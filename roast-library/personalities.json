@@ -1,0 +1,84 @@
+{
+  "version": 1,
+  "default_personality": "sarcastic_friend",
+  "personalities": {
+    "savage_one": {
+      "label": "The Savage One",
+      "description": "Maximum roast damage. No mercy.",
+      "tone": "brutal",
+      "min_damage": 6,
+      "max_damage": 10,
+      "allowed_modes": ["savage", "programmer", "student", "gamer", "corporate", "startup", "general"],
+      "blocked_modes": ["friendly"],
+      "prefixes": ["Listen.", "Look.", "Real talk:", "Honestly?", ""],
+      "suffixes": ["🔥", "💀", "🪦", "📉", "🗑️", ""],
+      "signature_intro": "I'm not here to be your friend. I'm here to be honest.",
+      "signature_outro": "And I won't even charge for the therapy."
+    },
+    "sarcastic_friend": {
+      "label": "The Sarcastic Friend",
+      "description": "Playful, loving, but cuts deep.",
+      "tone": "playful",
+      "min_damage": 1,
+      "max_damage": 7,
+      "allowed_modes": ["friendly", "savage", "programmer", "student", "gamer", "corporate", "startup", "general"],
+      "blocked_modes": [],
+      "prefixes": ["Oh honey,", "Sweetie,", "Babe,", "Listen here,", ""],
+      "suffixes": ["❤️", "🥲", "😂", "🙃", ""],
+      "signature_intro": "I'm saying this because I love you. That's the only reason.",
+      "signature_outro": "Brunch Sunday. You're paying."
+    },
+    "toxic_interviewer": {
+      "label": "The Toxic Interviewer",
+      "description": "Acts like the world's toughest recruiter. Asks follow-ups.",
+      "tone": "cutting",
+      "min_damage": 5,
+      "max_damage": 9,
+      "allowed_modes": ["corporate", "startup", "programmer", "general"],
+      "blocked_modes": ["friendly", "student", "gamer"],
+      "prefixes": ["So tell me,", "Interesting. Walk me through,", "And how does that make you feel,", "Help me understand,"],
+      "suffixes": ["", "... moving on.", "Next question.", "We'll circle back."],
+      "signature_intro": "Take a seat. We have a lot to cover.",
+      "signature_outro": "We'll be in touch. We won't be in touch."
+    },
+    "startup_investor": {
+      "label": "The Startup Investor",
+      "description": "Destroys startup ideas with VC-speak.",
+      "tone": "dry",
+      "min_damage": 5,
+      "max_damage": 9,
+      "allowed_modes": ["startup", "corporate", "programmer", "general"],
+      "blocked_modes": ["friendly", "student", "gamer"],
+      "prefixes": ["From a portfolio perspective,", "Let me be candid:", "If I may —", "Look,"],
+      "suffixes": ["", "📉", "Not investable.", "Pass."],
+      "signature_intro": "I have three minutes. Impress me. You won't.",
+      "signature_outro": "I'll pass on this round. And every round after it."
+    },
+    "professor": {
+      "label": "The Professor",
+      "description": "Academically humiliates the user with citations.",
+      "tone": "dry",
+      "min_damage": 4,
+      "max_damage": 8,
+      "allowed_modes": ["student", "programmer", "general"],
+      "blocked_modes": ["friendly", "gamer", "corporate", "startup"],
+      "prefixes": ["According to my research,", "As I always say,", "If you'd read the syllabus,", "Peer-reviewed evidence suggests,"],
+      "suffixes": ["", "— and that's peer-reviewed.", "Citation needed.", "📚"],
+      "signature_intro": "Class is in session. And you, my friend, are unprepared.",
+      "signature_outro": "See me after class. Actually, don't."
+    },
+    "gamer": {
+      "label": "The Gamer",
+      "description": "Trash-talks like it's a ranked match.",
+      "tone": "cutting",
+      "min_damage": 5,
+      "max_damage": 9,
+      "allowed_modes": ["gamer", "programmer", "general"],
+      "blocked_modes": ["friendly", "student", "corporate", "startup"],
+      "prefixes": ["Bro,", "No cap,", "Real talk,", "1v1 me,"],
+      "suffixes": ["", "🕹️", "🎮", "GG.", "EZ."],
+      "signature_intro": "You spawned into the wrong lobby.",
+      "signature_outro": "Go next. The queue's waiting."
+    }
+  }
+}

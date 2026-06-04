@@ -1,0 +1,5 @@
+# Render / Heroku-style process file
+# Used as a fallback by Render when render.yaml is not present.
+# (Render picks this up automatically for Python services.)
+web: gunicorn -k uvicorn.workers.UvicornWorker -w 2 -b 0.0.0.0:$PORT main:app
+release: echo "RoastGPT backend release"

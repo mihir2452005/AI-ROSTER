@@ -1,0 +1,50 @@
+# ----- Python -----
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+backend/.venv/
+backend/venv/
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
+*.db
+*.sqlite
+*.sqlite3
+.env
+.env.local
+.env.production
+
+# ----- Node / Next.js -----
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/build/
+frontend/.env.local
+frontend/.env.*.local
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+
+# ----- IDE -----
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# ----- Project-specific -----
+backend/test_*.db
+backend/test_*.db-journal
+.roast-cache/
+*.log
+logs/
+
+# ----- Build artifacts -----
+dist/
+build/
+*.whl
+frontend/tsconfig.tsbuildinfo

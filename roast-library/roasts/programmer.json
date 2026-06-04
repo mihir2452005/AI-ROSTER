@@ -1,0 +1,282 @@
+{
+  "mode": "programmer",
+  "version": 1,
+  "description": "For developers. Tech references land hardest.",
+  "count": 27,
+  "roasts": [
+    {
+      "id": "prog_001",
+      "personalities": ["savage_one", "sarcastic_friend", "professor"],
+      "intents": ["programming", "career"],
+      "keywords": ["code", "coding", "function", "class", "method", "compile", "debug"],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Your code has more bugs than {place}. Did you write it with your {body_part}, or is that just your default {activity}?",
+      "placeholders": {
+        "place": {
+          "type": "enum",
+          "values": ["a motel in July", "a Windows ME installation", "a free antivirus trial", "the comment section on YouTube"]
+        },
+        "body_part": {
+          "type": "enum",
+          "values": ["eyes closed", "non-dominant hand", "fingers crossed", "elbows"]
+        },
+        "activity": {
+          "type": "enum",
+          "values": ["debugging strategy", "definition of 'done'", "code review process", "quality assurance"]
+        }
+      },
+      "reaction": "🐛"
+    },
+    {
+      "id": "prog_002",
+      "personalities": ["savage_one", "sarcastic_friend"],
+      "intents": ["programming"],
+      "keywords": ["stackoverflow", "stack overflow"],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Stack Overflow sent me a notification: 'Please stop. We're begging you.' 📚",
+      "reaction": "📚"
+    },
+    {
+      "id": "prog_003",
+      "personalities": ["savage_one", "gamer"],
+      "intents": ["programming"],
+      "keywords": ["git", "commit", "push"],
+      "damage": 6,
+      "tone": "playful",
+      "template": "Your Git commit messages read like a cry for help. 'pls work' isn't a commit message — it's a prayer.",
+      "reaction": "🆘"
+    },
+    {
+      "id": "prog_004",
+      "personalities": ["savage_one"],
+      "intents": ["programming"],
+      "keywords": ["production", "prod", "deploy", "deployment"],
+      "damage": 8,
+      "tone": "brutal",
+      "template": "You don't have bugs. You have features that haven't been diagnosed yet.",
+      "reaction": "🐛"
+    },
+    {
+      "id": "prog_005",
+      "personalities": ["savage_one", "sarcastic_friend"],
+      "intents": ["programming"],
+      "damage": 6,
+      "tone": "cutting",
+      "template": "Your function has more parameters than your dating history has red flags.",
+      "reaction": "🚩"
+    },
+    {
+      "id": "prog_006",
+      "personalities": ["savage_one", "professor"],
+      "intents": ["programming"],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "I'm not saying your code is bad, but even your linter gave up and is looking for a new repo.",
+      "reaction": "🔍"
+    },
+    {
+      "id": "prog_007",
+      "personalities": ["savage_one"],
+      "intents": ["programming"],
+      "damage": 6,
+      "tone": "playful",
+      "template": "Your variable names suggest you learned programming from a {source}.",
+      "placeholders": {
+        "source": {
+          "type": "enum",
+          "values": ["cereal box", "fortune cookie", "broken Magic 8-Ball", "Huffington Post comments", "Morse code tutorial"]
+        }
+      },
+      "reaction": "🤔"
+    },
+    {
+      "id": "prog_008",
+      "personalities": ["savage_one", "sarcastic_friend"],
+      "intents": ["programming"],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "You write code the way I write apologies — lots of effort, no actual result.",
+      "reaction": "💔"
+    },
+    {
+      "id": "prog_009",
+      "personalities": ["savage_one", "toxic_interviewer"],
+      "intents": ["programming", "career"],
+      "keywords": ["pull request", "pr"],
+      "damage": 8,
+      "tone": "brutal",
+      "template": "Your pull request has been 'pending review' for so long, the reviewer died of old age. Twice.",
+      "reaction": "🪦"
+    },
+    {
+      "id": "prog_010",
+      "personalities": ["savage_one"],
+      "intents": ["programming"],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Even ChatGPT is tired of explaining recursion to you. It added you to its do-not-respond list.",
+      "reaction": "🤖"
+    },
+    {
+      "id": "prog_011",
+      "personalities": ["savage_one", "sarcastic_friend"],
+      "intents": ["programming"],
+      "damage": 6,
+      "tone": "playful",
+      "template": "Your tech stack was outdated when you started learning it. Even the docs have a funeral date.",
+      "reaction": "🪦"
+    },
+    {
+      "id": "prog_012",
+      "personalities": ["savage_one"],
+      "intents": ["programming"],
+      "damage": 6,
+      "tone": "dry",
+      "template": "You don't debug code. You emotionally support it until it works.",
+      "reaction": "🤗"
+    },
+    {
+      "id": "prog_013",
+      "personalities": ["savage_one"],
+      "intents": ["programming"],
+      "keywords": ["css", "frontend", "html"],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Your CSS is so broken, even Flexbox filed a restraining order. Grid just moved apartments.",
+      "reaction": "📐"
+    },
+    {
+      "id": "prog_014",
+      "personalities": ["savage_one", "sarcastic_friend"],
+      "intents": ["programming"],
+      "damage": 6,
+      "tone": "playful",
+      "template": "Your 'works on my machine' is just your machine being a liar too.",
+      "reaction": "💻"
+    },
+    {
+      "id": "prog_015",
+      "personalities": ["savage_one", "professor"],
+      "intents": ["programming", "career"],
+      "damage": 8,
+      "tone": "brutal",
+      "template": "I'd refactor your code, but my therapist said I should stop taking on hopeless cases.",
+      "reaction": "🛋️"
+    },
+    {
+      "id": "prog_016",
+      "personalities": ["savage_one", "toxic_interviewer"],
+      "intents": ["programming", "career"],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Your code review comments have more red flags than a Soviet parade. The party is concerning. The flags are wet.",
+      "reaction": "🚩"
+    },
+    {
+      "id": "prog_017",
+      "personalities": ["savage_one", "sarcastic_friend"],
+      "intents": ["programming", "career"],
+      "keywords": ["github", "open source", "contribution"],
+      "damage": 6,
+      "tone": "playful",
+      "template": "You have a GitHub profile with more green squares than your lawn has grass. Both are suspicious. The HOA has opinions.",
+      "reaction": "🟩"
+    },
+    {
+      "id": "prog_018",
+      "personalities": ["savage_one", "professor"],
+      "intents": ["programming"],
+      "keywords": ["regex", "regular expression"],
+      "damage": 8,
+      "tone": "brutal",
+      "template": "Your regex looks like someone had a seizure on a keyboard. I mean, technically it works. Theoretically. In a universe with different rules of syntax.",
+      "reaction": "🤯"
+    },
+    {
+      "id": "prog_019",
+      "personalities": ["savage_one", "sarcastic_friend"],
+      "intents": ["programming"],
+      "damage": 6,
+      "tone": "playful",
+      "template": "You name variables like you're trying to get fired. 'temp', 'temp2', 'tempFinal_v3_USE_THIS_ONE' — the holy trinity of giving up.",
+      "reaction": "🫠"
+    },
+    {
+      "id": "prog_020",
+      "personalities": ["savage_one"],
+      "intents": ["programming", "career"],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Your architecture diagram is a single box that says 'magic happens here.' Sometimes the magic is on fire. Sometimes it never loaded.",
+      "reaction": "🪄"
+    },
+    {
+      "id": "prog_021",
+      "personalities": ["savage_one", "toxic_interviewer", "startup_investor"],
+      "intents": ["programming", "career"],
+      "damage": 8,
+      "tone": "brutal",
+      "template": "You don't have a tech debt. You have a tech bankruptcy. The creditors have formed a coalition. The coalition has a Slack.",
+      "reaction": "💸"
+    },
+    {
+      "id": "prog_022",
+      "personalities": ["savage_one", "gamer"],
+      "intents": ["programming", "career"],
+      "damage": 6,
+      "tone": "playful",
+      "template": "Your CI/CD pipeline is more of a CI/Maybe pipeline. The 'D' is doing whatever it wants. The 'C' is on vacation.",
+      "reaction": "🔄"
+    },
+    {
+      "id": "prog_023",
+      "personalities": ["savage_one"],
+      "intents": ["programming"],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "You treat warnings like suggestions, and suggestions like insults. Your code shows. Loudly. In production. On the front page.",
+      "reaction": "⚠️"
+    },
+    {
+      "id": "prog_024",
+      "personalities": ["savage_one", "sarcastic_friend"],
+      "intents": ["programming", "career"],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Your test coverage is like your dating life — technically present, mostly empty, and full of regret. The coverage report is in denial.",
+      "reaction": "🧪"
+    },
+    {
+      "id": "prog_025",
+      "personalities": ["savage_one", "gamer"],
+      "intents": ["programming"],
+      "keywords": ["node", "npm", "dependency", "dependencies"],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "You've never met a dependency you didn't want to add. Your node_modules weighs more than a small car. The car is healthier.",
+      "reaction": "📦"
+    },
+    {
+      "id": "prog_026",
+      "personalities": ["savage_one", "toxic_interviewer"],
+      "intents": ["programming", "career"],
+      "keywords": ["production", "deploy", "friday", "main"],
+      "damage": 8,
+      "tone": "brutal",
+      "template": "You push to main on Friday at 5pm. Your on-call rotation has a file on you. So does HR. So does the CEO's dog.",
+      "reaction": "🔥"
+    },
+    {
+      "id": "prog_027",
+      "personalities": ["savage_one"],
+      "intents": ["programming", "career"],
+      "keywords": ["docker", "dockerfile", "container", "kubernetes"],
+      "damage": 6,
+      "tone": "playful",
+      "template": "Your Dockerfile has 47 layers. Each one is a regret. The image is a cry for help. The help has been dispatched. The help is also crying.",
+      "reaction": "🐳"
+    }
+  ]
+}

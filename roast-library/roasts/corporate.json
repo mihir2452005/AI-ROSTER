@@ -1,0 +1,243 @@
+{
+  "mode": "corporate",
+  "version": 1,
+  "description": "LinkedIn, buzzwords, meetings, performance reviews.",
+  "count": 24,
+  "roasts": [
+    {
+      "id": "corp_001",
+      "personalities": ["toxic_interviewer", "savage_one"],
+      "intents": ["career", "money"],
+      "keywords": ["circle back", "synergy", "leverage", "stakeholder"],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Let's circle back on your competence, but I'm afraid we'd need to invent the concept first.",
+      "reaction": "🔁"
+    },
+    {
+      "id": "corp_002",
+      "personalities": ["savage_one", "toxic_interviewer", "startup_investor"],
+      "intents": ["career"],
+      "keywords": ["linkedin", "linked in"],
+      "damage": 8,
+      "tone": "cutting",
+      "template": "Your LinkedIn says 'Thought Leader,' but your actual thoughts require a permission slip and three approvals.",
+      "reaction": "💼"
+    },
+    {
+      "id": "corp_003",
+      "personalities": ["savage_one", "sarcastic_friend"],
+      "intents": ["career"],
+      "damage": 7,
+      "tone": "brutal",
+      "template": "You're not 'unemployed.' You're 'between opportunities' and 'between realities.'",
+      "reaction": "📉"
+    },
+    {
+      "id": "corp_004",
+      "personalities": ["savage_one"],
+      "intents": ["career"],
+      "keywords": ["plan", "5-year", "goals"],
+      "damage": 6,
+      "tone": "cutting",
+      "template": "You don't have a 5-year plan. You have a 5-minute excuse and a Pinterest board titled 'someday.'",
+      "reaction": "📌"
+    },
+    {
+      "id": "corp_005",
+      "personalities": ["savage_one", "toxic_interviewer"],
+      "intents": ["career"],
+      "keywords": ["resume", "cv"],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Your resume has more buzzwords than achievements. Buzzwords: 47. Achievements: 👀.",
+      "reaction": "📄"
+    },
+    {
+      "id": "corp_006",
+      "personalities": ["savage_one", "sarcastic_friend"],
+      "intents": ["career"],
+      "damage": 7,
+      "tone": "brutal",
+      "template": "You're the human equivalent of a corporate memo — long, unclear, and ignored by everyone with a job.",
+      "reaction": "📑"
+    },
+    {
+      "id": "corp_007",
+      "personalities": ["savage_one", "toxic_interviewer"],
+      "intents": ["career"],
+      "keywords": ["team player", "team"],
+      "damage": 6,
+      "tone": "dry",
+      "template": "Your 'team player' status expired with your last performance review. HR didn't send a renewal.",
+      "reaction": "🏢"
+    },
+    {
+      "id": "corp_008",
+      "personalities": ["savage_one"],
+      "intents": ["career"],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "You don't 'disrupt the industry.' You disrupt my patience and the office coffee machine.",
+      "reaction": "☕"
+    },
+    {
+      "id": "corp_009",
+      "personalities": ["savage_one", "toxic_interviewer"],
+      "intents": ["career"],
+      "keywords": ["elevator pitch", "pitch"],
+      "damage": 6,
+      "tone": "playful",
+      "template": "Your elevator pitch has more ups and downs than your career. The elevator is filing a complaint.",
+      "reaction": "🛗"
+    },
+    {
+      "id": "corp_010",
+      "personalities": ["savage_one", "sarcastic_friend"],
+      "intents": ["career"],
+      "damage": 6,
+      "tone": "dry",
+      "template": "You say 'synergy' the way normal people say 'please help me.' Both are equally hard to watch.",
+      "reaction": "🤝"
+    },
+    {
+      "id": "corp_011",
+      "personalities": ["savage_one", "toxic_interviewer"],
+      "intents": ["career"],
+      "keywords": ["interview", "interviewing"],
+      "damage": 8,
+      "tone": "brutal",
+      "template": "I've interviewed better candidates in my spam folder. At least they had the confidence to show up uninvited.",
+      "reaction": "💼"
+    },
+    {
+      "id": "corp_012",
+      "personalities": ["savage_one"],
+      "intents": ["career"],
+      "keywords": ["meeting", "standup", "stand-up"],
+      "damage": 6,
+      "tone": "playful",
+      "template": "You treat meetings like attendance is the assignment. Spoiler: participation trophies don't promote.",
+      "reaction": "📅"
+    },
+    {
+      "id": "corp_013",
+      "personalities": ["savage_one", "sarcastic_friend"],
+      "intents": ["career"],
+      "keywords": ["people person", "extrovert", "social"],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "You're a 'people person.' Unfortunately, no people have been confirmed. The people are also looking for you. To leave.",
+      "reaction": "👥"
+    },
+    {
+      "id": "corp_014",
+      "personalities": ["toxic_interviewer", "savage_one"],
+      "intents": ["career"],
+      "keywords": ["okr", "okrs", "objectives", "goals"],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Your OKRs are a wish list your therapist is concerned about. The OKRs don't even know what they are. They are on a vision quest.",
+      "reaction": "🎯"
+    },
+    {
+      "id": "corp_015",
+      "personalities": ["savage_one", "sarcastic_friend"],
+      "intents": ["career"],
+      "damage": 6,
+      "tone": "playful",
+      "template": "You say 'I wear many hats' but they all say 'Intern' on the tag. The hats are aspirational. The hats are also lying.",
+      "reaction": "🎩"
+    },
+    {
+      "id": "corp_016",
+      "personalities": ["savage_one"],
+      "intents": ["career"],
+      "keywords": ["promotion", "promoted", "promote"],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Your promotion is a software update that keeps rolling back. IT is concerned. HR is concerned. Your manager is updating their resume too.",
+      "reaction": "⏬"
+    },
+    {
+      "id": "corp_017",
+      "personalities": ["toxic_interviewer", "savage_one"],
+      "intents": ["career"],
+      "keywords": ["passionate", "passion"],
+      "damage": 6,
+      "tone": "dry",
+      "template": "You're 'passionate' the way a cover letter is 'passionate.' It's professional lying. The lie is consistent. The lie is on LinkedIn.",
+      "reaction": "❤️‍🔥"
+    },
+    {
+      "id": "corp_018",
+      "personalities": ["savage_one", "sarcastic_friend"],
+      "intents": ["career"],
+      "keywords": ["personal brand", "brand", "linkedin"],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Your personal brand is 'unemployed with a website.' Squarespace has a special template for you. The template says 'in transition.' Forever.",
+      "reaction": "🌐"
+    },
+    {
+      "id": "corp_019",
+      "personalities": ["savage_one", "sarcastic_friend"],
+      "intents": ["career"],
+      "keywords": ["slack", "status", "remote"],
+      "damage": 6,
+      "tone": "playful",
+      "template": "You treat Slack status updates as a personality. 'Heads down' is not a personality. The status is also a lie. The status is also the job.",
+      "reaction": "💬"
+    },
+    {
+      "id": "corp_020",
+      "personalities": ["savage_one", "toxic_interviewer"],
+      "intents": ["career"],
+      "keywords": ["manager", "boss", "1:1", "one on one"],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Your manager has a 1:1 with you every week. They are not happy. Their smile is in storage. Their agenda is your performance improvement plan.",
+      "reaction": "📋"
+    },
+    {
+      "id": "corp_021",
+      "personalities": ["savage_one", "sarcastic_friend"],
+      "intents": ["career"],
+      "keywords": ["feedback", "review", "performance"],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "You asked for feedback. The team gave it. You cried. Nobody was surprised. The tears were also feedback. HR saved them in a folder.",
+      "reaction": "🫠"
+    },
+    {
+      "id": "corp_022",
+      "personalities": ["savage_one"],
+      "intents": ["career"],
+      "keywords": ["quick wins", "ship", "deliver"],
+      "damage": 6,
+      "tone": "playful",
+      "template": "Your 'quick wins' take a quarter. The quarter is concerned. Q2 is preparing a complaint. The complaint is also taking a quarter.",
+      "reaction": "📊"
+    },
+    {
+      "id": "corp_023",
+      "personalities": ["savage_one", "toxic_interviewer"],
+      "intents": ["career"],
+      "keywords": ["meeting", "meetings"],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "You attend meetings about meetings about meetings. The matrix has you. Morpheus is also in the meeting. He's confused. He's also in another meeting.",
+      "reaction": "🔁"
+    },
+    {
+      "id": "corp_024",
+      "personalities": ["savage_one", "toxic_interviewer"],
+      "intents": ["career"],
+      "keywords": ["review", "performance review"],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Your performance review is a Mad Lib: 'Great energy, but [concern] about [skill].' [Skill] is everything. [Concern] is also everything. Both are about you.",
+      "reaction": "📑"
+    }
+  ]
+}

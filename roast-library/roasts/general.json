@@ -1,0 +1,117 @@
+{
+  "mode": "general",
+  "version": 1,
+  "description": "Fallback roasts used when no intent matches or user picked Custom mode.",
+  "count": 10,
+  "roasts": [
+    {
+      "id": "gen_001",
+      "personalities": ["sarcastic_friend"],
+      "intents": [],
+      "keywords": [],
+      "damage": 4,
+      "tone": "playful",
+      "template": "You have the energy of a {place}. I mean that as a compliment. Actually, no, I don't.",
+      "placeholders": {
+        "place": {
+          "type": "enum",
+          "values": ["mid-day Monday", "WiFi signal in a basement", "free trial antivirus", "loading screen of a person"]
+        }
+      },
+      "reaction": "🙃"
+    },
+    {
+      "id": "gen_002",
+      "personalities": ["savage_one", "toxic_interviewer", "startup_investor"],
+      "intents": [],
+      "damage": 7,
+      "tone": "brutal",
+      "template": "I want to roast you, but I'm afraid the insults will feel personally attacked by how accurate they are.",
+      "reaction": "🔥"
+    },
+    {
+      "id": "gen_003",
+      "personalities": ["sarcastic_friend"],
+      "intents": [],
+      "damage": 3,
+      "tone": "playful",
+      "template": "You're not stupid. You're just... enthusiastic about being wrong.",
+      "reaction": "❤️"
+    },
+    {
+      "id": "gen_004",
+      "personalities": ["savage_one", "professor"],
+      "intents": [],
+      "damage": 8,
+      "tone": "cutting",
+      "template": "Your ancestors fought for your right to speak. They regret it daily.",
+      "reaction": "🪦"
+    },
+    {
+      "id": "gen_005",
+      "personalities": ["sarcastic_friend", "gamer"],
+      "intents": [],
+      "damage": 5,
+      "tone": "playful",
+      "template": "You're like a {item} — present, technically functional, but no one really knows why.",
+      "placeholders": {
+        "item": {
+          "type": "enum",
+          "values": ["stock screensaver", "rubber doorstop", "decorative pillow", "USB cable that only charges one way"]
+        }
+      },
+      "reaction": "😐"
+    },
+    {
+      "id": "gen_006",
+      "personalities": ["sarcastic_friend"],
+      "intents": [],
+      "damage": 2,
+      "tone": "light",
+      "template": "If I had a dollar for every smart thing you said, I'd still need a payment plan.",
+      "reaction": "💛"
+    },
+    {
+      "id": "gen_007",
+      "personalities": ["savage_one"],
+      "intents": [],
+      "damage": 9,
+      "tone": "brutal",
+      "template": "You're the reason group projects have a 'free-rider' clause.",
+      "reaction": "📉"
+    },
+    {
+      "id": "gen_008",
+      "personalities": ["sarcastic_friend", "professor"],
+      "intents": [],
+      "damage": 4,
+      "tone": "dry",
+      "template": "You're proof that the bar was lowered. And then you tripped over it.",
+      "reaction": "🤝"
+    },
+    {
+      "id": "gen_009",
+      "personalities": ["gamer", "savage_one"],
+      "intents": [],
+      "damage": 6,
+      "tone": "cutting",
+      "template": "You're like a {game} tutorial — everyone's stuck on you, and most want to skip.",
+      "placeholders": {
+        "game": {
+          "type": "enum",
+          "values": ["Dark Souls", "Linux", "Elden Ring", "IRS website", "Windows update"]
+        }
+      },
+      "reaction": "🎮"
+    },
+    {
+      "id": "gen_010",
+      "personalities": ["sarcastic_friend"],
+      "intents": [],
+      "damage": 5,
+      "tone": "playful",
+      "template": "I don't roast people. I just describe you accurately and let the audience decide.",
+      "reaction": "🎤"
+    }
+  ]
+}

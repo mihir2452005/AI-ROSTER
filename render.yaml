@@ -1,0 +1,55 @@
+# Render Blueprint — RoastGPT backend
+#
+# Deploy: connect this repo at https://dashboard.render.com/blueprints,
+# point it at the repo root, and Render will spin up the service and the
+# Postgres database below. No Docker required — Render's native Python
+# runtime uses the runtime.txt + requirements.txt combo to build.
+
+services:
+  - type: web
+    name: roastgpt-api
+    runtime: python
+    plan: starter
+    region: oregon
+    rootDir: backend
+    buildCommand: "pip install --upgrade pip && pip install -r requirements.txt"
+    startCommand: "gunicorn -k uvicorn.workers.UvicornWorker -w 2 -b 0.0.0.0:$PORT main:app"
+    autoDeploy: true
+    healthCheckPath: /api/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.7
+      - key: ENVIRONMENT
+        value: production
+      # ---- Secrets you must fill in (Dashboard → Environment → Add) ----
+      - key: DATABASE_URL
+        sync: false          # set to the Internal Database URL below
+      - key: JWT_SECRET_KEY
+        generateValue: true  # Render auto-fills a strong random secret
+      - key: ADMIN_API_KEY
+        generateValue: true
+      - key: RAZORPAY_KEY_ID
+        sync: false
+      - key: RAZORPAY_KEY_SECRET
+        sync: false
+      - key: RAZORPAY_WEBHOOK_SECRET
+        sync: false
+      # ---- Public configuration ----
+      - key: ALLOWED_ORIGINS
+        value: "https://roastgpt.vercel.app,https://www.roastgpt.app"
+      - key: FRONTEND_URL
+        value: "https://roastgpt.vercel.app"
+      - key: RATE_LIMIT_REQUESTS
+        value: "60"
+      - key: RATE_LIMIT_WINDOW
+        value: "60"
+      - key: TRUSTED_PROXIES
+        value: "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,127.0.0.1/32,::1/128"
+
+databases:
+  - name: roastgpt-db
+    databaseName: roastgpt
+    user: roastgpt
+    plan: starter          # 1 GB, $7/mo. Free tier also works for low traffic.
+    region: oregon
+    ipAllowList: []        # only the service above can connect

@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "description": "Used when a returning user starts a new session. Pulls from user memory.",
+  "trigger": "user.has_prior_session == true",
+  "callbacks": [
+    {
+      "id": "cbk_001",
+      "personalities": ["savage_one", "sarcastic_friend"],
+      "template": "Welcome back, {username}. Last time you {last_topic}. I figured you'd be too embarrassed to return.",
+      "placeholders": {
+        "username":   { "type": "username" },
+        "last_topic": { "type": "history", "key": "last_topic_summary" }
+      },
+      "reaction": "🔥"
+    },
+    {
+      "id": "cbk_002",
+      "personalities": ["savage_one"],
+      "template": "Oh look who came back. Your previous roast damage was {last_damage}%. We've raised the bar. And your self-esteem has lowered it.",
+      "placeholders": {
+        "last_damage": { "type": "history", "key": "last_session_damage_pct" }
+      },
+      "reaction": "📈"
+    },
+    {
+      "id": "cbk_003",
+      "personalities": ["sarcastic_friend"],
+      "template": "Hi {username}! 👋 Still {recurring_habit}? Bold of you to keep that energy.",
+      "placeholders": {
+        "username":        { "type": "username" },
+        "recurring_habit": { "type": "history", "key": "recurring_topic" }
+      },
+      "reaction": "🥲"
+    }
+  ]
+}

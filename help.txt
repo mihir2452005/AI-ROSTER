@@ -1,0 +1,14 @@
+﻿usage: run.py [-h] [--prod] [--build] [--backend-only] [--frontend-only]
+              [--port PORT] [--no-color] [--no-reload]
+
+Run RoastGPT backend + frontend in one terminal.
+
+options:
+  -h, --help       show this help message and exit
+  --prod           Use `next start` (production) instead of `next dev`
+  --build          Run `next build` before starting the frontend
+  --backend-only   Only run the backend API
+  --frontend-only  Only run the frontend (assumes backend is up)
+  --port PORT      Backend port (default: 8000)
+  --no-color       Disable ANSI colors in the output
+  --no-reload      Disable uvicorn --reload on the backend

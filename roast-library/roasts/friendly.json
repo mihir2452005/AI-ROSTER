@@ -1,0 +1,260 @@
+{
+  "mode": "friendly",
+  "version": 1,
+  "description": "Light teasing. Safe to send to your mom. Damage 1-4 only.",
+  "count": 22,
+  "roasts": [
+    {
+      "id": "frnd_001",
+      "personalities": ["sarcastic_friend"],
+      "intents": [],
+      "damage": 2,
+      "tone": "light",
+      "template": "I'd roast you, but my mom told me to be nice to people who are trying their best. 💛",
+      "reaction": "💛"
+    },
+    {
+      "id": "frnd_002",
+      "personalities": ["sarcastic_friend"],
+      "intents": [],
+      "damage": 1,
+      "tone": "light",
+      "template": "You're the human equivalent of a typo — close, but not quite right. ✨",
+      "reaction": "✨"
+    },
+    {
+      "id": "frnd_003",
+      "personalities": ["sarcastic_friend"],
+      "intents": [],
+      "damage": 3,
+      "tone": "playful",
+      "template": "Your vibe is giving 'participation trophy.' And honestly? It's kind of comforting. 🏆",
+      "reaction": "🏆"
+    },
+    {
+      "id": "frnd_004",
+      "personalities": ["sarcastic_friend"],
+      "intents": [],
+      "damage": 2,
+      "tone": "light",
+      "template": "You're like a {item} — nobody's excited to see you, but life would feel weird without one.",
+      "placeholders": {
+        "item": {
+          "type": "enum",
+          "values": ["WiFi signal in a coffee shop", "tax refund", "default ringtone", "loading bar that lies"]
+        }
+      },
+      "reaction": "🤗"
+    },
+    {
+      "id": "frnd_005",
+      "personalities": ["sarcastic_friend"],
+      "intents": [],
+      "damage": 3,
+      "tone": "playful",
+      "template": "You bring so much joy... to people who aren't related to you.",
+      "reaction": "😊"
+    },
+    {
+      "id": "frnd_006",
+      "personalities": ["sarcastic_friend"],
+      "intents": [],
+      "damage": 2,
+      "tone": "light",
+      "template": "If kindness were a currency, you'd be the world's richest {adjective} person.",
+      "placeholders": {
+        "adjective": {
+          "type": "enum",
+          "values": ["struggling", "lovably confused", "enthusiastically broke", "chronically optimistic"]
+        }
+      },
+      "reaction": "💕"
+    },
+    {
+      "id": "frnd_007",
+      "personalities": ["sarcastic_friend"],
+      "intents": [],
+      "damage": 1,
+      "tone": "light",
+      "template": "You have a great face for radio. Wait, that wasn't nice. Let me restart. Your laugh is... memorable. 🎙️",
+      "reaction": "🎙️"
+    },
+    {
+      "id": "frnd_008",
+      "personalities": ["sarcastic_friend"],
+      "intents": [],
+      "damage": 3,
+      "tone": "playful",
+      "template": "I was going to come up with a clever roast, but then I realized I'd be giving you too much credit.",
+      "reaction": "🥲"
+    },
+    {
+      "id": "frnd_009",
+      "personalities": ["sarcastic_friend"],
+      "intents": [],
+      "damage": 2,
+      "tone": "light",
+      "template": "You're like a software update — nobody's excited, but we tolerate you. ☕",
+      "reaction": "☕"
+    },
+    {
+      "id": "frnd_010",
+      "personalities": ["sarcastic_friend"],
+      "intents": [],
+      "damage": 3,
+      "tone": "playful",
+      "template": "Remember when you asked me to be honest? Yeah... let's not do that again.",
+      "reaction": "💛"
+    },
+    {
+      "id": "frnd_011",
+      "personalities": ["sarcastic_friend"],
+      "intents": [],
+      "damage": 2,
+      "tone": "light",
+      "template": "You're the human equivalent of a {item} — I wouldn't go out of my way, but I won't say no.",
+      "placeholders": {
+        "item": {
+          "type": "enum",
+          "values": ["welcome mat", "default screensaver", "free sample", "buffer episode", "loyalty card"]
+        }
+      },
+      "reaction": "🤗"
+    },
+    {
+      "id": "frnd_012",
+      "personalities": ["sarcastic_friend"],
+      "intents": [],
+      "damage": 2,
+      "tone": "light",
+      "template": "Your vibe is the human version of a {weather} — not bad, just… present.",
+      "placeholders": {
+        "weather": {
+          "type": "enum",
+          "values": ["mid-March drizzle", "mild breeze", "cloudy with a chance of awkward", "Tuesday afternoon"]
+        }
+      },
+      "reaction": "🌥️"
+    },
+    {
+      "id": "frnd_013",
+      "personalities": ["sarcastic_friend"],
+      "intents": [],
+      "damage": 2,
+      "tone": "light",
+      "template": "You're like a {snack} — nobody raves about you, but the bowl's always empty. Out of pity.",
+      "placeholders": {
+        "snack": {
+          "type": "enum",
+          "values": ["mixed nuts", "trail mix", "fruit cake", "the plain chips at the party"]
+        }
+      },
+      "reaction": "🥜"
+    },
+    {
+      "id": "frnd_014",
+      "personalities": ["sarcastic_friend"],
+      "intents": [],
+      "damage": 3,
+      "tone": "playful",
+      "template": "You have the charisma of a {object}. A polite {object}. One that says sorry when you bump into it.",
+      "placeholders": {
+        "object": {
+          "type": "enum",
+          "values": ["library card", "waiting room magazine", "complimentary mint", "USB-C cable in a drawer"]
+        }
+      },
+      "reaction": "📎"
+    },
+    {
+      "id": "frnd_015",
+      "personalities": ["sarcastic_friend"],
+      "intents": [],
+      "damage": 3,
+      "tone": "playful",
+      "template": "If I had to describe you in a movie, you'd be the friend who dies in the first act. Plot-wise. The audience will miss you briefly.",
+      "reaction": "🎬"
+    },
+    {
+      "id": "frnd_016",
+      "personalities": ["sarcastic_friend"],
+      "intents": [],
+      "damage": 2,
+      "tone": "light",
+      "template": "You treat 'OK' like a personality. It works. Sort of. Three days a week.",
+      "reaction": "👌"
+    },
+    {
+      "id": "frnd_017",
+      "personalities": ["sarcastic_friend"],
+      "intents": [],
+      "damage": 3,
+      "tone": "playful",
+      "template": "You are the human version of a {platform} — beloved by your mom, ignored by everyone else.",
+      "placeholders": {
+        "platform": {
+          "type": "enum",
+          "values": ["scrapbook", "pager", "fax machine", "Quibi", "Foursquare check-in"]
+        }
+      },
+      "reaction": "📠"
+    },
+    {
+      "id": "frnd_018",
+      "personalities": ["sarcastic_friend"],
+      "intents": [],
+      "damage": 3,
+      "tone": "playful",
+      "template": "I'd be more upset about you being average, but 'average' would imply you tried. The bar is still on the floor.",
+      "reaction": "📊"
+    },
+    {
+      "id": "frnd_019",
+      "personalities": ["sarcastic_friend"],
+      "intents": [],
+      "damage": 2,
+      "tone": "light",
+      "template": "You're like a {season} — quietly doing your thing, asking nothing of anyone. Mostly because nobody's watching.",
+      "placeholders": {
+        "season": {
+          "type": "enum",
+          "values": ["late October", "early February", "shoulder season", "Sunday afternoon", "the third week of January"]
+        }
+      },
+      "reaction": "🍂"
+    },
+    {
+      "id": "frnd_020",
+      "personalities": ["sarcastic_friend"],
+      "intents": [],
+      "damage": 3,
+      "tone": "playful",
+      "template": "Your hobbies include: scrolling, judging, and being a delight. Two of those are lies. Three if you count the delight.",
+      "reaction": "📱"
+    },
+    {
+      "id": "frnd_021",
+      "personalities": ["sarcastic_friend"],
+      "intents": [],
+      "damage": 3,
+      "tone": "playful",
+      "template": "You have 'main character' energy. It's the kind where you're actually the NPC who repeats the same line. We love you anyway.",
+      "reaction": "🎮"
+    },
+    {
+      "id": "frnd_022",
+      "personalities": ["sarcastic_friend"],
+      "intents": [],
+      "damage": 2,
+      "tone": "light",
+      "template": "You're like a {gift} — thoughtful in theory, regifted in practice. The receipt is still in the bag.",
+      "placeholders": {
+        "gift": {
+          "type": "enum",
+          "values": ["fruit cake", "scented candle", "novelty mug", "framed inspirational quote", "a candle that smells like a candle"]
+        }
+      },
+      "reaction": "🎁"
+    }
+  ]
+}

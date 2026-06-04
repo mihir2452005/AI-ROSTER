@@ -1,0 +1,227 @@
+{
+  "version": 2,
+  "fallback_intent": "general",
+  "scoring": {
+    "exact_phrase_match": 10,
+    "keyword_match": 1,
+    "decay_per_position": 0,
+    "min_score_threshold": 1
+  },
+  "intents": {
+    "programming": {
+      "label": "Programming",
+      "weight": 1.0,
+      "min_keyword_score": 2,
+      "keywords": [
+        "code", "coding", "program", "programmer", "developer", "dev",
+        "function", "variable", "bug", "compile", "compile error", "syntax",
+        "git", "commit", "push", "pull request", "merge", "deploy",
+        "deployment", "API", "endpoint", "frontend", "backend", "fullstack",
+        "javascript", "typescript", "python", "java", "c++", "rust", "go",
+        "react", "next.js", "nextjs", "node", "django", "flask", "fastapi",
+        "docker", "kubernetes", "aws", "azure", "gcp", "sql", "nosql",
+        "mongodb", "postgres", "redis", "leetcode", "hackerrank",
+        "stackoverflow", "stack overflow", "ide", "vscode", "intellij",
+        "production", "prod", "staging", "localhost", "github", "gitlab",
+        "open source", "contribution", "regex", "regular expression",
+        "ci/cd", "node_modules", "dependency", "dependencies", "dockerfile",
+        "container", "debugger", "debugging", "refactor", "refactoring",
+        "tech debt", "tech stack", "framework", "library", "package",
+        "package.json", "compiler", "interpreter", "runtime", "ide",
+        "algorithm", "data structure", "thread", "threading", "mutex",
+        "async", "await", "promise", "callback", "closure", "lambda",
+        "recursion", "stack trace", "exception", "stack overflow error"
+      ],
+      "phrases": [
+        "my code doesn't work", "why won't it compile", "merge conflict",
+        "i wrote a function", "i'm a developer", "i'm a software engineer",
+        "i work in tech", "stack overflow said", "production is down",
+        "i pushed to main", "my code is broken", "tests are failing",
+        "main branch", "pushed to main", "force push", "pull request",
+        "merge conflict", "build is broken", "tests are red", "npm install",
+        "yarn install", "pip install", "cargo build", "stack trace",
+        "code review", "i'm a dev", "junior dev", "senior dev"
+      ]
+    },
+    "school": {
+      "label": "School",
+      "weight": 1.0,
+      "min_keyword_score": 1,
+      "keywords": [
+        "school", "class", "classes", "course", "courses", "exam", "exams",
+        "test", "tests", "midterm test", "final test", "pop quiz", "quiz",
+        "quizzes", "homework", "assignment", "assignments", "essay",
+        "essays", "thesis", "dissertation", "gpa", "professor", "prof",
+        "teacher", "lecture", "lectures", "studying", "studied", "degree",
+        "major", "minor", "university", "college", "campus", "dorm",
+        "semester", "term", "freshman", "sophomore", "junior", "senior",
+        "graduate", "undergrad", "phd", "masters", "bachelors", "dropout",
+        "academic", "academia", "library", "attendance", "absent",
+        "missed class", "office hours", "advisor", "abroad", "exchange",
+        "study abroad", "wikipedia", "cite", "group project", "partner",
+        "graduated", "graduation", "syllabus", "rubric", "midterm", "finals",
+        "dean", "tenure", "TA", "tutor", "lecture hall", "classroom"
+      ],
+      "phrases": [
+        "i have an exam tomorrow", "i failed my test", "i skipped class",
+        "i'm in college", "i'm a student", "my professor", "my gpa",
+        "i didn't study", "i have homework", "my essay",
+        "i dropped out", "i'm failing", "i can't graduate", "finals week",
+        "midterm tomorrow", "i bombed the exam", "academic probation"
+      ]
+    },
+    "gaming": {
+      "label": "Gaming",
+      "weight": 1.0,
+      "min_keyword_score": 1,
+      "keywords": [
+        "gaming", "gamer", "console", "ps5", "playstation", "xbox",
+        "nintendo", "steam deck", "ranked match", "ranked game", "ranked queue",
+        "ranked season", "ranked placement", "competitive queue",
+        "casual mode", "fps game", "moba", "mmo", "rpg game", "loot box",
+        "raid boss", "boss fight", "league of legends",
+        "valorant", "csgo", "cs2", "fortnite", "apex legends", "overwatch",
+        "world of warcraft", "minecraft", "elden ring", "dark souls",
+        "k/d ratio", "kd ratio", "kda", "headshot", "no scope", "sniper",
+        "tank role", "dps role", "healer role", "jungle path", "tier list",
+        "nerfed", "buffed", "patch notes", "dlc", "speedrun", "esports",
+        "twitch.tv", "streamer", "loot drop", "matchmaking rating", "mmr",
+        "git gud", "smurf account", "smurfing", "throw the game",
+        "fps drop", "frame drop", "lag spike", "input lag", "ping",
+        "battle pass", "battle royale", "battle royale game", "roguelike",
+        "soulslike", "metroidvania", "platformer", "fighting game",
+        "fighting games", "pvp", "pve", "gank", "ganking",
+        "1v1 me", "2v2", "5v5", "clutch or kick",
+        "get rekt", "pwned", "noob tube", "camping noob", "hacker",
+        "aimbot", "wallhack", "rage quit", "alt account", "boosted",
+        "carries me", "carried by", "i carry", "intentionally feeding",
+        "afk", "dc'd", "disconnected mid", "ban pick phase", "draft phase",
+        "noob", "scrub", "tilted", "tilting"
+      ],
+      "phrases": [
+        "i got destroyed", "i got matched against", "my team is trash",
+        "i got kicked", "i clutched", "i rage quit", "i got reported",
+        "i got banned", "i keep dying", "my main is", "support main",
+        "i'm playing support", "i queued support", "main character",
+        "main character syndrome", "main quest", "ranked match tonight",
+        "ranked game with me", "1v1 me", "gg ez", "git gud", "i got smoked",
+        "i got rolled", "clutch or kick", "throw the game", "we got rolled",
+        "we got steamrolled", "i lost my rank", "i dropped rank",
+        "i got demoted", "i got promoted", "i went up a rank", "i ranked up",
+        "i'm hardstuck", "i'm stuck in silver", "i'm stuck in gold",
+        "i'm stuck in plat", "diamond ranked", "master ranked",
+        "immortal ranked", "radiant ranked", "global elite", "supreme master",
+        "global offensive", "counter strike", "half life", "half-life",
+        "left 4 dead", "team fortress", "rocket league", "fall guys",
+        "stumble guys", "among us", "dead by daylight", "phasmophobia",
+        "destiny 2", "warframe", "path of exile", "diablo", "starcraft",
+        "warcraft", "hearthstone", "magic the gathering arena", "runeterra",
+        "teamfight tactics", "auto chess", "dota 2", "honor of kings",
+        "wild rift", "pokemon unite", "smite", "paladins", "brawlhalla",
+        "apex pack", "warzone", "modern warfare", "black ops", "fifa",
+        "madden", "nba 2k", "gtav", "gta v", "gta online", "red dead",
+        "cyberpunk", "elden ring boss", "margit", "malenia", "radahn",
+        "ds3", "ds1", "dark souls 3", "dark souls 1", "bloodborne",
+        "sekiro", "lies of p", "nioh", "monster hunter", "persona 5",
+        "final fantasy", "ffxiv", "ff14", "lost ark", "new world",
+        "lost my promos", "lost my series", "won my series", "got my series",
+        "mid lane", "top lane", "bot lane", "side lane", "lane phase",
+        "in ranked", "play ranked", "solo queue", "duo queue", "flex queue",
+        "my kd", "my kda", "my k/d", "kdr",
+        "get gud", "get rekt", "i got rekt", "you got rekt", "pwned noob",
+        "i'm hard stuck", "i'm hard-stuck", "stuck in elo hell", "elo hell",
+        "smurf", "smurfing", "reverse boosted", "i'm reverse boosted",
+        "i'm boosted", "i got boosted", "tilted off", "tilted out",
+        "i can't climb", "i'm stuck", "losing streak", "win streak",
+        "my mmr", "low mmr", "high mmr", "ranked anxiety",
+        "diamond lobby", "master lobby", "radiant lobby", "immortal lobby"
+      ]
+    },
+    "fitness": {
+      "label": "Fitness",
+      "weight": 0.9,
+      "min_keyword_score": 1,
+      "keywords": [
+        "gym", "workout", "lifting", "weights", "cardio", "running",
+        "marathon", "bench press", "squat", "deadlift", "rep", "reps", "set",
+        "sets", "muscle", "abs", "bulk", "cut", "bulking", "cutting",
+        "protein", "creatine", "pre-workout", "calories", "diet", "keto",
+        "intermittent fasting", "weight loss", "weight gain", "fat loss",
+        "leg day", "PR", "personal record", "1RM", "5x5", "split",
+        "push day", "pull day", "gains", "shredded", "physique", "bodybuilder"
+      ],
+      "phrases": [
+        "i skipped leg day", "i can't lift", "i'm bulking", "i'm cutting",
+        "i missed my workout", "i'm sore", "i'm not sore", "i hit a PR",
+        "i benched", "i squatted", "i deadlifted"
+      ]
+    },
+    "money": {
+      "label": "Money",
+      "weight": 0.8,
+      "min_keyword_score": 1,
+      "keywords": [
+        "money", "cash", "rich", "wealthy", "broke", "salary", "wage",
+        "income", "revenue", "profit", "loss", "invest", "investing",
+        "investment", "stocks", "crypto", "bitcoin", "ethereum", "nft",
+        "trading", "trader", "wall street", "hedge fund", "ipo", "loan",
+        "debt", "credit", "mortgage", "rent", "budget", "savings", "401k",
+        "ira", "roth", "tax", "taxes", "audit", "side hustle", "freelance",
+        "series a", "funding round", "raised funding", "cac", "ltv",
+        "unit economics", "burn rate", "runway", "valuation", "cap table"
+      ],
+      "phrases": [
+        "i'm broke", "i'm getting paid", "i got fired", "i got laid off",
+        "i got promoted", "my salary", "i invested", "i got a raise",
+        "i got a bonus", "i'm in debt", "i can't pay rent", "broke af",
+        "i lost my job", "i'm unemployed", "i can't find a job",
+        "i got evicted", "i'm broke this month", "broke college student"
+      ]
+    },
+    "relationships": {
+      "label": "Relationships",
+      "weight": 0.7,
+      "min_keyword_score": 1,
+      "keywords": [
+        "girlfriend", "boyfriend", "partner", "wife", "husband", "ex",
+        "crush", "dating", "tinder", "bumble", "hinge", "relationship",
+        "marriage", "married", "divorce", "single", "lonely", "love",
+        "breakup", "dumped", "ghosted", "cheated", "best friend", "enemy",
+        "enemies", "drama", "ex girlfriend", "ex boyfriend", "anniversary",
+        "valentine", "proposal", "engagement"
+      ],
+      "phrases": [
+        "my ex", "my girlfriend", "my boyfriend", "i got ghosted",
+        "i got dumped", "i'm single", "i'm married", "i'm in love",
+        "third wheel", "i'm in a relationship", "long distance"
+      ]
+    },
+    "career": {
+      "label": "Career",
+      "weight": 0.8,
+      "min_keyword_score": 2,
+      "keywords": [
+        "career", "boss", "manager", "coworker", "office", "remote work",
+        "wfh", "linkedin", "resume", "cv", "interview", "interviewing",
+        "hired", "fired", "promotion", "promoted", "quit", "resigned",
+        "job", "jobs", "job hunt", "job hunting", "job offer", "job offers",
+        "corporate", "startup", "employee", "employer", "company",
+        "okr", "okrs", "objectives", "1:1", "one on one", "feedback",
+        "performance review", "quick wins", "shipped it", "standup",
+        "stand-up", "circle back", "synergy", "leverage", "stakeholder",
+        "elevator pitch", "team player", "performance review", "HR",
+        "human resources", "payroll", "salary negotiation", "offer letter",
+        "rejected after interview", "offer rescinded", "onboarding"
+      ],
+      "phrases": [
+        "i hate my job", "i got fired", "i got promoted", "my boss",
+        "i'm interviewing", "i quit", "linkedin told me", "i got laid off",
+        "i got a promotion", "performance review", "i hate my boss",
+        "my manager is", "toxic workplace", "i got an offer", "i got rejected",
+        "i bombed the interview", "salary negotiation",
+        "i applied to", "i'm applying to", "i'm job hunting", "job hunting",
+        "i'm looking for a job", "i'm looking for work", "i got an interview"
+      ]
+    }
+  }
+}

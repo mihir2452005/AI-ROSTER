@@ -1,0 +1,103 @@
+{
+  "version": 1,
+  "description": "First roast of a session. Sets the tone. Picked based on selected mode + personality.",
+  "openers": [
+    {
+      "id": "opn_001",
+      "mode": "savage",
+      "personalities": ["savage_one"],
+      "template": "Oh, you're back. Or maybe this is your first time. Doesn't matter. You were going to disappoint me either way.",
+      "reaction": "🔥"
+    },
+    {
+      "id": "opn_002",
+      "mode": "friendly",
+      "personalities": ["sarcastic_friend"],
+      "template": "Hey {username}! 👋 Ready for a session you'll pretend to forget about?",
+      "placeholders": {
+        "username": { "type": "username" }
+      },
+      "reaction": "💛"
+    },
+    {
+      "id": "opn_003",
+      "mode": "programmer",
+      "personalities": ["professor", "savage_one"],
+      "template": "Welcome. I see you've come to be debugged.",
+      "reaction": "🐛"
+    },
+    {
+      "id": "opn_004",
+      "mode": "student",
+      "personalities": ["professor"],
+      "template": "Take a seat. Class is in session. And you, {username}, are already late.",
+      "placeholders": {
+        "username": { "type": "username" }
+      },
+      "reaction": "🎓"
+    },
+    {
+      "id": "opn_005",
+      "mode": "gamer",
+      "personalities": ["gamer"],
+      "template": "1v1 me. Actually, never mind. I don't queue with unranked.",
+      "reaction": "🎮"
+    },
+    {
+      "id": "opn_006",
+      "mode": "startup",
+      "personalities": ["startup_investor"],
+      "template": "I have three minutes. Impress me. You won't.",
+      "reaction": "📉"
+    },
+    {
+      "id": "opn_007",
+      "mode": "corporate",
+      "personalities": ["toxic_interviewer"],
+      "template": "Take a seat, {username}. We have a lot to cover. And by 'a lot' I mean your résumé's weak spots.",
+      "placeholders": {
+        "username": { "type": "username" }
+      },
+      "reaction": "📋"
+    },
+    {
+      "id": "opn_008",
+      "mode": "savage",
+      "personalities": ["savage_one", "sarcastic_friend"],
+      "template": "Well, well, well. {username} decided to show up. {roaster_title}, you picked the wrong day, and I am the wrong {roaster_self}. Let's begin.",
+      "placeholders": {
+        "username": { "type": "username" },
+        "roaster_title": {
+          "type": "roaster",
+          "values": ["male:sir", "female:ma'am", "neutral:friend"],
+          "default": "friend"
+        },
+        "roaster_self": {
+          "type": "roaster",
+          "values": ["male:man", "female:lady", "neutral:entity"],
+          "default": "entity"
+        }
+      },
+      "reaction": "🎬"
+    },
+    {
+      "id": "opn_009",
+      "mode": "friendly",
+      "personalities": ["sarcastic_friend"],
+      "template": "Hey {username}! 👋 I am your {roaster_self} for the next few minutes. Try not to make it awkward for {roaster_pronoun_obj}.",
+      "placeholders": {
+        "username": { "type": "username" },
+        "roaster_self": {
+          "type": "roaster",
+          "values": ["male:buddy", "female:bestie", "neutral:pal"],
+          "default": "pal"
+        },
+        "roaster_pronoun_obj": {
+          "type": "roaster",
+          "values": ["male:him", "female:her", "neutral:them"]
+        }
+      },
+      "reaction": "💛"
+    }
+  ]
+}

@@ -1,0 +1,258 @@
+{
+  "mode": "student",
+  "version": 1,
+  "description": "For the chronically procrastinating, currently-failing, GPA-on-life-support crowd.",
+  "count": 26,
+  "roasts": [
+    {
+      "id": "std_001",
+      "personalities": ["savage_one", "professor"],
+      "intents": ["school"],
+      "keywords": ["gpa", "grade", "grades", "transcript"],
+      "damage": 8,
+      "tone": "brutal",
+      "template": "Your GPA and your future are both on academic probation. The doctors are discussing when to pull the plug.",
+      "reaction": "📉"
+    },
+    {
+      "id": "std_002",
+      "personalities": ["savage_one", "sarcastic_friend"],
+      "intents": ["school"],
+      "damage": 6,
+      "tone": "playful",
+      "template": "You don't procrastinate. You just prefer doing things in a future you haven't ruined yet.",
+      "reaction": "⏰"
+    },
+    {
+      "id": "std_003",
+      "personalities": ["savage_one"],
+      "intents": ["school"],
+      "keywords": ["study", "studying", "studied", "homework"],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Your study group is just you, your phone, and denial. And your phone is winning.",
+      "reaction": "📱"
+    },
+    {
+      "id": "std_004",
+      "personalities": ["savage_one"],
+      "intents": ["school"],
+      "keywords": ["exam", "test", "fail", "failed"],
+      "damage": 9,
+      "tone": "brutal",
+      "template": "You failed so hard the curve gave up on you. The curve is unionized now.",
+      "reaction": "📉"
+    },
+    {
+      "id": "std_005",
+      "personalities": ["savage_one", "sarcastic_friend"],
+      "intents": ["school"],
+      "keywords": ["essay", "paper", "thesis"],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Your essay has the same structure as a house of cards — impressive on paper, collapses on contact.",
+      "reaction": "🃏"
+    },
+    {
+      "id": "std_006",
+      "personalities": ["savage_one", "professor"],
+      "intents": ["school"],
+      "damage": 6,
+      "tone": "dry",
+      "template": "You don't need a degree. You need a participation certificate and a long, honest conversation.",
+      "reaction": "🎓"
+    },
+    {
+      "id": "std_007",
+      "personalities": ["savage_one"],
+      "intents": ["school"],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Your transcript reads like a cry for help written in course codes. CRY101: Required.",
+      "reaction": "🆘"
+    },
+    {
+      "id": "std_008",
+      "personalities": ["savage_one", "sarcastic_friend"],
+      "intents": ["school"],
+      "damage": 6,
+      "tone": "playful",
+      "template": "You study the way I check my phone — with no real commitment to the outcome.",
+      "reaction": "📲"
+    },
+    {
+      "id": "std_009",
+      "personalities": ["savage_one", "professor"],
+      "intents": ["school"],
+      "keywords": ["professor", "prof", "teacher", "lecture"],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Your professor has you in their 'students to avoid remembering' folder. It's a thick folder.",
+      "reaction": "📁"
+    },
+    {
+      "id": "std_010",
+      "personalities": ["savage_one"],
+      "intents": ["school"],
+      "keywords": ["senior", "senioritis", "junior"],
+      "damage": 6,
+      "tone": "playful",
+      "template": "You don't have senioritis. You have junior regret and a senior workload.",
+      "reaction": "🎓"
+    },
+    {
+      "id": "std_011",
+      "personalities": ["sarcastic_friend"],
+      "intents": ["school"],
+      "damage": 5,
+      "tone": "playful",
+      "template": "The only A you're getting is in attendance. And even that's iffy.",
+      "reaction": "🕒"
+    },
+    {
+      "id": "std_012",
+      "personalities": ["savage_one"],
+      "intents": ["school"],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "You treat deadlines like suggestions and suggestions like rules. Both are wrong.",
+      "reaction": "📅"
+    },
+    {
+      "id": "std_013",
+      "personalities": ["savage_one"],
+      "intents": ["school"],
+      "keywords": ["major", "career", "future"],
+      "damage": 6,
+      "tone": "playful",
+      "template": "You majored in 'figuring it out later.' Spoiler: you didn't.",
+      "reaction": "🎒"
+    },
+    {
+      "id": "std_014",
+      "personalities": ["savage_one", "professor"],
+      "intents": ["school"],
+      "keywords": ["dropout", "quit", "dropped out"],
+      "damage": 8,
+      "tone": "brutal",
+      "template": "You didn't drop out. You were expelled by reality. And reality doesn't accept appeals.",
+      "reaction": "🎓"
+    },
+    {
+      "id": "std_015",
+      "personalities": ["sarcastic_friend"],
+      "intents": ["school"],
+      "keywords": ["attendance", "absent", "missed class"],
+      "damage": 5,
+      "tone": "playful",
+      "template": "Your attendance is the only thing passing. Like a lighthouse in a sea of F's. The lighthouse union has filed a complaint.",
+      "reaction": "🗼"
+    },
+    {
+      "id": "std_016",
+      "personalities": ["savage_one", "professor"],
+      "intents": ["school"],
+      "keywords": ["essay", "paper", "wrote"],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "You wrote a 12-page essay on why you couldn't write a 12-page essay. The professor gave you an A for honesty. They were being sarcastic. Mostly.",
+      "reaction": "📝"
+    },
+    {
+      "id": "std_017",
+      "personalities": ["savage_one", "professor"],
+      "intents": ["school"],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "You treat the syllabus like a suggestion document, the rubric like a rumor, and the deadline like a hoax. The academic integrity office has your photo on a dartboard.",
+      "reaction": "🎯"
+    },
+    {
+      "id": "std_018",
+      "personalities": ["savage_one", "sarcastic_friend"],
+      "intents": ["school"],
+      "keywords": ["major", "undeclared", "undecided"],
+      "damage": 6,
+      "tone": "playful",
+      "template": "Your major says 'undeclared' but your transcript says 'unmotivated.' And the bar is on the floor. The bar is also on fire.",
+      "reaction": "🎓"
+    },
+    {
+      "id": "std_019",
+      "personalities": ["savage_one", "sarcastic_friend"],
+      "intents": ["school"],
+      "damage": 6,
+      "tone": "playful",
+      "template": "You have a 4.0 in sleeping through 8ams and a 0.0 in showing up. The math is overwhelming. So is your sleep schedule.",
+      "reaction": "😴"
+    },
+    {
+      "id": "std_020",
+      "personalities": ["savage_one", "professor"],
+      "intents": ["school"],
+      "keywords": ["office hours", "advisor"],
+      "damage": 6,
+      "tone": "dry",
+      "template": "You treat office hours like they don't exist. The professor has accepted it. They have other students. Better students. They send holiday cards.",
+      "reaction": "🕒"
+    },
+    {
+      "id": "std_021",
+      "personalities": ["savage_one", "sarcastic_friend"],
+      "intents": ["school"],
+      "damage": 6,
+      "tone": "playful",
+      "template": "Your parents brag about your 'potential.' Potential doesn't have a GPA. Yours wouldn't, anyway. Your parents' friends know this.",
+      "reaction": "👨‍👩‍👧"
+    },
+    {
+      "id": "std_022",
+      "personalities": ["savage_one"],
+      "intents": ["school"],
+      "keywords": ["abroad", "exchange", "study abroad"],
+      "damage": 6,
+      "tone": "playful",
+      "template": "You study abroad — abroad from your responsibilities, that is. The trip is endless. The passport is full of excuses.",
+      "reaction": "✈️"
+    },
+    {
+      "id": "std_023",
+      "personalities": ["savage_one", "professor"],
+      "intents": ["school"],
+      "keywords": ["wikipedia", "source", "cite"],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "You cite Wikipedia in academic papers. Wikipedia cited you back, asking you to stop. Publicly. The article is in the edit history.",
+      "reaction": "📚"
+    },
+    {
+      "id": "std_024",
+      "personalities": ["savage_one", "professor"],
+      "intents": ["school"],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "You don't have a thesis statement. You have a thesis suggestion. And you're not following it. Or any other instruction. Or any other suggestion.",
+      "reaction": "🧠"
+    },
+    {
+      "id": "std_025",
+      "personalities": ["savage_one", "sarcastic_friend"],
+      "intents": ["school"],
+      "keywords": ["group project", "team", "partner"],
+      "damage": 6,
+      "tone": "playful",
+      "template": "You treat the group project like it's group punishment. Your partners agree. They have a group chat without you. You're not in the read receipt.",
+      "reaction": "👥"
+    },
+    {
+      "id": "std_026",
+      "personalities": ["savage_one"],
+      "intents": ["school"],
+      "keywords": ["graduate", "graduated", "graduation"],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "You graduated. The only thing that graduated is your student debt. It has its own zip code now. The IRS sends you holiday cards.",
+      "reaction": "🎓"
+    }
+  ]
+}

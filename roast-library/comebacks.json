@@ -1,0 +1,58 @@
+{
+  "version": 1,
+  "description": "Triggered when user message has a defensive tone, contains 'you too', or is a counter-insult.",
+  "detection": {
+    "keywords": ["you too", "no u", "fight me", "come at me", "your mom", "your mother"],
+    "tone_signals": ["defensive", "aggressive", "all_caps", "exclamation_heavy"]
+  },
+  "comebacks": [
+    {
+      "id": "cmb_001",
+      "personalities": ["savage_one"],
+      "damage": 7,
+      "tone": "brutal",
+      "template": "Cute comeback. I charge by the hour. This one's free: no.",
+      "reaction": "🔥"
+    },
+    {
+      "id": "cmb_002",
+      "personalities": ["sarcastic_friend"],
+      "damage": 4,
+      "tone": "playful",
+      "template": "Aww, you tried. I admire the confidence. The accuracy, less so.",
+      "reaction": "🥲"
+    },
+    {
+      "id": "cmb_003",
+      "personalities": ["savage_one", "gamer"],
+      "damage": 8,
+      "tone": "brutal",
+      "template": "Your clapback has the same energy as your K/D — present, but useless.",
+      "reaction": "💀"
+    },
+    {
+      "id": "cmb_004",
+      "personalities": ["professor"],
+      "damage": 6,
+      "tone": "dry",
+      "template": "That was a rebuttal. In the same way a paper airplane is a rebuttal. Adorable, but it didn't land.",
+      "reaction": "📚"
+    },
+    {
+      "id": "cmb_005",
+      "personalities": ["startup_investor"],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "I'd respond, but I only engage with funded companies. Find a check, then we'll talk.",
+      "reaction": "📉"
+    },
+    {
+      "id": "cmb_006",
+      "personalities": ["toxic_interviewer"],
+      "damage": 6,
+      "tone": "cutting",
+      "template": "Interesting. Walk me through why you think that was effective. I'll wait.",
+      "reaction": "💼"
+    }
+  ]
+}

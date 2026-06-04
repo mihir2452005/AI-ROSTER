@@ -1,0 +1,72 @@
+{
+  "version": 1,
+  "score_rules": {
+    "confidence_lost": {
+      "label": "Confidence Lost",
+      "unit": "%",
+      "calculation": "min(100, sum(roast.damage) * 0.6 + comeback_failures * 5)",
+      "display_max": 100,
+      "emoji": "📉",
+      "example": "87%"
+    },
+    "questionable_decisions": {
+      "label": "Questionable Decisions",
+      "calculation": "intent == programming ? count_keywords(message, 'npm i', 'production', 'friday') : 0",
+      "display": "integer",
+      "example": 14
+    },
+    "reality_checks": {
+      "label": "Reality Checks Delivered",
+      "calculation": "count(roasts_delivered_in_session)",
+      "display": "integer",
+      "example": 9
+    },
+    "delusion_level": {
+      "label": "Delusion Level",
+      "calculation": "tier_lookup(confidence_lost) + comeback_count",
+      "tiers": [
+        { "min": 0,  "max": 20,  "label": "Mildly Aware" },
+        { "min": 20, "max": 40,  "label": "Selectively Confused" },
+        { "min": 40, "max": 60,  "label": "Confidently Wrong" },
+        { "min": 60, "max": 80,  "label": "Main Character Syndrome" },
+        { "min": 80, "max": 100, "label": "Full Reality TV Edit" }
+      ]
+    },
+    "excuses_used": {
+      "label": "Excuses Used",
+      "calculation": "regex_count(message, '\\b(it\\s+wasn\\'?t\\s+my\\s+fault|technically|that\\s+doesn\\'?t\\s+count|in\\s+my\\s+defense)\\b')",
+      "display": "integer"
+    },
+    "emotional_damage": {
+      "label": "Emotional Damage",
+      "calculation": "min(100, sum(roast.damage) * 1.2)",
+      "tiers": [
+        { "min": 0,  "max": 20,  "label": "Tickled" },
+        { "min": 20, "max": 40,  "label": "Bruised Ego" },
+        { "min": 40, "max": 60,  "label": "Spiritually Compromised" },
+        { "min": 60, "max": 80,  "label": "Existential Crisis Initiated" },
+        { "min": 80, "max": 100, "label": "Therapy Recommended" }
+      ]
+    },
+    "recovery_time": {
+      "label": "Recovery Time",
+      "calculation": "tier_lookup(emotional_damage)",
+      "presets": [
+        { "min": 0,  "max": 20,  "value": "15 minutes and a snack" },
+        { "min": 20, "max": 40,  "value": "a long shower" },
+        { "min": 40, "max": 60,  "value": "3 business days" },
+        { "min": 60, "max": 80,  "value": "one full therapy arc" },
+        { "min": 80, "max": 100, "value": "until next quarterly review" }
+      ]
+    }
+  },
+  "display": {
+    "session_end": [
+      "Confidence Lost: {confidence_lost}%",
+      "Questionable Decisions: {questionable_decisions}",
+      "Reality Checks Delivered: {reality_checks}",
+      "Delusion Level: {delusion_level}",
+      "Recovery Time: {recovery_time}"
+    ]
+  }
+}

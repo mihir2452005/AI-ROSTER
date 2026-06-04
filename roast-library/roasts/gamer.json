@@ -1,0 +1,253 @@
+{
+  "mode": "gamer",
+  "version": 1,
+  "description": "Trash-talk with game lingo. Plays well with the Gamer personality.",
+  "count": 24,
+  "roasts": [
+    {
+      "id": "gam_001",
+      "personalities": ["gamer", "savage_one"],
+      "intents": ["gaming"],
+      "keywords": ["k/d", "kd", "kda", "kills", "deaths"],
+      "damage": 8,
+      "tone": "cutting",
+      "template": "Your K/D ratio is so low it's basically a suicide prevention hotline number. Please call it.",
+      "reaction": "📞"
+    },
+    {
+      "id": "gam_002",
+      "personalities": ["gamer", "savage_one"],
+      "intents": ["gaming"],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "You're the reason the enemy team has more fun than yours. They're sending thank-you cards.",
+      "reaction": "✉️"
+    },
+    {
+      "id": "gam_003",
+      "personalities": ["gamer"],
+      "intents": ["gaming"],
+      "keywords": ["rank", "ranked", "tier"],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Your rank isn't a rank, it's a cry for help. The system keeps you around for diversity.",
+      "reaction": "🏅"
+    },
+    {
+      "id": "gam_004",
+      "personalities": ["gamer", "savage_one"],
+      "intents": ["gaming"],
+      "keywords": ["support", "healer", "heal"],
+      "damage": 6,
+      "tone": "playful",
+      "template": "You play support like a hostage — present, but not helping. We tried to negotiate, but you just sat there.",
+      "reaction": "🎯"
+    },
+    {
+      "id": "gam_005",
+      "personalities": ["gamer", "savage_one"],
+      "intents": ["gaming"],
+      "keywords": ["aim", "shoot", "headshot", "shot"],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Your aim is so bad, the game has you flagged as a lag switch. Or maybe just lag.",
+      "reaction": "🎯"
+    },
+    {
+      "id": "gam_006",
+      "personalities": ["gamer"],
+      "intents": ["gaming"],
+      "damage": 6,
+      "tone": "playful",
+      "template": "You don't lose. You just redistribute victories to better players. Out of the goodness of your heart.",
+      "reaction": "🏆"
+    },
+    {
+      "id": "gam_007",
+      "personalities": ["gamer", "savage_one"],
+      "intents": ["gaming"],
+      "keywords": ["team", "teammate"],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Your team would carry you, but they already used up their carry slots. Try again next season.",
+      "reaction": "🛡️"
+    },
+    {
+      "id": "gam_008",
+      "personalities": ["gamer"],
+      "intents": ["gaming"],
+      "damage": 6,
+      "tone": "playful",
+      "template": "Your strategy is the gaming equivalent of bringing a {item} to a gunfight.",
+      "placeholders": {
+        "item": {
+          "type": "enum",
+          "values": ["spoon", "pool noodle", "USB-A cable", "fidget spinner", "participation certificate"]
+        }
+      },
+      "reaction": "🥄"
+    },
+    {
+      "id": "gam_009",
+      "personalities": ["gamer", "savage_one"],
+      "intents": ["gaming"],
+      "keywords": ["rage", "tilt", "angry"],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "You don't rage quit. You rage continue. Which is honestly a worse reflection on everyone involved.",
+      "reaction": "🎮"
+    },
+    {
+      "id": "gam_010",
+      "personalities": ["gamer"],
+      "intents": ["gaming"],
+      "damage": 6,
+      "tone": "playful",
+      "template": "You're the loading screen of the team — everyone waits for you to be useful, and they never find out.",
+      "reaction": "⏳"
+    },
+    {
+      "id": "gam_011",
+      "personalities": ["gamer", "savage_one"],
+      "intents": ["gaming"],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Your gameplay is so bad the tutorial came back to check on you. It brought snacks. Sympathy snacks.",
+      "reaction": "🎓"
+    },
+    {
+      "id": "gam_012",
+      "personalities": ["gamer"],
+      "intents": ["gaming"],
+      "keywords": ["grind", "grinding", "farm"],
+      "damage": 5,
+      "tone": "playful",
+      "template": "You grind like you're paying rent on the game. Everyone else is just visiting.",
+      "reaction": "⛏️"
+    },
+    {
+      "id": "gam_013",
+      "personalities": ["gamer", "savage_one"],
+      "intents": ["gaming"],
+      "keywords": ["inventory", "loot", "item", "items"],
+      "damage": 6,
+      "tone": "playful",
+      "template": "Your inventory management is a war crime. The Geneva Convention has a clause about it. We need to talk. Preferably with lawyers.",
+      "reaction": "🎒"
+    },
+    {
+      "id": "gam_014",
+      "personalities": ["gamer", "savage_one"],
+      "intents": ["gaming"],
+      "damage": 6,
+      "tone": "playful",
+      "template": "You die so much the respawn point sends you Christmas cards. They have your name on the list. The list is long. The list is worried.",
+      "reaction": "💀"
+    },
+    {
+      "id": "gam_015",
+      "personalities": ["gamer"],
+      "intents": ["gaming"],
+      "keywords": ["sensitivity", "mouse", "settings"],
+      "damage": 6,
+      "tone": "playful",
+      "template": "Your sensitivity is so high, the cursor is in a different timezone. And it's losing. The cursor has filed a transfer request.",
+      "reaction": "🖱️"
+    },
+    {
+      "id": "gam_016",
+      "personalities": ["gamer", "savage_one"],
+      "intents": ["gaming"],
+      "damage": 6,
+      "tone": "playful",
+      "template": "You're the boss check before the actual boss. Easy to beat. Annoying to deal with. Mandatory. Just like therapy. And taxes.",
+      "reaction": "👹"
+    },
+    {
+      "id": "gam_017",
+      "personalities": ["gamer", "sarcastic_friend"],
+      "intents": ["gaming"],
+      "keywords": ["inventory", "loot", "item"],
+      "damage": 6,
+      "tone": "playful",
+      "template": "Your inventory is full of items you don't need and a shortage of the ones you do. That's also your love life. Coincidence? I think not.",
+      "reaction": "💼"
+    },
+    {
+      "id": "gam_018",
+      "personalities": ["gamer", "savage_one"],
+      "intents": ["gaming"],
+      "keywords": ["support", "healer"],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "You main support but you don't support. You just spectate from the back. The back doesn't even know you're there. The back is confused.",
+      "reaction": "🩹"
+    },
+    {
+      "id": "gam_019",
+      "personalities": ["gamer", "savage_one"],
+      "intents": ["gaming"],
+      "keywords": ["life", "irl", "real life"],
+      "damage": 8,
+      "tone": "brutal",
+      "template": "Your K/D in life is 0.0/1.0. You have been permanently muted. By the universe. The universe also added you to the do-not-respawn list.",
+      "reaction": "🔇"
+    },
+    {
+      "id": "gam_020",
+      "personalities": ["gamer"],
+      "intents": ["gaming"],
+      "keywords": ["fps", "lag", "frame", "frames"],
+      "damage": 5,
+      "tone": "playful",
+      "template": "Your FPS is dropping faster than your rank. Both are reaching bedrock. Bedrock is also a ranking tier in some games. You're heading there.",
+      "reaction": "📉"
+    },
+    {
+      "id": "gam_021",
+      "personalities": ["gamer"],
+      "intents": ["gaming"],
+      "keywords": ["lobby", "queue", "matchmaking"],
+      "damage": 6,
+      "tone": "playful",
+      "template": "You spend more time in the lobby than in the actual game. The lobby is starting to charge rent. It's sending invoices. The invoices have interest.",
+      "reaction": "🏛️"
+    },
+    {
+      "id": "gam_022",
+      "personalities": ["gamer", "savage_one"],
+      "intents": ["gaming"],
+      "keywords": ["reaction", "reaction time", "reflex"],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "You have the reaction time of a Windows XP shutdown. The progress bar is fake. We all know. The bar is also a lie.",
+      "reaction": "⏳"
+    },
+    {
+      "id": "gam_023",
+      "personalities": ["gamer", "savage_one"],
+      "intents": ["gaming"],
+      "keywords": ["strategy", "tactic", "plan"],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Your strategy is 'run in and pray.' Prayer isn't an ability in this game. Or any game. Or real life. The strategy needs work. The work is overdue.",
+      "reaction": "🙏"
+    },
+    {
+      "id": "gam_024",
+      "personalities": ["gamer"],
+      "intents": ["gaming"],
+      "keywords": ["main", "character", "pick"],
+      "damage": 5,
+      "tone": "playful",
+      "template": "You main {character} just because they're 'cool.' Their pick rate is down. So is your win rate. So is morale. So is the rest of the team.",
+      "placeholders": {
+        "character": {
+          "type": "enum",
+          "values": ["Jett", "Pikachu", "Kirby", "Sombra", "a hero nobody asked for", "Yasuo"]
+        }
+      },
+      "reaction": "🎭"
+    }
+  ]
+}

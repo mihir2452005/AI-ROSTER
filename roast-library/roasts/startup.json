@@ -1,0 +1,276 @@
+{
+  "mode": "startup",
+  "version": 1,
+  "description": "Founders, pitch decks, MVPs that aren't actually minimum.",
+  "count": 26,
+  "roasts": [
+    {
+      "id": "sup_001",
+      "personalities": ["startup_investor", "savage_one", "toxic_interviewer"],
+      "intents": ["startup", "career"],
+      "damage": 9,
+      "tone": "brutal",
+      "template": "You're not a founder. You're a person with a Notion doc and a dream. The dream is also a doc.",
+      "reaction": "📝"
+    },
+    {
+      "id": "sup_002",
+      "personalities": ["startup_investor"],
+      "intents": ["startup"],
+      "keywords": ["tam", "market", "users"],
+      "damage": 8,
+      "tone": "brutal",
+      "template": "Your TAM is 'everyone.' Your actual customers are 'mom,' 'dad,' and 'mom's friend Janice.'",
+      "reaction": "📉"
+    },
+    {
+      "id": "sup_003",
+      "personalities": ["startup_investor", "savage_one"],
+      "intents": ["startup"],
+      "keywords": ["mvp"],
+      "damage": 8,
+      "tone": "cutting",
+      "template": "Your MVP is just V. And the V is for 'Vague.'",
+      "reaction": "🧪"
+    },
+    {
+      "id": "sup_004",
+      "personalities": ["startup_investor", "savage_one"],
+      "intents": ["startup"],
+      "damage": 9,
+      "tone": "brutal",
+      "template": "You don't have a startup. You have a delusion with a domain name and a Squarespace subscription.",
+      "reaction": "🌐"
+    },
+    {
+      "id": "sup_005",
+      "personalities": ["startup_investor", "savage_one"],
+      "intents": ["startup"],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Your 'next Facebook' has fewer daily users than my {item}. And my {item} doesn't even exist.",
+      "placeholders": {
+        "item": {
+          "type": "enum",
+          "values": ["spice rack", "therapy dog", "USB hub", "motivational calendar", "LinkedIn draft folder"]
+        }
+      },
+      "reaction": "📱"
+    },
+    {
+      "id": "sup_006",
+      "personalities": ["startup_investor", "sarcastic_friend"],
+      "intents": ["startup"],
+      "keywords": ["pitch", "deck", "pitch deck"],
+      "damage": 7,
+      "tone": "dry",
+      "template": "Your pitch deck has more fiction than a Tolkien novel. At least Tolkien committed to a sequel.",
+      "reaction": "📊"
+    },
+    {
+      "id": "sup_007",
+      "personalities": ["startup_investor", "savage_one"],
+      "intents": ["startup"],
+      "keywords": ["pre-revenue", "revenue"],
+      "damage": 8,
+      "tone": "brutal",
+      "template": "You're pre-revenue, pre-product, and pre-qualified to be in this conversation.",
+      "reaction": "📉"
+    },
+    {
+      "id": "sup_008",
+      "personalities": ["startup_investor", "savage_one"],
+      "intents": ["startup"],
+      "keywords": ["runway", "burn", "burn rate"],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Your runway isn't a runway — it's a runway to bankruptcy with a first-class seat.",
+      "reaction": "✈️"
+    },
+    {
+      "id": "sup_009",
+      "personalities": ["startup_investor", "savage_one"],
+      "intents": ["startup"],
+      "damage": 8,
+      "tone": "brutal",
+      "template": "Investors don't ghost you. They never saw you. There is a meaningful difference.",
+      "reaction": "👻"
+    },
+    {
+      "id": "sup_010",
+      "personalities": ["startup_investor", "savage_one"],
+      "intents": ["startup", "money"],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "You 'bootstrapped' with your parents' credit card. The VCs can smell the parental financing from here.",
+      "reaction": "💳"
+    },
+    {
+      "id": "sup_011",
+      "personalities": ["startup_investor", "savage_one"],
+      "intents": ["startup"],
+      "keywords": ["10x", "engineer", "developer"],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Your '10x engineer' is you, and you have a 1x work ethic and a 0x sense of urgency.",
+      "reaction": "👨‍💻"
+    },
+    {
+      "id": "sup_012",
+      "personalities": ["startup_investor", "savage_one"],
+      "intents": ["startup", "money"],
+      "damage": 8,
+      "tone": "brutal",
+      "template": "Your startup doesn't need funding. It needs a refund, a refund, and a refund.",
+      "reaction": "🪦"
+    },
+    {
+      "id": "sup_013",
+      "personalities": ["startup_investor", "savage_one"],
+      "intents": ["startup"],
+      "keywords": ["ai", "blockchain", "web3", "nft", "crypto"],
+      "damage": 6,
+      "tone": "dry",
+      "template": "Another day, another {trend} startup. The only thing you're disrupting is the dictionary's definition of 'idea.'",
+      "placeholders": {
+        "trend": {
+          "type": "enum",
+          "values": ["AI", "blockchain", "Web3", "NFT", "metaverse", "RAG", "AI agent"]
+        }
+      },
+      "reaction": "🤖"
+    },
+    {
+      "id": "sup_014",
+      "personalities": ["startup_investor", "savage_one"],
+      "intents": ["startup"],
+      "keywords": ["ai", "team", "customer", "customers"],
+      "damage": 8,
+      "tone": "brutal",
+      "template": "Your 'AI startup' has 47 people on the team and 0 customers. 3 of them are your mom. One is a bot you built to look like a customer. The bot is also leaving.",
+      "reaction": "🤖"
+    },
+    {
+      "id": "sup_015",
+      "personalities": ["startup_investor", "savage_one"],
+      "intents": ["startup", "money"],
+      "keywords": ["series a", "funding", "raise", "raised"],
+      "damage": 8,
+      "tone": "brutal",
+      "template": "Your Series A is your mom's credit card. The interest rate is conversations about your future. They're not going well. The card is also maxed out.",
+      "reaction": "💳"
+    },
+    {
+      "id": "sup_016",
+      "personalities": ["startup_investor", "savage_one"],
+      "intents": ["startup"],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Your 'we're like Uber for X' is the most common sentence in startup graveyards. The headstones are numbered. Yours is being engraved.",
+      "reaction": "🪦"
+    },
+    {
+      "id": "sup_017",
+      "personalities": ["startup_investor", "savage_one"],
+      "intents": ["startup"],
+      "keywords": ["exit", "exit strategy", "ipo", "acquisition"],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "You have a 5-year exit strategy. The exit strategy is your parents' basement. They've started charging rent. The rent has also gone up.",
+      "reaction": "🏠"
+    },
+    {
+      "id": "sup_018",
+      "personalities": ["startup_investor"],
+      "intents": ["startup"],
+      "damage": 6,
+      "tone": "dry",
+      "template": "Your 'moat' is vibes and a Squarespace domain. Both are leaking. The ducks are leaving. The moat is also a koi pond with one fish. The fish is leaving.",
+      "reaction": "🪼"
+    },
+    {
+      "id": "sup_019",
+      "personalities": ["startup_investor", "savage_one"],
+      "intents": ["startup"],
+      "keywords": ["advisor", "advisory"],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Your advisory board is your roommate, your dog, and a guy you met at a networking event who ghosted you. The dog has the most equity. The dog is also leaving.",
+      "reaction": "🐕"
+    },
+    {
+      "id": "sup_020",
+      "personalities": ["startup_investor", "savage_one"],
+      "intents": ["startup"],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Your 'next big thing' has been 'next big' for 4 years. The big thing is overdue. So is your refund. So is your therapist's appointment.",
+      "reaction": "📅"
+    },
+    {
+      "id": "sup_021",
+      "personalities": ["startup_investor", "savage_one"],
+      "intents": ["startup"],
+      "keywords": ["medium", "followers", "content", "subscribers"],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Your startup's only 'metric' is your Medium follower count. It's 12. 4 are bots. One is your mom. The rest are recruiters who are about to unsubscribe.",
+      "reaction": "📰"
+    },
+    {
+      "id": "sup_022",
+      "personalities": ["startup_investor", "savage_one"],
+      "intents": ["startup", "money"],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "You raise from angels. They're your friends. They're not angels. They're worried. About you, not the company. The company is a concern. The friends are leaving.",
+      "reaction": "👼"
+    },
+    {
+      "id": "sup_023",
+      "personalities": ["startup_investor", "savage_one"],
+      "intents": ["startup", "money"],
+      "keywords": ["cac", "ltv", "unit economics"],
+      "damage": 8,
+      "tone": "brutal",
+      "template": "Your CAC is higher than your LTV. Your accountant is in therapy. Their therapist is also in therapy. The therapy bills are higher than revenue.",
+      "reaction": "📉"
+    },
+    {
+      "id": "sup_024",
+      "personalities": ["startup_investor", "savage_one"],
+      "intents": ["startup"],
+      "keywords": ["name", "branding", "logo"],
+      "damage": 6,
+      "tone": "playful",
+      "template": "You named your startup after a {food}. There's already 6 of them. Yours is the worst. The {food} is suing. The lawyer is also a {food}. The {food} is winning.",
+      "placeholders": {
+        "food": {
+          "type": "enum",
+          "values": ["pear", "kiwi", "fig", "coconut", "tangerine", "mango"]
+        }
+      },
+      "reaction": "🍐"
+    },
+    {
+      "id": "sup_025",
+      "personalities": ["startup_investor", "savage_one"],
+      "intents": ["startup", "career"],
+      "keywords": ["story", "founder story", "origin"],
+      "damage": 6,
+      "tone": "dry",
+      "template": "Your 'founder story' is 'I quit my job.' That's not a story. That's a LinkedIn post. The engagement is single digits. The post is also wrong.",
+      "reaction": "📖"
+    },
+    {
+      "id": "sup_026",
+      "personalities": ["startup_investor", "savage_one"],
+      "intents": ["startup", "career"],
+      "keywords": ["co-founder", "cofounder", "team"],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Your 'co-founder' is your cat. The cat is also the CTO. The cat is also the only one who has seen the roadmap. The cat is also taking meetings.",
+      "reaction": "🐈"
+    }
+  ]
+}

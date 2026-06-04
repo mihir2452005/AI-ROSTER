@@ -1,0 +1,98 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "RoastTemplate",
+  "description": "Schema for a single roast template. Validated at library-load time.",
+  "type": "object",
+  "required": ["id", "mode", "personalities", "template", "damage"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z]+_[0-9]{3,}$",
+      "description": "Unique key. Format: <mode>_<number> (e.g. prog_001)."
+    },
+    "mode": {
+      "enum": ["friendly", "savage", "programmer", "student", "gamer", "corporate", "startup", "general"],
+      "description": "Which mode this roast belongs to."
+    },
+    "subcategory": {
+      "type": "string",
+      "description": "Optional grouping inside a mode (e.g. code_quality, deadlines)."
+    },
+    "personalities": {
+      "type": "array",
+      "items": {
+        "enum": ["savage_one", "sarcastic_friend", "toxic_interviewer", "startup_investor", "professor", "gamer"]
+      },
+      "description": "Which personalities may deliver this roast. Empty = any."
+    },
+    "intents": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Intent tags that activate this roast. Empty = always eligible."
+    },
+    "keywords": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Words that boost the match score if present in user message."
+    },
+    "trigger_phrases": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Hard-match phrases (case-insensitive substring)."
+    },
+    "damage": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 10,
+      "description": "Roast severity. Used by score system."
+    },
+    "tone": {
+      "enum": ["light", "playful", "dry", "cutting", "brutal"],
+      "description": "Style tag for filtering."
+    },
+    "context_tags": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Free-form tags: humor:meta, topic:tech, style:metaphor, etc."
+    },
+    "template": {
+      "type": "string",
+      "minLength": 10,
+      "description": "The roast text with {placeholder} slots."
+    },
+    "placeholders": {
+      "type": "object",
+      "description": "Maps each {placeholder} to its possible values or context source.",
+      "additionalProperties": {
+        "oneOf": [
+          { "type": "array", "minItems": 1 },
+          {
+            "type": "object",
+            "required": ["type"],
+            "properties": {
+              "type":    { "enum": ["enum", "context", "intent", "history", "username", "roaster"] },
+              "values":  { "type": "array" },
+              "default": { "type": "string" }
+            }
+          }
+        ]
+      }
+    },
+    "reaction": {
+      "type": "string",
+      "description": "Optional emoji suffix."
+    },
+    "followup_id": {
+      "type": "string",
+      "description": "Optional id of a roast to chain after this one."
+    },
+    "weight": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "default": 1.0,
+      "description": "Selection probability (1.0 = default, lower = rarer)."
+    }
+  },
+  "additionalProperties": false
+}

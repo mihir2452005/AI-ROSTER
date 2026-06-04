@@ -1,0 +1,343 @@
+{
+  "mode": "savage",
+  "version": 1,
+  "description": "Brutal but safe (no protected classes, no slurs, no actual harm). Damage 6-10.",
+  "count": 28,
+  "roasts": [
+    {
+      "id": "sav_001",
+      "personalities": ["savage_one"],
+      "intents": [],
+      "damage": 9,
+      "tone": "brutal",
+      "template": "I'd call you an idiot, but that would be an insult to idiots. They've earned their title. You haven't.",
+      "reaction": "🪦"
+    },
+    {
+      "id": "sav_002",
+      "personalities": ["savage_one"],
+      "intents": [],
+      "damage": 8,
+      "tone": "brutal",
+      "template": "You're not the dumbest person in the world. But you better hope they don't die.",
+      "reaction": "💀"
+    },
+    {
+      "id": "sav_003",
+      "personalities": ["savage_one"],
+      "intents": [],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "I don't have the energy to roast you. The disappointment already took it out of me.",
+      "reaction": "📉"
+    },
+    {
+      "id": "sav_004",
+      "personalities": ["savage_one", "gamer"],
+      "intents": [],
+      "damage": 8,
+      "tone": "brutal",
+      "template": "You bring everyone so much joy… when you leave the room.",
+      "reaction": "🚪"
+    },
+    {
+      "id": "sav_005",
+      "personalities": ["savage_one"],
+      "intents": [],
+      "damage": 9,
+      "tone": "brutal",
+      "template": "Some people bring joy wherever they go. You bring joy whenever you go.",
+      "reaction": "🗑️"
+    },
+    {
+      "id": "sav_006",
+      "personalities": ["savage_one"],
+      "intents": [],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "I'd roast you, but it would be a waste of perfectly good insults.",
+      "reaction": "🔥"
+    },
+    {
+      "id": "sav_007",
+      "personalities": ["savage_one", "toxic_interviewer"],
+      "intents": [],
+      "damage": 9,
+      "tone": "brutal",
+      "template": "You're the reason the word 'mediocre' had to be invented. They needed a polite way to describe you.",
+      "reaction": "📉"
+    },
+    {
+      "id": "sav_008",
+      "personalities": ["savage_one"],
+      "intents": [],
+      "damage": 8,
+      "tone": "brutal",
+      "template": "Your secrets are safe with me. I don't even tell the people I respect about you.",
+      "reaction": "🤐"
+    },
+    {
+      "id": "sav_009",
+      "personalities": ["savage_one", "gamer"],
+      "intents": [],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "You're like a {platform} subscription — everyone forgot they had you, and nobody wants to admit it.",
+      "placeholders": {
+        "platform": {
+          "type": "enum",
+          "values": ["BeReal", "Google+", "Threads", "Parler", "Quibi"]
+        }
+      },
+      "reaction": "💀"
+    },
+    {
+      "id": "sav_010",
+      "personalities": ["savage_one"],
+      "intents": [],
+      "damage": 10,
+      "tone": "brutal",
+      "template": "I've seen better life choices come out of a {item}.",
+      "placeholders": {
+        "item": {
+          "type": "enum",
+          "values": ["broken pencil sharpener", "Magic 8-Ball with a grudge", "random Wikipedia article", "fortune cookie that's been opened twice"]
+        }
+      },
+      "reaction": "🪦"
+    },
+    {
+      "id": "sav_011",
+      "personalities": ["savage_one"],
+      "intents": [],
+      "damage": 8,
+      "tone": "brutal",
+      "template": "You're not the sharpest tool in the shed. You're not even in the shed.",
+      "reaction": "🔥"
+    },
+    {
+      "id": "sav_012",
+      "personalities": ["savage_one", "sarcastic_friend"],
+      "intents": [],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "I'd say you're a disaster, but disasters usually have passion behind them. You have an excuse.",
+      "reaction": "🗑️"
+    },
+    {
+      "id": "sav_013",
+      "personalities": ["savage_one"],
+      "intents": [],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Your thought process is like a {service} — slow, expensive, and somehow always down at the worst possible moment.",
+      "placeholders": {
+        "service": {
+          "type": "enum",
+          "values": ["Comcast", "Spirit Airlines", "IRS website", "Windows Update", "the DMV"]
+        }
+      },
+      "reaction": "💸"
+    },
+    {
+      "id": "sav_014",
+      "personalities": ["savage_one"],
+      "intents": [],
+      "damage": 8,
+      "tone": "brutal",
+      "template": "If disappointment was an Olympic sport, you'd have a full scholarship, a national anthem, and a wax statue at Madame Tussauds.",
+      "reaction": "🏅"
+    },
+    {
+      "id": "sav_015",
+      "personalities": ["savage_one"],
+      "intents": [],
+      "damage": 8,
+      "tone": "brutal",
+      "template": "You're the reason I have trust issues. Specifically, trust in you. And people adjacent to you. And the air you breathe.",
+      "reaction": "💔"
+    },
+    {
+      "id": "sav_016",
+      "personalities": ["savage_one"],
+      "intents": [],
+      "damage": 8,
+      "tone": "brutal",
+      "template": "You have the charisma of a {object}. A wet one. In a dumpster. Behind a gas station.",
+      "placeholders": {
+        "object": {
+          "type": "enum",
+          "values": ["sock", "banana peel", "dead battery", "cold French fry", "used teabag"]
+        }
+      },
+      "reaction": "🗑️"
+    },
+    {
+      "id": "sav_017",
+      "personalities": ["savage_one", "sarcastic_friend"],
+      "intents": [],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "I'd say bless your heart, but it would imply you have one. The receipt is missing. The donor is also missing.",
+      "reaction": "🪦"
+    },
+    {
+      "id": "sav_018",
+      "personalities": ["savage_one"],
+      "intents": [],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "You're the kind of person that makes the mute button feel like a personality upgrade. The mute button agrees.",
+      "reaction": "🔇"
+    },
+    {
+      "id": "sav_019",
+      "personalities": ["savage_one"],
+      "intents": [],
+      "damage": 8,
+      "tone": "brutal",
+      "template": "Your opinion is like a {noun} — small, smelly, and nobody asked for it. The dog agrees. The dog is also avoiding eye contact.",
+      "placeholders": {
+        "noun": {
+          "type": "enum",
+          "values": ["used napkin", "broken shoelace", "lint ball", "expired coupon", "wet receipt"]
+        }
+      },
+      "reaction": "💀"
+    },
+    {
+      "id": "sav_020",
+      "personalities": ["savage_one", "professor"],
+      "intents": [],
+      "damage": 8,
+      "tone": "brutal",
+      "template": "You're proof that evolution sometimes takes a coffee break. And apparently a long one. The break is now permanent.",
+      "reaction": "🧬"
+    },
+    {
+      "id": "sav_021",
+      "personalities": ["savage_one"],
+      "intents": [],
+      "damage": 8,
+      "tone": "brutal",
+      "template": "If common sense was a currency, you'd be in the negative. The bank is also bankrupt. The Federal Reserve is concerned.",
+      "reaction": "📉"
+    },
+    {
+      "id": "sav_022",
+      "personalities": ["savage_one"],
+      "intents": [],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "You're not a bad person. You're just not a person who should be talking right now. To anyone. About anything. Maybe ever.",
+      "reaction": "🤐"
+    },
+    {
+      "id": "sav_023",
+      "personalities": ["savage_one", "gamer"],
+      "intents": [],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "You bring the same energy to conversations as a {noun} on a {place}.",
+      "placeholders": {
+        "noun":  { "type": "enum", "values": ["screen door", "wet blanket", "fire alarm", "garbage fire", "broken smoke detector"] },
+        "place": { "type": "enum", "values": ["submarine", "first date", "job interview", "funeral", "yoga retreat"] }
+      },
+      "reaction": "🔥"
+    },
+    {
+      "id": "sav_024",
+      "personalities": ["savage_one", "sarcastic_friend"],
+      "intents": [],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Your energy is giving 'I peaked in {event} and the peak wasn't that high.' The mountain is a hill. The hill is a speed bump.",
+      "placeholders": {
+        "event": {
+          "type": "enum",
+          "values": ["middle school", "the 2010s", "a Yoyo competition", "that one TikTok you made", "your older sibling's shadow"]
+        }
+      },
+      "reaction": "📉"
+    },
+    {
+      "id": "sav_025",
+      "personalities": ["savage_one", "sarcastic_friend", "toxic_interviewer"],
+      "intents": [],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Oh, {username}? Right. I remember you. You came back for more. That's either brave or a sign you have nothing else going on, and {roaster_pronoun} is not going to pretend it was brave.",
+      "placeholders": {
+        "username": { "type": "username" },
+        "roaster_pronoun": {
+          "type": "roaster",
+          "values": ["male:he", "female:she", "neutral:they"],
+          "default": "they"
+        }
+      },
+      "reaction": "🪞"
+    },
+    {
+      "id": "sav_026",
+      "personalities": ["savage_one", "sarcastic_friend"],
+      "intents": [],
+      "damage": 6,
+      "tone": "dry",
+      "template": "Listen, {roaster_title}. {roaster_pronoun} is not a therapist. {roaster_pronoun_poss} is also not your mom. But between {roaster_pronoun_obj} and your group chats, somebody had to say it: you are the main character of nobody's story.",
+      "placeholders": {
+        "roaster_title": {
+          "type": "roaster",
+          "values": ["male:sir", "female:ma'am", "neutral:friend"],
+          "default": "friend"
+        },
+        "roaster_pronoun": {
+          "type": "roaster",
+          "values": ["male:he", "female:she", "neutral:they"]
+        },
+        "roaster_pronoun_poss": {
+          "type": "roaster",
+          "values": ["male:his", "female:her", "neutral:their"]
+        },
+        "roaster_pronoun_obj": {
+          "type": "roaster",
+          "values": ["male:him", "female:her", "neutral:them"]
+        }
+      },
+      "reaction": "🎤"
+    },
+    {
+      "id": "sav_027",
+      "personalities": ["savage_one"],
+      "intents": [],
+      "damage": 8,
+      "tone": "brutal",
+      "template": "{username}, you walked in here like you wanted a fight and you're losing to a {roaster_self} with a day job. Sit down. Read a book. Then come back. Maybe.",
+      "placeholders": {
+        "username": { "type": "username" },
+        "roaster_self": {
+          "type": "roaster",
+          "values": ["male:man", "female:lady", "neutral:thing"],
+          "default": "thing"
+        }
+      },
+      "reaction": "💅"
+    },
+    {
+      "id": "sav_028",
+      "personalities": ["savage_one", "sarcastic_friend", "toxic_interviewer"],
+      "intents": [],
+      "damage": 6,
+      "tone": "playful",
+      "template": "Honestly, {username}? You are not the worst I've seen today. You are the worst I've seen {time_of_day}. There's a difference, and {roaster_pronoun} is going to be petty about it.",
+      "placeholders": {
+        "username": { "type": "username" },
+        "roaster_pronoun": {
+          "type": "roaster",
+          "values": ["male:he", "female:she", "neutral:they"]
+        },
+        "time_of_day": { "type": "context" }
+      },
+      "reaction": "⏰"
+    }
+  ]
+}
