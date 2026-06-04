@@ -5,7 +5,15 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { MODES, PERSONALITIES, type Personality, type RoastMode } from "@/lib/types";
 import { api, friendlyError } from "@/lib/api";
-import { authApi, getAccessToken, type User } from "@/lib/auth-api";
+import {
+  authApi,
+  clearTokens,
+  getAccessToken,
+  getCachedUser,
+  getStoredTokenVersion,
+  cacheUser,
+  type User,
+} from "@/lib/auth-api";
 
 export default function HomePage() {
   const router = useRouter();
@@ -18,11 +26,27 @@ export default function HomePage() {
 
   // If the user is logged in, prefill their saved name and use their
   // saved roaster-gender preference to drive personalized roast generation.
+  //
+  // We also cross-check the server's `token_version` against the
+  // cached one: if they don't match, the token has been revoked on
+  // another device (password change, admin deactivation, explicit
+  // logout) and we force a fresh login. This matches the behaviour of
+  // HeaderAuth.
   useEffect(() => {
     if (!getAccessToken()) return;
+    const cached = getCachedUser();
+    const cachedVer = getStoredTokenVersion();
     authApi
       .me()
       .then((u) => {
+        if (cached && cachedVer !== 0 && u.token_version !== cachedVer) {
+          // Token revoked elsewhere. Drop the stale state and let the
+          // header render the signed-out UI on the next render.
+          clearTokens();
+          setUser(null);
+          return;
+        }
+        cacheUser(u);
         setUser(u);
         if (u.full_name) setUsername(u.full_name);
       })

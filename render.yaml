@@ -1,9 +1,16 @@
 # Render Blueprint — RoastGPT backend
 #
 # Deploy: connect this repo at https://dashboard.render.com/blueprints,
-# point it at the repo root, and Render will spin up the service and the
-# Postgres database below. No Docker required — Render's native Python
-# runtime uses the runtime.txt + requirements.txt combo to build.
+# point it at the repo root, and Render will spin up the service and
+# the daily backup cron below. No Docker required — Render's native
+# Python runtime uses the runtime.txt + requirements.txt combo.
+#
+# ---- Why no `databases:` block? ----
+# Render's free PostgreSQL expires at 30 days + 14 days grace, then
+# DELETES your data. We use Neon (free, never expires) as the primary
+# and add a daily JSON backup to a free external store. Set the Neon
+# connection string as DATABASE_URL on the web service. See DEPLOY.md
+# for the full setup.
 
 services:
   - type: web
@@ -21,11 +28,12 @@ services:
         value: 3.12.7
       - key: ENVIRONMENT
         value: production
-      # ---- Secrets you must fill in (Dashboard → Environment → Add) ----
+      # ---- Primary database (Neon — never expires) ----
       - key: DATABASE_URL
-        sync: false          # set to the Internal Database URL below
+        sync: false  # paste the Neon pooled connection string here
+      # ---- Secrets (Render auto-fills `generateValue: true`) ----
       - key: JWT_SECRET_KEY
-        generateValue: true  # Render auto-fills a strong random secret
+        generateValue: true
       - key: ADMIN_API_KEY
         generateValue: true
       - key: RAZORPAY_KEY_ID
@@ -45,11 +53,55 @@ services:
         value: "60"
       - key: TRUSTED_PROXIES
         value: "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,127.0.0.1/32,::1/128"
+      # ---- Daily backup (any of these stores works for free) ----
+      # local (default) — writes to the cron's working directory; on
+      # Render Cron this is ephemeral, so use a remote backend unless
+      # you're just debugging.
+      - key: BACKUP_DESTINATION
+        value: "github"  # one of: local, http, github, s3
+      # ---- GitHub backend (recommended; free for private repos) ----
+      - key: BACKUP_GITHUB_REPO
+        sync: false  # e.g. mihir2452005/roastgpt-backups
+      - key: BACKUP_GITHUB_TOKEN
+        sync: false  # fine-grained PAT with `contents:write` on the backup repo
+      # ---- Optional: HTTP webhook backend ----
+      # - key: BACKUP_WEBHOOK_URL
+      #   sync: false
+      # ---- Optional: S3-compatible backend (Cloudflare R2, Backblaze B2, AWS) ----
+      # - key: BACKUP_S3_BUCKET
+      #   sync: false
+      # - key: BACKUP_S3_ENDPOINT
+      #   sync: false
+      # - key: BACKUP_S3_KEY_ID
+      #   sync: false
+      # - key: BACKUP_S3_KEY_SECRET
+      #   sync: false
+      # - key: BACKUP_S3_REGION
+      #   value: "auto"
 
-databases:
-  - name: roastgpt-db
-    databaseName: roastgpt
-    user: roastgpt
-    plan: starter          # 1 GB, $7/mo. Free tier also works for low traffic.
+  # Daily database backup. Runs `python -m scripts.backup_db --env` so
+  # everything is configured via env vars above. Cron jobs are a free
+  # Render feature. Schedule: 02:13 UTC (off-the-hour to avoid the
+  # midnight crowd).
+  - type: cron
+    name: roastgpt-backup
+    runtime: python
+    plan: starter
     region: oregon
-    ipAllowList: []        # only the service above can connect
+    rootDir: backend
+    schedule: "13 2 * * *"
+    buildCommand: "pip install --upgrade pip && pip install -r requirements.txt"
+    startCommand: "python -m scripts.backup_db --env"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.7
+      - key: DATABASE_URL
+        sync: false  # paste the same Neon connection string here
+      # Mirror the BACKUP_* env vars from the web service. Render doesn't
+      # share env between services, so duplicate what you need.
+      - key: BACKUP_DESTINATION
+        sync: false
+      - key: BACKUP_GITHUB_REPO
+        sync: false
+      - key: BACKUP_GITHUB_TOKEN
+        sync: false

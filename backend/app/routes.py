@@ -137,7 +137,7 @@ def start_session(
     session.history.append(
         ChatMessage(role="assistant", content=opener_text or "", intents=[])
     )
-    SESSIONS.save(session)
+    SESSIONS.save(session, db=db, user_id=user.id if user is not None else None)
 
     # Persist opener to authenticated user's history.
     if user is not None and db is not None and opener_text:
@@ -218,7 +218,7 @@ def roast(
                 ChatMessage(role="assistant", content=safe_text, intents=[])
             )
             session.message_count += 1
-            SESSIONS.save(session)
+            SESSIONS.save(session, db=db, user_id=user.id if user is not None else None)
             return RoastResponse(
                 roast=safe_text,
                 scores=session.scores,
@@ -234,7 +234,7 @@ def roast(
             ChatMessage(role="assistant", content=safe_text, intents=[])
         )
         session.message_count += 1
-        SESSIONS.save(session)
+        SESSIONS.save(session, db=db, user_id=user.id if user is not None else None)
         return RoastResponse(
             roast=safe_text,
             scores=session.scores,
@@ -406,7 +406,7 @@ def roast(
     )
 
     scorer.update_scores(session, damage_added=damage_added)
-    SESSIONS.save(session)
+    SESSIONS.save(session, db=db, user_id=user.id if user is not None else None)
 
     # Persist to authenticated user's chat history (best-effort; never
     # break the response if the DB write fails for any reason).
@@ -516,7 +516,7 @@ def end_session(
         session.history.append(
             ChatMessage(role="assistant", content=closer_text, intents=[])
         )
-    SESSIONS.save(session)
+    SESSIONS.save(session, db=db, user_id=user.id if user is not None else None)
 
     MEMORY.record_session(session)
 
@@ -558,6 +558,75 @@ def get_session(session_id: str) -> SessionStateResponse:
         scores=session.scores,
         history=session.history,
         is_ended=session.ended_at is not None,
+    )
+
+
+@router.post("/session/{session_id}/recover", response_model=SessionStateResponse)
+def recover_session(
+    session_id: str,
+    user: Annotated[db_models.User, Depends(auth.get_current_user)] = None,
+    db: Annotated[Session, Depends(get_db)] = None,
+) -> SessionStateResponse:
+    """Reconstruct a session after a host cold start.
+
+    On free-tier hosts (Render, Koyeb) the in-memory session store is
+    wiped when the process spins down. Authenticated users can call
+    this endpoint to reload their last-known session state from the
+    `roast_sessions` table. Anonymous sessions can't be recovered
+    because we never persisted them.
+
+    Security: the recovered session's `user_id` MUST match the
+    requesting user. Otherwise a leaked session id from one user
+    could be used to peek at another user's transcript.
+
+    This endpoint is idempotent: if the session is already in memory
+    (no cold start happened), we return its state directly.
+    """
+    in_mem = SESSIONS.get(session_id)
+    if in_mem is not None:
+        return SessionStateResponse(
+            session_id=in_mem.session_id,
+            mode=in_mem.mode,
+            personality=in_mem.personality,
+            message_count=in_mem.message_count,
+            scores=in_mem.scores,
+            history=in_mem.history,
+            is_ended=in_mem.ended_at is not None,
+        )
+
+    from . import session as session_mod
+    restored = session_mod.load_session_from_db(db, session_id)
+    if restored is None:
+        raise HTTPException(404, "session not found")
+
+    # Authorization: only the owning user can recover. We check both
+    # the persisted user_id on the row and the in-state user_id field
+    # (defence in depth: a corrupt row shouldn't bypass auth).
+    row = db.query(db_models.RoastSession).filter(
+        db_models.RoastSession.session_id == session_id
+    ).first()
+    if row is None or row.user_id is None:
+        # Anonymous session — never persisted by the live path, so if
+        # we see one, it's either a test artifact or a tampering
+        # attempt. Refuse to expose it.
+        raise HTTPException(404, "session not found")
+    if row.user_id != user.id:
+        # Don't leak whether the session id exists for someone else.
+        raise HTTPException(404, "session not found")
+
+    # Repopulate the in-memory store so the next /roast or /end is
+    # hot-path. We hold the store's lock implicitly via SESSIONS.save.
+    SESSIONS.save(restored)
+    log.info("recovered session %s for user %s", session_id, user.id)
+
+    return SessionStateResponse(
+        session_id=restored.session_id,
+        mode=restored.mode,
+        personality=restored.personality,
+        message_count=restored.message_count,
+        scores=restored.scores,
+        history=restored.history,
+        is_ended=restored.ended_at is not None,
     )
 
 

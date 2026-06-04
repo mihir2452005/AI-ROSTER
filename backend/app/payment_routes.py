@@ -52,37 +52,99 @@ def get_razorpay_client() -> razorpay.Client:
 
 
 # ---- Plans (seed defaults if empty) ----
+# Each plan has TWO feature keys:
+#   1. A machine-readable schema (roaster_types, unlimited, etc.) used
+#      by the API consumers that want to gate behaviour on plan.
+#   2. A `items` list and optional `highlighted` string used by the
+#      pricing page UI to render feature bullets. Keeping the list on
+#      the backend means changing copy doesn't require a frontend deploy.
 DEFAULT_PLANS = [
     {
         "plan_code": "starter",
         "name": "Starter Chat",
         "price_paise": 29900,  # ₹299
         "duration_days": 10,
-        "features": {"roaster_types": ["male", "female"], "unlimited": True, "priority_support": False},
+        "features": {
+            "roaster_types": ["male", "female"],
+            "unlimited": True,
+            "priority_support": False,
+            "items": [
+                "✅ Unlimited messages",
+                "✅ Male & female roaster",
+                "✅ Chat history",
+                "❌ Custom personality",
+            ],
+        },
     },
     {
         "plan_code": "pro",
         "name": "Pro Roaster",
         "price_paise": 79900,  # ₹799
         "duration_days": 30,
-        "features": {"roaster_types": ["male", "female", "neutral"], "unlimited": True, "priority_support": True},
+        "features": {
+            "roaster_types": ["male", "female", "neutral"],
+            "unlimited": True,
+            "priority_support": True,
+            "highlighted": "MOST POPULAR",
+            "items": [
+                "✅ Everything in Starter",
+                "✅ All 3 roaster types",
+                "✅ Priority support",
+                "✅ Weekly leaderboard rewards",
+            ],
+        },
     },
     {
         "plan_code": "legend",
         "name": "Legend Pass",
         "price_paise": 199900,  # ₹1999
         "duration_days": 90,
-        "features": {"roaster_types": ["male", "female", "neutral", "custom"], "unlimited": True, "priority_support": True, "custom_personality": True},
+        "features": {
+            "roaster_types": ["male", "female", "neutral", "custom"],
+            "unlimited": True,
+            "priority_support": True,
+            "custom_personality": True,
+            "items": [
+                "✅ Everything in Pro",
+                "✅ Custom personality (build your own)",
+                "✅ 90 days of access",
+                "✅ VIP support & early features",
+            ],
+        },
     },
 ]
 
 
 def seed_plans(db: Session) -> None:
-    """Insert default plans if the table is empty. Idempotent."""
-    if db.query(db_models.SubscriptionPlan).count() > 0:
-        return
+    """Insert default plans if the table is empty, and merge any new
+    feature keys (e.g. `items` for the pricing page UI) into existing
+    plans so the seed is forward-compatible.
+
+    Idempotent: safe to call on every boot. Existing rows are merged
+    by `plan_code`, so renaming a plan still works. Custom plans
+    (e.g. added by an admin via SQL) are left alone unless their
+    `plan_code` matches a default — in which case the seeded fields
+    fill in only the keys that are missing.
+    """
     for p in DEFAULT_PLANS:
-        db.add(db_models.SubscriptionPlan(**p))
+        existing = db.query(db_models.SubscriptionPlan).filter(
+            db_models.SubscriptionPlan.plan_code == p["plan_code"]
+        ).first()
+        if existing is None:
+            db.add(db_models.SubscriptionPlan(**p))
+        else:
+            # Forward-compat: if the existing row is missing any of the
+            # feature keys shipped in this build's DEFAULT_PLANS, add
+            # them. This is what brings an older DB up to date with a
+            # new `items` list without overwriting admin customisations.
+            merged = dict(existing.features or {})
+            changed = False
+            for k, v in (p.get("features") or {}).items():
+                if k not in merged:
+                    merged[k] = v
+                    changed = True
+            if changed:
+                existing.features = merged
     db.commit()
 
 

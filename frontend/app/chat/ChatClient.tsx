@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ApiError, api, friendlyError } from "@/lib/api";
+import { getAccessToken } from "@/lib/auth-api";
 import type {
   ChatMessage,
   Personality,
@@ -31,11 +32,23 @@ export default function ChatClient({ sessionId }: Props) {
   const [closer, setCloser] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [endedRemote, setEndedRemote] = useState(false);
+  // Set true when we successfully recovered the session from the
+  // backend's `roast_sessions` table after a server cold start. We
+  // show a one-time banner so the user knows their state was rebuilt
+  // and not freshly fetched from memory.
+  const [recoveredFromDb, setRecoveredFromDb] = useState(false);
+  // True iff the latest error was a "free tier" 402 from the backend.
+  // Drives the "See plans →" CTA — branching on the typed error code
+  // rather than substring matching the human-readable message.
+  const [hitFreeTier, setHitFreeTier] = useState(false);
 
   const scrollerRef = useRef<HTMLDivElement>(null);
   const copyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Bootstrap: load session + opener
+  // Bootstrap: load session + opener. If the in-memory store lost it
+  // (free-tier host cold start) and the user is logged in, try the
+  // recovery endpoint which rebuilds the session from the
+  // `roast_sessions` table.
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -58,9 +71,30 @@ export default function ChatClient({ sessionId }: Props) {
           }
         }
       } catch (e) {
-        if (!cancelled) {
-          setError(friendlyError(e));
+        if (cancelled) return;
+        // If we got a 404, the in-memory store lost this session —
+        // typical after a free-tier host cold start. Authenticated
+        // users can recover from the persisted `roast_sessions` row.
+        if (e instanceof ApiError && e.code === "not_found" && getAccessToken()) {
+          try {
+            const recovered = await api.recoverSession(sessionId);
+            if (cancelled) return;
+            setMode(recovered.mode);
+            setPersonality(recovered.personality);
+            setScores(recovered.scores);
+            setMessages(recovered.history);
+            setEndedRemote(recovered.is_ended);
+            setRecoveredFromDb(true);
+            if (recovered.is_ended && recovered.history.length > 0) {
+              const last = recovered.history[recovered.history.length - 1];
+              if (last.role === "assistant") setCloser(last.content);
+            }
+            return;
+          } catch {
+            // Fall through to the regular error UI.
+          }
         }
+        setError(friendlyError(e));
       }
     })();
     return () => { cancelled = true; };
@@ -86,6 +120,7 @@ export default function ChatClient({ sessionId }: Props) {
     }
     setInput("");
     setError(null);
+    setHitFreeTier(false);
     setBusy(true);
     // Optimistic: show the user message immediately.
     setMessages((m) => [...m, { role: "user", content: text }]);
@@ -94,6 +129,33 @@ export default function ChatClient({ sessionId }: Props) {
       setMessages((m) => [...m, { role: "assistant", content: r.roast, intents: r.intents_detected }]);
       setScores(r.scores);
     } catch (e) {
+      // 404 mid-session usually means the server restarted and lost
+      // the in-memory store. Authenticated users can recover from the
+      // persisted `roast_sessions` row, then re-send automatically.
+      if (e instanceof ApiError && e.code === "not_found" && getAccessToken()) {
+        try {
+          const recovered = await api.recoverSession(sessionId);
+          setMode(recovered.mode);
+          setPersonality(recovered.personality);
+          setScores(recovered.scores);
+          setRecoveredFromDb(true);
+          // Re-send the message now that the session is back in
+          // memory. setMessages is a REPLACEMENT, not a delta, so the
+          // optimistic user bubble from line 121 is dropped — the
+          // recovered history doesn't include this turn (it was
+          // persisted before the new attempt was sent) and the new
+          // user/assistant pair is appended.
+          const r2: RoastResponse = await api.roast(sessionId, { message: text });
+          setMessages((recovered.history || []).concat([
+            { role: "user", content: text },
+            { role: "assistant", content: r2.roast, intents: r2.intents_detected },
+          ]));
+          setScores(r2.scores);
+          return;
+        } catch {
+          // Fall through to the regular error UI.
+        }
+      }
       // Remove the optimistic user message and restore the input so the
       // user can retry without retyping.
       setMessages((m) => m.slice(0, -1));
@@ -102,10 +164,13 @@ export default function ChatClient({ sessionId }: Props) {
         setEndedRemote(true);
       }
       if (e instanceof ApiError && e.code === "free_tier") {
-        setError("You’ve used your 5 free messages. Subscribe to keep roasting.");
+        setHitFreeTier(true);
       } else {
-        setError(friendlyError(e));
+        setHitFreeTier(false);
       }
+      // friendlyError() already returns the right text for free_tier,
+      // session_ended, etc. — no need to duplicate the strings here.
+      setError(friendlyError(e));
     } finally {
       setBusy(false);
     }
@@ -181,6 +246,16 @@ export default function ChatClient({ sessionId }: Props) {
           </div>
         </div>
 
+        {recoveredFromDb && (
+          <div
+            role="status"
+            className="border-b border-accent/30 bg-accent/10 px-4 py-2 text-xs text-accent"
+          >
+            Session recovered from history. The server restarted and lost its
+            short-term state, but your full conversation is intact.
+          </div>
+        )}
+
         <div
           ref={scrollerRef}
           className="flex-1 space-y-4 overflow-y-auto px-4 py-6"
@@ -216,7 +291,7 @@ export default function ChatClient({ sessionId }: Props) {
             >
               <div className="flex-1">
                 <span>{error}</span>
-                {(error.includes("Subscribe") || error.includes("free messages")) && (
+                {hitFreeTier && (
                   <a
                     href="/pricing"
                     className="ml-3 inline-block rounded-md bg-gradient-to-r from-purple-600 to-pink-600 px-3 py-1 text-xs font-semibold text-white"
@@ -226,7 +301,7 @@ export default function ChatClient({ sessionId }: Props) {
                 )}
               </div>
               <button
-                onClick={() => setError(null)}
+                onClick={() => { setError(null); setHitFreeTier(false); }}
                 aria-label="Dismiss error"
                 className="text-accent/70 hover:text-accent"
               >

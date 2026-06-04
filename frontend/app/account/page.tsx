@@ -78,7 +78,22 @@ export default function AccountPage() {
   }
   if (!user) return null;
 
-  const activeSub = subs.find((s) => s.status === "active");
+  // "Currently in effect" means: status=active AND period_end > now. This
+  // matches the backend's `has_active_subscription` rule. The "Cancel
+  // subscription" button only renders when the user hasn't already
+  // requested cancellation (cancel_at_period_end).
+  const now = Date.now();
+  const inEffect = subs.find(
+    (s) => s.status === "active" && s.current_period_end && new Date(s.current_period_end).getTime() > now
+  );
+  // Sub being cancelled this period (status still "active" but
+  // cancel_at_period_end is set) — show "Cancellation pending" badge
+  // and hide the cancel button.
+  const cancellationPending = subs.find(
+    (s) => s.status === "active" && s.cancel_at_period_end
+  );
+  // Any subscription at all, even expired/cancelled.
+  const anySub = subs[0];
 
   return (
     <main className="min-h-screen bg-slate-50 px-4 py-8">
@@ -157,30 +172,56 @@ export default function AccountPage() {
         {/* Subscription */}
         <section className="bg-white rounded-xl p-6 shadow-sm">
           <h2 className="text-xl font-semibold text-slate-900 mb-4">Subscription</h2>
-          {activeSub ? (
+          {inEffect ? (
             <div className="space-y-2 text-sm">
               <p>
-                <span className="inline-block px-2 py-0.5 rounded text-xs bg-emerald-100 text-emerald-700 mr-2">
-                  {activeSub.status}
-                </span>
-                <strong>{activeSub.plan_name}</strong>
+                {cancellationPending ? (
+                  <span className="inline-block px-2 py-0.5 rounded text-xs bg-amber-100 text-amber-700 mr-2">
+                    Cancellation pending
+                  </span>
+                ) : (
+                  <span className="inline-block px-2 py-0.5 rounded text-xs bg-emerald-100 text-emerald-700 mr-2">
+                    active
+                  </span>
+                )}
+                <strong>{inEffect.plan_name}</strong>
               </p>
               <p className="text-slate-600">
-                {activeSub.current_period_end
-                  ? `Active until ${new Date(activeSub.current_period_end).toLocaleDateString()}`
+                {inEffect.current_period_end
+                  ? `${cancellationPending ? "Access until" : "Active until"} ${new Date(inEffect.current_period_end).toLocaleDateString()}`
                   : "—"}
               </p>
-              {activeSub.admin_granted && (
+              {inEffect.admin_granted && (
                 <p className="text-xs text-amber-600">
                   🎁 This subscription was granted to you (free).
                 </p>
               )}
-              <button
-                onClick={cancelSub}
-                className="mt-3 px-4 py-1.5 text-sm text-red-600 hover:bg-red-50 rounded"
+              {!cancellationPending && (
+                <button
+                  onClick={cancelSub}
+                  className="mt-3 px-4 py-1.5 text-sm text-red-600 hover:bg-red-50 rounded"
+                >
+                  Cancel subscription
+                </button>
+              )}
+            </div>
+          ) : anySub ? (
+            <div>
+              <p className="text-slate-600 mb-3">
+                Your <strong>{anySub.plan_name}</strong> subscription is{" "}
+                <span className="capitalize">{anySub.status}</span>
+                {anySub.current_period_end && (
+                  <>
+                    {" "}(expired {new Date(anySub.current_period_end).toLocaleDateString()})
+                  </>
+                )}.
+              </p>
+              <a
+                href="/pricing"
+                className="inline-block px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg"
               >
-                Cancel subscription
-              </button>
+                See plans
+              </a>
             </div>
           ) : (
             <div>

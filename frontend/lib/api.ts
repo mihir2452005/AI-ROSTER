@@ -157,4 +157,15 @@ export const api = {
 
   getSession: (sessionId: string) =>
     request<SessionStateResponse>(`/api/session/${sessionId}`),
+
+  /**
+   * Reconstruct a session from the `roast_sessions` table after a
+   * server cold start wiped the in-memory store. Authenticated users
+   * only — anonymous sessions aren't persisted. Requires the JWT
+   * bearer token to be present (auto-injected by `request`).
+   */
+  recoverSession: (sessionId: string) =>
+    request<SessionStateResponse>(`/api/session/${sessionId}/recover`, {
+      method: "POST",
+    }),
 };

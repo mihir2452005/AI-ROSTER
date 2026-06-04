@@ -12,24 +12,28 @@ import {
   type User,
 } from "../lib/auth-api";
 
+// Broadcast channel name used by other parts of the app to tell
+// HeaderAuth to refetch. The pricing page fires this on successful
+// payment so the "⭐ Subscribe" badge disappears without a full
+// page reload.
+const REFRESH_EVENT = "roastgpt:auth-refresh";
+
 export default function HeaderAuth() {
   const [user, setUser] = useState<User | null>(null);
   const [checked, setChecked] = useState(false);
 
-  useEffect(() => {
+  function refetch() {
     if (!getAccessToken()) {
+      setUser(null);
       setChecked(true);
       return;
     }
-    // 1. Show the cached user instantly so the header renders without a
-    //    network round-trip. The cached copy is overwritten with the
-    //    fresh server copy below.
+    // Show the cached user instantly.
     const cached = getCachedUser();
     if (cached) setUser(cached);
-    // 2. Refetch the canonical user from the server. If the server's
-    //    token_version doesn't match what we cached, force a logout —
-    //    the token has been revoked (password change, admin
-    //    deactivation, or explicit logout on another device).
+    // Refetch the canonical user from the server. Cross-check
+    // `token_version` to detect cross-tab/cross-device token
+    // invalidation.
     const cachedVer = getStoredTokenVersion();
     authApi
       .me()
@@ -45,6 +49,18 @@ export default function HeaderAuth() {
       })
       .catch(() => { /* not logged in / token expired */ })
       .finally(() => setChecked(true));
+  }
+
+  useEffect(() => {
+    refetch();
+    // Re-run on any cross-component auth-refresh signal. This is how
+    // the pricing page tells us "payment went through, please drop the
+    // Subscribe badge" without a hard reload.
+    if (typeof window !== "undefined") {
+      const handler = () => refetch();
+      window.addEventListener(REFRESH_EVENT, handler);
+      return () => window.removeEventListener(REFRESH_EVENT, handler);
+    }
   }, []);
 
   if (!checked) return <div className="w-32" />;

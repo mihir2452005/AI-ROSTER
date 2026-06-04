@@ -1,12 +1,29 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { authApi, setTokens } from "../../lib/auth-api";
+import { useRouter, useSearchParams } from "next/navigation";
+import { authApi } from "../../lib/auth-api";
 
 export default function LoginPage() {
+  // `useSearchParams` requires a Suspense boundary in Next.js 14
+  // app-router builds; the inner component does the real work and
+  // the outer component just wraps it for streaming.
+  return (
+    <Suspense fallback={
+      <main className="min-h-screen flex items-center justify-center text-slate-500">Loading…</main>
+    }>
+      <LoginPageInner />
+    </Suspense>
+  );
+}
+
+function LoginPageInner() {
   const router = useRouter();
+  const params = useSearchParams();
+  // `?return=/pricing` is set by the pricing page when an anonymous
+  // visitor clicks "Get Pro". Bring them back here after login.
+  const returnTo = params?.get("return") || "/";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -17,9 +34,10 @@ export default function LoginPage() {
     setError("");
     setLoading(true);
     try {
-      const result = await authApi.login({ email, password });
-      setTokens(result.access_token, result.refresh_token);
-      router.push("/");
+      // authApi.login already stores the tokens in sessionStorage
+      // (see lib/auth-api.ts:202-212). No need to call setTokens again.
+      await authApi.login({ email, password });
+      router.push(returnTo);
     } catch (err: any) {
       setError(err?.detail || "Login failed. Check your credentials.");
     } finally {

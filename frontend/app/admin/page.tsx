@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   adminApi,
@@ -24,6 +24,10 @@ export default function AdminPage() {
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [userTotal, setUserTotal] = useState(0);
   const [search, setSearch] = useState("");
+  // Debounce timer for the user search box. Without this, every
+  // keystroke fires an `/api/admin/users?search=...` request which
+  // hammers the DB on long email prefixes.
+  const searchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [period, setPeriod] = useState<"week" | "month">("week");
   const [plans, setPlans] = useState<Plan[]>([]);
@@ -80,6 +84,14 @@ export default function AdminPage() {
       })
       .catch((e) => setMessage("Search failed: " + (e?.detail || "")));
   }
+
+  // Cancel any in-flight debounce timer on unmount so we don't try to
+  // setState on an unmounted component.
+  useEffect(() => {
+    return () => {
+      if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
+    };
+  }, []);
 
   function toggleUserFlag(u: AdminUser, key: "is_active" | "is_verified" | "is_admin", value: boolean) {
     setMessage("");
@@ -181,8 +193,12 @@ export default function AdminPage() {
               placeholder="Search by email or name…"
               value={search}
               onChange={(e) => {
-                setSearch(e.target.value);
-                reloadUsers(e.target.value);
+                const v = e.target.value;
+                setSearch(v);
+                if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
+                searchTimerRef.current = setTimeout(() => {
+                  reloadUsers(v);
+                }, 300);
               }}
               className="w-full mb-3 px-3 py-2 border border-slate-300 rounded-lg"
             />

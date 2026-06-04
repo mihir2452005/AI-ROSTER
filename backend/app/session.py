@@ -1,15 +1,24 @@
 """Session and user memory management.
 
-For MVP, both are in-memory dicts. Swap for Redis (sessions) and PostgreSQL
-(memory) when moving to production.
+`SessionStore` and `UserMemory` are the in-memory hot path. For
+authenticated users, `SessionStore.save()` also writes the session
+state to the `roast_sessions` table so the user can resume after the
+process restarts (free-tier hosts spin down after 15 minutes of idle).
+
+Anonymous sessions are NOT persisted: they have no user_id to
+associate with and their lifetime is short by design.
 """
 from __future__ import annotations
 
+import json
+import logging
 import os
 import time
 import uuid
 from threading import RLock
 from typing import Optional
+
+from sqlalchemy.orm import Session
 
 from .models import (
     ChatMessage,
@@ -19,6 +28,8 @@ from .models import (
     SessionScores,
 )
 from .scorer import fresh_scores
+
+log = logging.getLogger(__name__)
 
 
 # Caps to keep in-memory state bounded under abuse. Sessions already have
@@ -30,6 +41,113 @@ MAX_MEM_USERS = int(os.environ.get("ROASTGPT_MAX_MEM_USERS", "10000"))
 
 
 # ----- Session store -----
+
+
+def session_to_persisted(session: Session, user_id: Optional[int]) -> dict:
+    """Serialise a Session into a JSON-safe dict for the roast_sessions
+    table. Round-trips back via session_from_persisted."""
+    return {
+        "version": 1,
+        "session_id": session.session_id,
+        "username": session.username,
+        "roaster_gender": session.roaster_gender,
+        "mode": session.mode.value if hasattr(session.mode, "value") else session.mode,
+        "personality": session.personality.value if hasattr(session.personality, "value") else session.personality,
+        "created_at": session.created_at,
+        "message_count": session.message_count,
+        "total_damage": session.total_damage,
+        "comeback_attempts": session.comeback_attempts,
+        "comeback_failures": session.comeback_failures,
+        "scores": session.scores.model_dump(),
+        "history": [m.model_dump() for m in session.history],
+        "recent_roast_ids": list(session.recent_roast_ids),
+        "detected_intents": list(session.detected_intents),
+        "opener_used": session.opener_used,
+        "closer_used": session.closer_used,
+        "ended_at": session.ended_at,
+        "closer_text": session.closer_text,
+        "user_id": user_id,
+    }
+
+
+def session_from_persisted(data: dict) -> Session:
+    """Inverse of session_to_persisted. Restores a Session from a JSON
+    dict read from the roast_sessions table."""
+    return Session(
+        session_id=data["session_id"],
+        username=data.get("username"),
+        roaster_gender=data.get("roaster_gender"),
+        mode=RoastMode(data["mode"]),
+        personality=Personality(data["personality"]),
+        created_at=float(data["created_at"]),
+        message_count=int(data.get("message_count", 0)),
+        total_damage=int(data.get("total_damage", 0)),
+        comeback_attempts=int(data.get("comeback_attempts", 0)),
+        comeback_failures=int(data.get("comeback_failures", 0)),
+        scores=SessionScores.model_validate(data.get("scores") or {}),
+        history=[ChatMessage.model_validate(m) for m in (data.get("history") or [])],
+        recent_roast_ids=list(data.get("recent_roast_ids") or []),
+        detected_intents=list(data.get("detected_intents") or []),
+        opener_used=bool(data.get("opener_used", False)),
+        closer_used=bool(data.get("closer_used", False)),
+        ended_at=data.get("ended_at"),
+        closer_text=data.get("closer_text"),
+    )
+
+
+def _persist_session(db: Session, session: Session, user_id: int) -> None:
+    """Upsert a session row. Best-effort: any error is logged and
+    swallowed so a transient DB problem can't break the live request."""
+    try:
+        # Lazy import: avoids a circular import at module load.
+        from . import db_models
+        row = db.query(db_models.RoastSession).filter(
+            db_models.RoastSession.session_id == session.session_id
+        ).first()
+        state = session_to_persisted(session, user_id=user_id)
+        if row is None:
+            row = db_models.RoastSession(
+                session_id=session.session_id,
+                user_id=user_id,
+                mode=state["mode"],
+                personality=state["personality"],
+                username=state.get("username"),
+                roaster_gender=state.get("roaster_gender"),
+                state_json=state,
+                ended_at=session.ended_at,
+            )
+            db.add(row)
+        else:
+            row.state_json = state
+            row.ended_at = session.ended_at
+        db.commit()
+    except Exception as e:  # pragma: no cover - DB error path
+        log.warning("failed to persist session %s: %s", session.session_id, e)
+        try:
+            db.rollback()
+        except Exception:
+            pass
+
+
+def load_session_from_db(db: Session, session_id: str) -> Optional[Session]:
+    """Read a session row from the DB and reconstruct the in-memory
+    `Session` object. Returns None if not found."""
+    try:
+        from . import db_models
+        row = db.query(db_models.RoastSession).filter(
+            db_models.RoastSession.session_id == session_id
+        ).first()
+    except Exception as e:  # pragma: no cover
+        log.warning("failed to read session %s: %s", session_id, e)
+        return None
+    if row is None or not row.state_json:
+        return None
+    try:
+        return session_from_persisted(row.state_json)
+    except Exception as e:  # pragma: no cover
+        log.warning("corrupt session state %s: %s", session_id, e)
+        return None
+
 
 class SessionStore:
     def __init__(self) -> None:
@@ -90,9 +208,24 @@ class SessionStore:
         with self._lock:
             return self._sessions.get(sid)
 
-    def save(self, session: Session) -> None:
+    def save(
+        self,
+        session: Session,
+        *,
+        db: Optional[Session] = None,
+        user_id: Optional[int] = None,
+    ) -> None:
+        """Save to in-memory store, and (if `db` and `user_id` are
+        provided) upsert into the roast_sessions table.
+
+        The DB write is best-effort. Callers in the request path can
+        pass `db` from FastAPI's dependency and `user_id` from the
+        authenticated user, and the session survives a cold start.
+        """
         with self._lock:
             self._sessions[session.session_id] = session
+        if db is not None and user_id is not None:
+            _persist_session(db, session, user_id=user_id)
 
     def delete(self, sid: str) -> None:
         with self._lock:

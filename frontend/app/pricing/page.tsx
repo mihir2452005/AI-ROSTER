@@ -1,11 +1,13 @@
 "use client";
 
+import type React from "react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   paymentsApi,
   subscriptionsApi,
   authApi,
+  emitAuthRefresh,
   getAccessToken,
   type Plan,
   type User,
@@ -18,6 +20,47 @@ declare global {
   }
 }
 
+// Maps a `plan.features` dict (from the backend) into a list of <li>.
+// Supports a small DSL so plans can be customised without frontend code:
+//   { items: ["✅ Unlimited messages", "❌ Custom personality", ...] }
+//   { highlighted: "MOST POPULAR", items: [...] }
+//   { items: ["...", { text: "Build your own", cta: "Configure" }] }
+function renderPlanFeatures(plan: Plan): React.ReactNode {
+  const f = (plan.features ?? {}) as { items?: Array<string | { text: string }> };
+  const items = Array.isArray(f.items) ? f.items : [];
+  if (items.length === 0) {
+    // Fallback when the backend didn't ship a feature list (e.g. dev
+    // seed). The legacy hardcoded lists so a missing entry doesn't
+    // render an empty plan card.
+    return FALLBACK_FEATURES[plan.plan_code]?.map((s, i) => <li key={i}>{s}</li>) ?? null;
+  }
+  return items.map((it, i) => {
+    if (typeof it === "string") return <li key={i}>{it}</li>;
+    return <li key={i}>{it.text}</li>;
+  });
+}
+
+const FALLBACK_FEATURES: Record<string, string[]> = {
+  starter: [
+    "✅ Unlimited messages",
+    "✅ Male & female roaster",
+    "✅ Chat history",
+    "❌ Custom personality",
+  ],
+  pro: [
+    "✅ Everything in Starter",
+    "✅ All 3 roaster types",
+    "✅ Priority support",
+    "✅ Weekly leaderboard rewards",
+  ],
+  legend: [
+    "✅ Everything in Pro",
+    "✅ Custom personality (build your own)",
+    "✅ 90 days of access",
+    "✅ VIP support & early features",
+  ],
+};
+
 export default function PricingPage() {
   const router = useRouter();
   const [plans, setPlans] = useState<Plan[]>([]);
@@ -27,12 +70,11 @@ export default function PricingPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const token = getAccessToken();
-    if (!token) {
-      router.push("/login");
-      return;
-    }
-    Promise.all([paymentsApi.listPlans(), authApi.me()])
+    // Plans are public — anyone can view pricing. We only need a
+    // logged-in user to subscribe; if the user clicks "Get Pro" while
+    // not logged in, we send them to /login and bring them back here
+    // after auth.
+    Promise.all([paymentsApi.listPlans(), getAccessToken() ? authApi.me() : Promise.resolve(null)])
       .then(([p, u]) => {
         setPlans(p.plans);
         setUser(u);
@@ -59,6 +101,12 @@ export default function PricingPage() {
   }
 
   async function handleSubscribe(plan: Plan) {
+    // Anonymous users can't subscribe. Send them to /login and bring
+    // them back here after auth.
+    if (!getAccessToken()) {
+      router.push("/login?return=/pricing");
+      return;
+    }
     if (plan.plan_code === "starter" && !confirm(
       "Starter plan is for trying things out. Most users pick Pro for the best value. Continue?"
     )) {
@@ -86,14 +134,30 @@ export default function PricingPage() {
           razorpay_payment_id: string;
           razorpay_signature: string;
         }) => {
+          // The Razorpay modal has closed and the user has paid.
+          // Verify on our backend. Note: clearing checkoutLoading is
+          // handled by ondismiss — we only clear it here on error so
+          // the user can retry without the button being stuck.
           try {
-            await paymentsApi.verifyPayment(response);
-            alert("🎉 Subscription activated! Welcome to " + plan.name + ".");
+            const r = await paymentsApi.verifyPayment(response);
+            // Surface the actual server message — "Payment verified and
+            // subscription activated" on first run, "Payment already
+            // verified" on idempotent retry. Both are fine.
+            const alreadyVerified = /already/i.test(r.message);
+            alert(
+              alreadyVerified
+                ? "You've already activated " + plan.name + " — no action needed."
+                : "🎉 " + r.message + "! Welcome to " + plan.name + "."
+            );
             const u = await authApi.me();
             setUser(u);
-            router.push("/");
+            // Tell the HeaderAuth in the root layout to refetch so the
+            // "⭐ Subscribe" badge disappears without a full reload.
+            emitAuthRefresh();
+            router.push("/account");
           } catch (e: any) {
             setError("Payment verification failed: " + (e?.detail || "unknown"));
+            setCheckoutLoading(null);
           }
         },
         prefill: {
@@ -109,7 +173,6 @@ export default function PricingPage() {
       rzp.open();
     } catch (e: any) {
       setError(e?.detail || "Checkout failed");
-    } finally {
       setCheckoutLoading(null);
     }
   }
@@ -146,16 +209,20 @@ export default function PricingPage() {
         <div className="grid md:grid-cols-3 gap-6">
           {plans.map((plan) => {
             const isPro = plan.plan_code === "pro";
+            // `plan.features.highlighted` lets the backend mark a plan
+            // as the "most popular" without the frontend hardcoding it.
+            const f = (plan.features ?? {}) as { highlighted?: string };
+            const highlightLabel = f.highlighted;
             return (
               <div
                 key={plan.plan_code}
                 className={`bg-white rounded-2xl p-8 shadow-xl ${
-                  isPro ? "ring-2 ring-purple-500 scale-105" : ""
+                  isPro || highlightLabel ? "ring-2 ring-purple-500 scale-105" : ""
                 }`}
               >
-                {isPro && (
+                {(isPro || highlightLabel) && (
                   <span className="inline-block mb-3 px-3 py-1 text-xs font-bold rounded-full bg-purple-100 text-purple-700">
-                    MOST POPULAR
+                    {highlightLabel ?? "MOST POPULAR"}
                   </span>
                 )}
                 <h2 className="text-2xl font-bold text-slate-900">{plan.name}</h2>
@@ -167,30 +234,7 @@ export default function PricingPage() {
                   <span className="text-slate-500 text-sm"> / {plan.duration_days} days</span>
                 </div>
                 <ul className="space-y-2 text-sm text-slate-600 mb-8 min-h-[140px]">
-                  {plan.plan_code === "starter" && (
-                    <>
-                      <li>✅ Unlimited messages</li>
-                      <li>✅ Male & female roaster</li>
-                      <li>✅ Chat history</li>
-                      <li className="text-slate-400">❌ Custom personality</li>
-                    </>
-                  )}
-                  {plan.plan_code === "pro" && (
-                    <>
-                      <li>✅ Everything in Starter</li>
-                      <li>✅ All 3 roaster types</li>
-                      <li>✅ Priority support</li>
-                      <li>✅ Weekly leaderboard rewards</li>
-                    </>
-                  )}
-                  {plan.plan_code === "legend" && (
-                    <>
-                      <li>✅ Everything in Pro</li>
-                      <li>✅ Custom personality (build your own)</li>
-                      <li>✅ 90 days of access</li>
-                      <li>✅ VIP support & early features</li>
-                    </>
-                  )}
+                  {renderPlanFeatures(plan)}
                 </ul>
                 <button
                   onClick={() => handleSubscribe(plan)}

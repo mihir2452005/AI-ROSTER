@@ -1,14 +1,26 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { authApi, setTokens } from "../../lib/auth-api";
+import { useRouter, useSearchParams } from "next/navigation";
+import { authApi } from "../../lib/auth-api";
 
 type Gender = "male" | "female" | "neutral";
 
 export default function RegisterPage() {
+  return (
+    <Suspense fallback={
+      <main className="min-h-screen flex items-center justify-center text-slate-500">Loading…</main>
+    }>
+      <RegisterPageInner />
+    </Suspense>
+  );
+}
+
+function RegisterPageInner() {
   const router = useRouter();
+  const params = useSearchParams();
+  const returnTo = params?.get("return") || "/";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
@@ -25,14 +37,15 @@ export default function RegisterPage() {
     }
     setLoading(true);
     try {
-      const result = await authApi.register({
+      // authApi.register already stores the tokens in sessionStorage
+      // (see lib/auth-api.ts:187-200). No need to call setTokens again.
+      await authApi.register({
         email,
         password,
         full_name: fullName || undefined,
         gender_preference: gender,
       });
-      setTokens(result.access_token, result.refresh_token);
-      router.push("/");
+      router.push(returnTo);
     } catch (err: any) {
       setError(err?.detail || "Registration failed. Please try again.");
     } finally {

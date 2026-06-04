@@ -82,6 +82,17 @@ export function getStoredTokenVersion(): number {
   return Number(s.getItem(TOKEN_VERSION_KEY) || "0");
 }
 
+/**
+ * Broadcast a cross-component "the auth state just changed" signal.
+ * Used by the pricing page after a successful payment so the HeaderAuth
+ * component (which is in the root layout and doesn't unmount on
+ * navigation) can drop the "⭐ Subscribe" badge without a full reload.
+ */
+export function emitAuthRefresh(): void {
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(new Event("roastgpt:auth-refresh"));
+}
+
 async function request<T>(path: string, init?: RequestInit & { timeoutMs?: number }): Promise<T> {
   const { timeoutMs = DEFAULT_TIMEOUT_MS, ...rest } = init ?? {};
   const controller = new AbortController();
@@ -195,6 +206,7 @@ export const authApi = {
     try {
       const u = await authApi.me();
       cacheUser(u);
+      emitAuthRefresh();
     } catch { /* best-effort */ }
     return r;
   },
@@ -207,6 +219,7 @@ export const authApi = {
     try {
       const u = await authApi.me();
       cacheUser(u);
+      emitAuthRefresh();
     } catch { /* best-effort */ }
     return r;
   },
@@ -245,6 +258,7 @@ export const authApi = {
       // best-effort: still clear local state
     }
     clearTokens();
+    emitAuthRefresh();
     if (typeof window !== "undefined") {
       window.location.href = "/login";
     }

@@ -76,6 +76,9 @@ class User(Base):
     payments: Mapped[List["Payment"]] = relationship(
         back_populates="user", cascade="all, delete-orphan"
     )
+    roast_sessions: Mapped[List["RoastSession"]] = relationship(
+        cascade="all, delete-orphan"
+    )
 
 
 class SubscriptionPlan(Base):
@@ -193,5 +196,55 @@ class ChatHistory(Base):
     __table_args__ = (
         # Speeds up the day-grouped history list query.
         Index("ix_chat_history_user_created", "user_id", "created_at"),
+    )
+
+
+class RoastSession(Base):
+    """Persisted view of an in-memory `app.models.Session`.
+
+    On a long-running host, `SessionStore` is enough. On a free-tier
+    host that spins down (Render, Koyeb), every active session is
+    wiped from memory on cold start. We save the full state here so
+    authenticated users can resume after a spin-down via the
+    `/api/session/{id}/recover` endpoint.
+
+    Anonymous sessions are NOT persisted: we have no way to associate
+    them with a stable user and their lifetime is short by design.
+    """
+    __tablename__ = "roast_sessions"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    # The 32-hex-char session id (128 bits). We store it as a unique
+    # string so the same id always maps to the same row across saves.
+    session_id: Mapped[str] = mapped_column(String(64), unique=True, index=True, nullable=False)
+    # Nullable: anonymous sessions never get persisted. On recovery we
+    # check that the user_id matches the requesting user before exposing
+    # the state, so a leaked session id from one user can't be used to
+    # peek at another user's transcript.
+    user_id: Mapped[Optional[int]] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), index=True
+    )
+    # Mode and personality as plain strings so the table can be read
+    # back without depending on the enum values being present.
+    mode: Mapped[str] = mapped_column(String(32), nullable=False)
+    personality: Mapped[str] = mapped_column(String(32), nullable=False)
+    username: Mapped[Optional[str]] = mapped_column(String(64))
+    roaster_gender: Mapped[Optional[str]] = mapped_column(String(16))
+    # Full denormalized state. We trade read/write simplicity for
+    # multiple small tables. The session object is small (<= 50
+    # messages, scores are ints + 2 strings), so a single JSON column
+    # is fine.
+    state_json: Mapped[dict] = mapped_column(JSON, nullable=False)
+    ended_at: Mapped[Optional[float]] = mapped_column()  # unix seconds
+    last_accessed_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=utcnow, onupdate=utcnow
+    )
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+    user: Mapped[Optional["User"]] = relationship(overlaps="roast_sessions")
+
+    __table_args__ = (
+        # Used by the cleanup task: "ended sessions older than N days".
+        Index("ix_roast_sessions_user_ended", "user_id", "ended_at"),
     )
 
