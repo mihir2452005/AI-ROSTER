@@ -2,7 +2,7 @@
   "mode": "savage",
   "version": 2,
   "description": "Brutal but safe (no protected classes, no slurs, no actual harm). Damage 6-10.",
-  "count": 101,
+  "count": 151,
   "roasts": [
     {
       "id": "sav_001",
@@ -4039,6 +4039,1692 @@
       "tone": "cutting",
       "template": "In your own group chat. With yourself. The group chat is also on FMLA. The FMLA's doctor is a $5 therapy app. The app is also your legend status. The status is on life support. The life support is also a 4:20AM Twitter draft. The draft is unread. The unread is also your memoir. The memoir has 47 typos on the cover. The cover is also a Canva template.",
       "reaction": "🐐"
+    },
+    {
+      "id": "sav_102",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend",
+        "startup_investor"
+      ],
+      "intents": [
+        "career"
+      ],
+      "trigger_phrases": [
+        "i have an idea",
+        "i have a new idea",
+        "i have this idea",
+        "i have an app idea",
+        "i have a business idea",
+        "i have a startup idea",
+        "i have an idea for an app",
+        "i just had an idea",
+        "i've got an idea",
+        "ive got an idea",
+        "i got an idea",
+        "i have a great idea",
+        "i have a brilliant idea",
+        "i have a million dollar idea"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Fantastic. Is this another billion-dollar startup that needs 'just one developer'?",
+      "reaction": "💡"
+    },
+    {
+      "id": "sav_103",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i will change the world",
+        "i'll change the world",
+        "i will change everything",
+        "i will change the future",
+        "i will change the industry",
+        "i will change things",
+        "i will make a difference",
+        "i'm going to change the world",
+        "im going to change the world",
+        "i will change the game",
+        "i will change how things work",
+        "i will change everything",
+        "i will revolutionise",
+        "i will revolutionize"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "You still haven't changed your bedsheet.",
+      "reaction": "🛏️"
+    },
+    {
+      "id": "sav_104",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "career"
+      ],
+      "trigger_phrases": [
+        "i am very productive today",
+        "i'm very productive today",
+        "i am super productive today",
+        "i'm super productive today",
+        "i am so productive today",
+        "i'm so productive today",
+        "i am really productive today",
+        "i'm really productive today",
+        "i am extremely productive today",
+        "i am very productive",
+        "i am super productive",
+        "i am so productive",
+        "i have been productive today",
+        "i've been productive today",
+        "i've been very productive today",
+        "i have been very productive",
+        "i am very productive today"
+      ],
+      "damage": 6,
+      "tone": "playful",
+      "template": "Opening Notion and changing the cover image doesn't count.",
+      "reaction": "📋"
+    },
+    {
+      "id": "sav_105",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "school"
+      ],
+      "trigger_phrases": [
+        "i bought a course",
+        "i bought a new course",
+        "i bought a course today",
+        "i bought another course",
+        "i bought an online course",
+        "i bought a udemy course",
+        "i enrolled in a course",
+        "i signed up for a course",
+        "i joined a course",
+        "i purchased a course",
+        "i bought a class",
+        "i bought a masterclass",
+        "i bought a program",
+        "i bought a bootcamp"
+      ],
+      "damage": 6,
+      "tone": "playful",
+      "template": "Congratulations. Your collection is almost a university now.",
+      "reaction": "🎓"
+    },
+    {
+      "id": "sav_106",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i watch tech youtubers",
+        "i love tech youtubers",
+        "i follow tech youtubers",
+        "i watch tech youtube",
+        "i watch tech videos",
+        "i follow tech influencers",
+        "i watch mr beast",
+        "i watch mkbhd",
+        "i watch tech channels",
+        "i watch linus tech tips",
+        "i watch ltt",
+        "i watch tech reviews",
+        "i watch tech content",
+        "i follow tech creators",
+        "i watch tech tubers"
+      ],
+      "damage": 6,
+      "tone": "playful",
+      "template": "So your personality is sponsored.",
+      "reaction": "📺"
+    },
+    {
+      "id": "sav_107",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i love ai",
+        "i love artificial intelligence",
+        "i love chatgpt",
+        "i love gpt",
+        "i love claude",
+        "i love gemini",
+        "i love llms",
+        "i love machine learning",
+        "i love ml",
+        "i love ai tools",
+        "i love ai products",
+        "ai is my thing",
+        "ai is life",
+        "i love using ai",
+        "i love ai so much"
+      ],
+      "damage": 6,
+      "tone": "playful",
+      "template": "AI appreciates your API requests.",
+      "reaction": "🤖"
+    },
+    {
+      "id": "sav_108",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i have discipline",
+        "i'm disciplined",
+        "i am disciplined",
+        "i have self-discipline",
+        "i have iron discipline",
+        "i am a disciplined person",
+        "discipline is my strength",
+        "discipline is my superpower",
+        "i have great discipline",
+        "i have a lot of discipline",
+        "i have serious discipline",
+        "i have unbreakable discipline"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Your snooze button is your biggest supporter.",
+      "reaction": "⏰"
+    },
+    {
+      "id": "sav_109",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i made a to-do list",
+        "i made a to do list",
+        "i made a todo list",
+        "i made a checklist",
+        "i made a list of things to do",
+        "i made a plan",
+        "i made a daily plan",
+        "i created a to-do list",
+        "i wrote a to-do list",
+        "i set up a to-do list",
+        "i have a to-do list",
+        "i made a task list",
+        "i made a schedule",
+        "i scheduled my day",
+        "i planned my day",
+        "i made a daily schedule"
+      ],
+      "damage": 6,
+      "tone": "playful",
+      "template": "Ah yes, the official document of things that will never happen.",
+      "reaction": "📝"
+    },
+    {
+      "id": "sav_110",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend",
+        "professor"
+      ],
+      "intents": [
+        "programming"
+      ],
+      "trigger_phrases": [
+        "i am learning java",
+        "i'm learning java",
+        "i am studying java",
+        "i'm studying java",
+        "i started learning java",
+        "i am a java developer",
+        "i'm a java developer",
+        "i am learning java programming",
+        "i just started java",
+        "i am learning java script",
+        "i am learning javascript",
+        "i'm learning javascript",
+        "i am learning js",
+        "i'm learning js",
+        "i am learning react",
+        "i'm learning react",
+        "i am learning python",
+        "i'm learning python",
+        "i am learning a language",
+        "i'm learning a language"
+      ],
+      "damage": 6,
+      "tone": "playful",
+      "template": "Nothing says happiness like writing 30 lines for 'Hello World.'",
+      "reaction": "☕"
+    },
+    {
+      "id": "sav_111",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend",
+        "professor"
+      ],
+      "intents": [
+        "programming"
+      ],
+      "trigger_phrases": [
+        "i know c++",
+        "i know cpp",
+        "i know c plus plus",
+        "i am good at c++",
+        "i am a c++ developer",
+        "i'm a c++ developer",
+        "i code in c++",
+        "i program in c++",
+        "i work with c++",
+        "i use c++",
+        "i write c++",
+        "i know c",
+        "i know c programming",
+        "i am good at c",
+        "i code in c",
+        "i know rust",
+        "i code in rust",
+        "i know golang",
+        "i know go"
+      ],
+      "damage": 6,
+      "tone": "playful",
+      "template": "The bugs know you too.",
+      "reaction": "🐛"
+    },
+    {
+      "id": "sav_112",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "programming",
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i am learning ai engineering",
+        "i'm learning ai engineering",
+        "i am studying ai engineering",
+        "i am learning prompt engineering",
+        "i am learning ml engineering",
+        "i am a prompt engineer",
+        "i'm a prompt engineer",
+        "i am a prompt engineer",
+        "i am an ai engineer",
+        "i'm an ai engineer",
+        "i am learning machine learning engineering",
+        "i am learning to be an ai engineer",
+        "i am learning genai",
+        "i am learning generative ai",
+        "i am learning llm engineering"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "So... professional prompt copy-paster?",
+      "reaction": "🤖"
+    },
+    {
+      "id": "sav_113",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend",
+        "startup_investor"
+      ],
+      "intents": [
+        "career"
+      ],
+      "trigger_phrases": [
+        "i have a startup",
+        "i have a business",
+        "i have a company",
+        "i have my own startup",
+        "i have a new startup",
+        "i have a tech startup",
+        "i run a startup",
+        "i own a startup",
+        "i started a startup",
+        "i started a company",
+        "i founded a startup",
+        "i am a startup founder",
+        "i have a saas",
+        "i have an app",
+        "i have a tech company",
+        "i have my own company",
+        "i have a venture",
+        "i have a project",
+        "i am working on a startup"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Let me guess. AI + Blockchain + Subscription model?",
+      "reaction": "🚀"
+    },
+    {
+      "id": "sav_114",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "career"
+      ],
+      "trigger_phrases": [
+        "i work remotely",
+        "i work from home",
+        "i work from my bed",
+        "i work from my bedroom",
+        "i work from home today",
+        "i work remotely today",
+        "i am a remote worker",
+        "i am working remotely",
+        "i'm a remote worker",
+        "i am a work from home person",
+        "i work from anywhere",
+        "i am a digital nomad",
+        "i work from the couch",
+        "i am working from home",
+        "i'm working from home",
+        "i work from home in my pajamas",
+        "i work from home in pyjamas"
+      ],
+      "damage": 6,
+      "tone": "playful",
+      "template": "Walking from your bed to your chair is quite the commute.",
+      "reaction": "🛋️"
+    },
+    {
+      "id": "sav_115",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "identity_claim",
+        "screen_time"
+      ],
+      "trigger_phrases": [
+        "i meditate",
+        "i am meditating",
+        "i'm meditating",
+        "i just meditated",
+        "i love meditating",
+        "i meditate daily",
+        "i meditate every day",
+        "i meditate everyday",
+        "i am a meditator",
+        "i'm a meditator",
+        "i am into meditation",
+        "i'm into meditation",
+        "i practice meditation",
+        "i do meditation",
+        "i was meditating",
+        "i do guided meditation",
+        "i meditate every morning",
+        "i meditate every night"
+      ],
+      "damage": 6,
+      "tone": "playful",
+      "template": "Mostly while staring at loading screens.",
+      "reaction": "🧘"
+    },
+    {
+      "id": "sav_116",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend",
+        "professor"
+      ],
+      "intents": [
+        "school"
+      ],
+      "trigger_phrases": [
+        "i read self-help books",
+        "i read self help books",
+        "i love self-help books",
+        "i love self help books",
+        "i read personal development books",
+        "i read self-improvement books",
+        "i read self improvement books",
+        "i read productivity books",
+        "i read motivational books",
+        "i read self-help",
+        "i am into self-help",
+        "i am into self help",
+        "i read a lot of self-help",
+        "i read a lot of self help",
+        "i read atomic habits",
+        "i read self-development books"
+      ],
+      "damage": 6,
+      "tone": "playful",
+      "template": "You're helping the authors financially.",
+      "reaction": "📚"
+    },
+    {
+      "id": "sav_117",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i love technology",
+        "i love tech",
+        "i love gadgets",
+        "i love new tech",
+        "i am a tech enthusiast",
+        "i'm a tech enthusiast",
+        "i am into technology",
+        "i am a techie",
+        "i am a techy",
+        "i am a technology lover",
+        "i love all the new technology",
+        "i am a gadget freak",
+        "i love the latest tech",
+        "i am a tech lover",
+        "i love modern technology",
+        "i love the latest gadgets",
+        "i love all the tech",
+        "technology is my thing"
+      ],
+      "damage": 6,
+      "tone": "playful",
+      "template": "Yet your password is probably '12345678.'",
+      "reaction": "🔐"
+    },
+    {
+      "id": "sav_118",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i have confidence",
+        "i'm confident",
+        "i am confident",
+        "i have high confidence",
+        "i have great confidence",
+        "i have a lot of confidence",
+        "i am full of confidence",
+        "i am very confident",
+        "i'm very confident",
+        "i have unshakeable confidence",
+        "i have unshakeable confidence in myself",
+        "i have unshakable confidence",
+        "i have bulletproof confidence",
+        "i have self-confidence",
+        "i have so much confidence",
+        "confidence is my strength",
+        "i am a confident person",
+        "i am super confident",
+        "i'm super confident"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Delusion and confidence often wear the same outfit.",
+      "reaction": "🪞"
+    },
+    {
+      "id": "sav_119",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "identity_claim",
+        "fitness_simple"
+      ],
+      "trigger_phrases": [
+        "i never quit",
+        "i never give up",
+        "i don't quit",
+        "i don't give up",
+        "i never back down",
+        "i am a quitter hater",
+        "i never back out",
+        "i never surrender",
+        "i am not a quitter",
+        "i am no quitter",
+        "i am not a quitter at all",
+        "i have never quit anything",
+        "i've never quit anything",
+        "i never quit on anything"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Except gym memberships.",
+      "reaction": "🏋️"
+    },
+    {
+      "id": "sav_120",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend",
+        "startup_investor"
+      ],
+      "intents": [
+        "money",
+        "trading"
+      ],
+      "trigger_phrases": [
+        "i am an investor",
+        "i'm an investor",
+        "i am a crypto investor",
+        "i invest in crypto",
+        "i invest in stocks",
+        "i invest in bitcoin",
+        "i invest in ethereum",
+        "i have an investment portfolio",
+        "i am into investing",
+        "i'm into investing",
+        "i am a long-term investor",
+        "i am a smart investor",
+        "i am a wise investor",
+        "i am a serious investor",
+        "i am a seasoned investor",
+        "i am a day trader",
+        "i trade stocks",
+        "i trade crypto",
+        "i am a trader",
+        "i am an investor",
+        "i'm a trader"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Buying one crypto coin because your friend said so isn't investing.",
+      "reaction": "📉"
+    },
+    {
+      "id": "sav_121",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "influence"
+      ],
+      "trigger_phrases": [
+        "i am famous on instagram",
+        "i'm famous on instagram",
+        "i am instagram famous",
+        "i'm instagram famous",
+        "i am a big deal on instagram",
+        "i am popular on instagram",
+        "i am a social media star",
+        "i am a star on instagram",
+        "i have many followers on instagram",
+        "i have lots of followers on instagram",
+        "i am a big instagrammer",
+        "i am an instagram star",
+        "i'm an instagram star",
+        "i have a lot of followers on instagram",
+        "i am well-known on instagram",
+        "i am well known on instagram",
+        "i am an instagram influencer",
+        "i'm an instagram influencer"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Your dog has more engagement.",
+      "reaction": "🐕"
+    },
+    {
+      "id": "sav_122",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "identity_claim",
+        "screen_time"
+      ],
+      "trigger_phrases": [
+        "i sleep only four hours",
+        "i sleep only 4 hours",
+        "i only sleep four hours",
+        "i only sleep 4 hours",
+        "i sleep 4 hours a day",
+        "i sleep four hours a day",
+        "i sleep 4 hours a night",
+        "i sleep four hours a night",
+        "i sleep only 3 hours",
+        "i sleep only 5 hours",
+        "i sleep 5 hours",
+        "i sleep 3 hours",
+        "i sleep 2 hours",
+        "i barely sleep",
+        "i don't sleep much",
+        "i sleep very little",
+        "i sleep just a few hours"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "And think eight-hour decisions.",
+      "reaction": "😴"
+    },
+    {
+      "id": "sav_123",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i am a multitasker",
+        "i'm a multitasker",
+        "i am a multi-tasker",
+        "i'm a multi-tasker",
+        "i can multitask",
+        "i am great at multitasking",
+        "i'm great at multitasking",
+        "i am a master multitasker",
+        "i'm a master multitasker",
+        "i multitask",
+        "i am good at multitasking",
+        "i'm good at multitasking",
+        "i am an expert multitasker",
+        "i love multitasking",
+        "i am a pro at multitasking",
+        "i'm a pro at multitasking"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Yes, failing multiple tasks at once is impressive.",
+      "reaction": "🤹"
+    },
+    {
+      "id": "sav_124",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend",
+        "gamer"
+      ],
+      "intents": [
+        "programming"
+      ],
+      "trigger_phrases": [
+        "i built my own pc",
+        "i built a pc",
+        "i built my pc",
+        "i built my own computer",
+        "i built a computer",
+        "i built a gaming pc",
+        "i built a custom pc",
+        "i built my gaming pc",
+        "i built my own gaming pc",
+        "i am building a pc",
+        "i'm building a pc",
+        "i built a rig",
+        "i built my rig",
+        "i built a custom rig",
+        "i assembled a pc",
+        "i put together a pc"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Congratulations. Now it crashes because you forgot one cable.",
+      "reaction": "🖥️"
+    },
+    {
+      "id": "sav_125",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend",
+        "gamer"
+      ],
+      "intents": [
+        "programming"
+      ],
+      "trigger_phrases": [
+        "i use arch linux",
+        "i use arch",
+        "i am an arch user",
+        "i'm an arch user",
+        "i use arch btw",
+        "i use archlinux",
+        "i run arch",
+        "i run arch linux",
+        "i daily drive arch",
+        "i use arch daily",
+        "i installed arch",
+        "i use gentoo",
+        "i use nixos",
+        "i use linux",
+        "i use ubuntu",
+        "i use debian",
+        "i use fedora",
+        "i use linux mint",
+        "i daily drive linux",
+        "i use a linux distro",
+        "i am a linux user",
+        "i'm a linux user"
+      ],
+      "damage": 6,
+      "tone": "playful",
+      "template": "We know. Arch users introduce themselves faster than celebrities.",
+      "reaction": "🐧"
+    },
+    {
+      "id": "sav_126",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend",
+        "professor"
+      ],
+      "intents": [
+        "school",
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i have perfect timing",
+        "i have great timing",
+        "i have good timing",
+        "my timing is perfect",
+        "i have impeccable timing",
+        "i have amazing timing",
+        "i always have good timing",
+        "i am always on time",
+        "i'm always on time",
+        "i have the best timing",
+        "i never miss deadlines",
+        "i always submit on time",
+        "i always arrive on time",
+        "i am a punctual person",
+        "i have perfect timing for everything"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Then why did you start studying the night before the exam?",
+      "reaction": "⏱️"
+    },
+    {
+      "id": "sav_127",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i am very creative",
+        "i'm very creative",
+        "i am super creative",
+        "i'm super creative",
+        "i am extremely creative",
+        "i'm extremely creative",
+        "i am the most creative",
+        "i am a creative person",
+        "i am a creative genius",
+        "i am a highly creative person",
+        "i have great ideas",
+        "i have creative ideas",
+        "i am full of ideas",
+        "i am very imaginative",
+        "i have a creative mind",
+        "i am full of creativity",
+        "creativity is my strength"
+      ],
+      "damage": 6,
+      "tone": "playful",
+      "template": "Your last idea was combining pizza and instant noodles.",
+      "reaction": "🍕"
+    },
+    {
+      "id": "sav_128",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i am unstoppable",
+        "i'm unstoppable",
+        "i am unstopable",
+        "i am unstopabble",
+        "i am unstoppale",
+        "i am an unstoppable force",
+        "i am the most unstoppable",
+        "nothing can stop me",
+        "nothing stops me",
+        "no one can stop me",
+        "i cannot be stopped",
+        "i can't be stopped",
+        "i am invincible",
+        "i'm invincible",
+        "i am on fire",
+        "i'm on fire",
+        "i am in the zone",
+        "i'm in the zone",
+        "i am on a roll",
+        "i'm on a roll"
+      ],
+      "damage": 6,
+      "tone": "playful",
+      "template": "Except by low internet speed.",
+      "reaction": "📶"
+    },
+    {
+      "id": "sav_129",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend",
+        "professor"
+      ],
+      "intents": [
+        "programming"
+      ],
+      "trigger_phrases": [
+        "i love debugging",
+        "i'm good at debugging",
+        "i am good at debugging",
+        "i am great at debugging",
+        "i'm great at debugging",
+        "i love fixing bugs",
+        "i love solving bugs",
+        "i love fixing code",
+        "i am a debugger",
+        "i'm a debugger",
+        "i love to debug",
+        "i love finding bugs",
+        "i love hunting bugs",
+        "i love solving errors",
+        "i am a bug hunter",
+        "i'm a bug hunter",
+        "debugging is fun",
+        "i love code reviews",
+        "i love reading code"
+      ],
+      "damage": 6,
+      "tone": "playful",
+      "template": "That's not love. That's trauma bonding.",
+      "reaction": "🪲"
+    },
+    {
+      "id": "sav_130",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "identity_claim",
+        "screen_time"
+      ],
+      "trigger_phrases": [
+        "i don't need sleep",
+        "i don't need much sleep",
+        "sleep is for the weak",
+        "i don't need sleep anymore",
+        "i don't need that much sleep",
+        "i don't need as much sleep",
+        "i don't need to sleep",
+        "i'm fine without sleep",
+        "i'm fine on no sleep",
+        "i am fine without sleep",
+        "i am fine on no sleep",
+        "i function on no sleep",
+        "i can function without sleep",
+        "i run on no sleep",
+        "i am fueled by no sleep",
+        "i work on no sleep",
+        "i don't believe in sleep",
+        "sleep is overrated"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Your dark circles are writing a different story.",
+      "reaction": "👀"
+    },
+    {
+      "id": "sav_131",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "influence"
+      ],
+      "trigger_phrases": [
+        "i am an influencer",
+        "i'm an influencer",
+        "i am a social media influencer",
+        "i'm a social media influencer",
+        "i am a micro influencer",
+        "i am a nano influencer",
+        "i am a mega influencer",
+        "i am a creator",
+        "i'm a creator",
+        "i am a content creator",
+        "i'm a content creator",
+        "i am a tiktok influencer",
+        "i am a fitness influencer",
+        "i am a fashion influencer",
+        "i am a beauty influencer",
+        "i am a lifestyle influencer",
+        "i am a food influencer",
+        "i am a travel influencer",
+        "i am a gaming influencer"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Your family muting your stories doesn't count as influence.",
+      "reaction": "📵"
+    },
+    {
+      "id": "sav_132",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend",
+        "startup_investor"
+      ],
+      "intents": [
+        "career",
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i am a genius entrepreneur",
+        "i'm a genius entrepreneur",
+        "i am an entrepreneur",
+        "i'm an entrepreneur",
+        "i am a smart entrepreneur",
+        "i am a young entrepreneur",
+        "i am a successful entrepreneur",
+        "i am a serial entrepreneur",
+        "i am a solopreneur",
+        "i am a startup entrepreneur",
+        "i am a tech entrepreneur",
+        "i am a brilliant entrepreneur",
+        "i am a great entrepreneur",
+        "i am the best entrepreneur",
+        "i am an entrepreneurial genius",
+        "i have an entrepreneurial genius"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Your business currently has one customer and it's your cousin.",
+      "reaction": "💼"
+    },
+    {
+      "id": "sav_133",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend",
+        "professor"
+      ],
+      "intents": [
+        "programming",
+        "school"
+      ],
+      "trigger_phrases": [
+        "i love reading documentation",
+        "i love reading docs",
+        "i love reading the docs",
+        "i love reading the documentation",
+        "i love reading official docs",
+        "i love reading manuals",
+        "i love reading api docs",
+        "i love reading technical documentation",
+        "i love reading the manual",
+        "i read documentation for fun",
+        "i read the docs for fun",
+        "i read docs for fun",
+        "i love reading tech docs",
+        "i love reading the readme",
+        "i read the readme",
+        "i love the documentation",
+        "i love the docs",
+        "i love the manual"
+      ],
+      "damage": 6,
+      "tone": "playful",
+      "template": "Blink twice if someone is forcing you.",
+      "reaction": "📖"
+    },
+    {
+      "id": "sav_134",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend",
+        "toxic_interviewer"
+      ],
+      "intents": [
+        "career"
+      ],
+      "trigger_phrases": [
+        "i am good at interviews",
+        "i'm good at interviews",
+        "i am great at interviews",
+        "i'm great at interviews",
+        "i am excellent at interviews",
+        "i am the best at interviews",
+        "i crush interviews",
+        "i ace interviews",
+        "i am a great interviewer",
+        "i am a pro at interviews",
+        "i'm a pro at interviews",
+        "i am good at job interviews",
+        "i am great at job interviews",
+        "i am a natural at interviews",
+        "interviews are easy for me",
+        "i have interview skills",
+        "i have strong interview skills",
+        "i am good at interviewing"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "HR asked 'Tell me about yourself' and you forgot your own name.",
+      "reaction": "🎙️"
+    },
+    {
+      "id": "sav_135",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i have many skills",
+        "i have lots of skills",
+        "i have so many skills",
+        "i have multiple skills",
+        "i have many talents",
+        "i have lots of talents",
+        "i have so many talents",
+        "i have many abilities",
+        "i have many different skills",
+        "i have a wide range of skills",
+        "i am a multi-skilled person",
+        "i am a skilled person",
+        "i have diverse skills",
+        "i am a jack of all trades",
+        "i am skilled in many areas",
+        "i have a lot of skills",
+        "i have many strings to my bow"
+      ],
+      "damage": 6,
+      "tone": "playful",
+      "template": "Collecting tutorials isn't a skill.",
+      "reaction": "📂"
+    },
+    {
+      "id": "sav_136",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i am focused",
+        "i'm focused",
+        "i am very focused",
+        "i'm very focused",
+        "i am super focused",
+        "i'm super focused",
+        "i am extremely focused",
+        "i'm extremely focused",
+        "i am the most focused",
+        "i am focused on my goals",
+        "i am 100% focused",
+        "i am totally focused",
+        "i am fully focused",
+        "i am laser focused",
+        "i am laser-focused",
+        "i am focused today",
+        "i am focused right now",
+        "i am in deep focus"
+      ],
+      "damage": 6,
+      "tone": "playful",
+      "template": "Your browser has 62 tabs open.",
+      "reaction": "🎯"
+    },
+    {
+      "id": "sav_137",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend",
+        "startup_investor"
+      ],
+      "intents": [
+        "career",
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i have a six month plan",
+        "i have a six-month plan",
+        "i have a 6 month plan",
+        "i have a 6-month plan",
+        "i have a three month plan",
+        "i have a 3 month plan",
+        "i have a 12 month plan",
+        "i have a year plan",
+        "i have a 1 year plan",
+        "i have a 2 year plan",
+        "i have a five year plan",
+        "i have a 5 year plan",
+        "i have a quarterly plan",
+        "i have a roadmap",
+        "i have a life plan",
+        "i have a long term plan",
+        "i have a long-term plan",
+        "i have a master plan",
+        "i have a detailed plan",
+        "i have a strategic plan"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Based on your history, that's six months of planning.",
+      "reaction": "📅"
+    },
+    {
+      "id": "sav_138",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i am a serious person",
+        "i'm a serious person",
+        "i am very serious",
+        "i'm very serious",
+        "i am super serious",
+        "i'm super serious",
+        "i am extremely serious",
+        "i'm extremely serious",
+        "i am a serious guy",
+        "i am a serious girl",
+        "i am a serious man",
+        "i am a serious woman",
+        "i am a serious student",
+        "i am a serious professional",
+        "i am a serious person about life",
+        "i am a serious person about business",
+        "i am dead serious",
+        "i'm dead serious",
+        "i am so serious",
+        "i'm so serious"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "You're arguing with an AI roast bot.",
+      "reaction": "🤨"
+    },
+    {
+      "id": "sav_139",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend",
+        "professor"
+      ],
+      "intents": [
+        "identity_claim",
+        "school"
+      ],
+      "trigger_phrases": [
+        "i am extremely intelligent",
+        "i'm extremely intelligent",
+        "i am very intelligent",
+        "i'm very intelligent",
+        "i am super intelligent",
+        "i'm super intelligent",
+        "i am highly intelligent",
+        "i'm highly intelligent",
+        "i am incredibly intelligent",
+        "i'm incredibly intelligent",
+        "i am the most intelligent",
+        "i am the smartest person",
+        "i am the smartest guy",
+        "i am the smartest girl",
+        "i am a genius",
+        "i'm a genius",
+        "i have a high iq",
+        "i have a 150 iq",
+        "i am a 150 iq person",
+        "i am really intelligent",
+        "i'm really intelligent"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Then why did autocorrect save you three times already?",
+      "reaction": "📱"
+    },
+    {
+      "id": "sav_140",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend",
+        "startup_investor"
+      ],
+      "intents": [
+        "career",
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i want success quickly",
+        "i want to be successful quickly",
+        "i want success fast",
+        "i want to succeed quickly",
+        "i want to succeed fast",
+        "i want to get rich quickly",
+        "i want quick success",
+        "i want to make it quickly",
+        "i want to make it fast",
+        "i want fast results",
+        "i want quick results",
+        "i want to be rich overnight",
+        "i want success asap",
+        "i want success now",
+        "i want to be successful asap",
+        "i want to make money fast",
+        "i want fast money",
+        "i want quick money",
+        "i want quick wins"
+      ],
+      "damage": 6,
+      "tone": "playful",
+      "template": "Microwave mindset. Oven-level goals.",
+      "reaction": "⏩"
+    },
+    {
+      "id": "sav_141",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i trust the process",
+        "i trust my process",
+        "i trust the journey",
+        "i trust the universe",
+        "i trust the grind",
+        "i trust the hustle",
+        "i trust the work",
+        "i trust the timing",
+        "i trust the plan",
+        "i trust the man upstairs",
+        "i trust god's plan",
+        "i trust god",
+        "i trust the process will work",
+        "i trust the process and let it be",
+        "i just trust the process",
+        "i just trust the journey"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "The process filed for resignation.",
+      "reaction": "🛑"
+    },
+    {
+      "id": "sav_142",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend",
+        "professor"
+      ],
+      "intents": [
+        "school"
+      ],
+      "trigger_phrases": [
+        "i love mathematics",
+        "i love math",
+        "i love maths",
+        "i am good at math",
+        "i'm good at math",
+        "i am great at math",
+        "i'm great at math",
+        "i am good at maths",
+        "i'm good at maths",
+        "i am a math person",
+        "i am a math genius",
+        "i am a math whiz",
+        "i love algebra",
+        "i love calculus",
+        "i love geometry",
+        "i love trigonometry",
+        "i love statistics",
+        "i love pure math",
+        "math is my thing",
+        "math is life",
+        "mathematics is my passion",
+        "maths is my passion",
+        "i am a maths student",
+        "i'm a maths student"
+      ],
+      "damage": 6,
+      "tone": "playful",
+      "template": "Finally, someone who voluntarily fights letters and numbers.",
+      "reaction": "🔢"
+    },
+    {
+      "id": "sav_143",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i can solve rubik's cube",
+        "i can solve a rubik's cube",
+        "i can solve the rubik's cube",
+        "i solve rubik's cubes",
+        "i solve rubiks cubes",
+        "i can solve a rubik cube",
+        "i can do the rubik's cube",
+        "i can do a rubik's cube",
+        "i can finish a rubik's cube",
+        "i can solve a rubix cube",
+        "i can solve a rubik's cube fast",
+        "i can solve a 3x3 cube",
+        "i can do a 3x3 cube",
+        "i can solve a cube",
+        "i am good at rubik's cube",
+        "i can solve any cube",
+        "i can solve the cube"
+      ],
+      "damage": 6,
+      "tone": "playful",
+      "template": "Incredible. Now solve your sleep schedule.",
+      "reaction": "🧩"
+    },
+    {
+      "id": "sav_144",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i am a good driver",
+        "i'm a good driver",
+        "i am a great driver",
+        "i'm a great driver",
+        "i am an excellent driver",
+        "i am the best driver",
+        "i drive well",
+        "i am a pro driver",
+        "i am a safe driver",
+        "i have a clean driving record",
+        "i have never had an accident",
+        "i am a good racer",
+        "i am good at driving",
+        "i'm good at driving",
+        "i drive like a pro",
+        "i can drive anything",
+        "i am a confident driver",
+        "i have great driving skills"
+      ],
+      "damage": 6,
+      "tone": "playful",
+      "template": "GTA doesn't count.",
+      "reaction": "🚗"
+    },
+    {
+      "id": "sav_145",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend",
+        "toxic_interviewer"
+      ],
+      "intents": [
+        "career",
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i have great communication skills",
+        "i have good communication skills",
+        "i have excellent communication skills",
+        "i have strong communication skills",
+        "i have amazing communication skills",
+        "i am a great communicator",
+        "i'm a great communicator",
+        "i am a good communicator",
+        "i'm a good communicator",
+        "i have great communication",
+        "i have good communication",
+        "i have excellent communication",
+        "i communicate well",
+        "i have amazing communication",
+        "i have great people skills",
+        "i have good people skills",
+        "i am a great communicator"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Yet somehow you're being roasted by a website.",
+      "reaction": "💬"
+    },
+    {
+      "id": "sav_146",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend",
+        "toxic_interviewer"
+      ],
+      "intents": [
+        "career",
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i am a leader",
+        "i'm a leader",
+        "i am a great leader",
+        "i'm a great leader",
+        "i am a good leader",
+        "i'm a good leader",
+        "i am a natural leader",
+        "i am a born leader",
+        "i am a strong leader",
+        "i am a team leader",
+        "i am the leader",
+        "i am a real leader",
+        "i have leadership skills",
+        "i have great leadership",
+        "i am a natural born leader",
+        "i have leadership qualities",
+        "i am a leader not a follower",
+        "i lead by example",
+        "i am a future leader"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Your group project members disagree.",
+      "reaction": "👑"
+    },
+    {
+      "id": "sav_147",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i can do anything",
+        "i can do everything",
+        "i can do anything i want",
+        "i can do anything i set my mind to",
+        "i can do anything if i try",
+        "i can do anything i put my mind to",
+        "i can do whatever i want",
+        "i can do it all",
+        "i can do it all by myself",
+        "i can do anything by myself",
+        "i can do everything by myself",
+        "i can accomplish anything",
+        "i can achieve anything",
+        "i can be anything",
+        "i can be anything i want",
+        "i can do anything in life",
+        "i can do it all"
+      ],
+      "damage": 6,
+      "tone": "playful",
+      "template": "Except choose what to watch on Netflix.",
+      "reaction": "🎬"
+    },
+    {
+      "id": "sav_148",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i have a bright future",
+        "i have a great future",
+        "i have a bright future ahead",
+        "i have a great future ahead",
+        "i have a bright future ahead of me",
+        "i have a great future ahead of me",
+        "i have a bright future in front of me",
+        "i have a bright future in store",
+        "i have a bright future waiting for me",
+        "the future is bright",
+        "the future is great",
+        "my future is bright",
+        "my future is great",
+        "i have a promising future",
+        "i have a successful future",
+        "i have a beautiful future",
+        "i have an amazing future",
+        "i have a future"
+      ],
+      "damage": 6,
+      "tone": "playful",
+      "template": "Please charge it first. It's running on 2%.",
+      "reaction": "🔋"
+    },
+    {
+      "id": "sav_149",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i am a winner",
+        "i'm a winner",
+        "i am a real winner",
+        "i'm a real winner",
+        "i am a winner in life",
+        "i am born a winner",
+        "i am a born winner",
+        "i am the biggest winner",
+        "i am the biggest winner of all time",
+        "i am the biggest winner of all",
+        "i am a winner and i know it",
+        "i am a winner not a quitter",
+        "i am a winner always",
+        "i am a winner everyday",
+        "i am a winner every day",
+        "i am a winner today",
+        "i am a winner this year",
+        "i have always been a winner",
+        "i've always been a winner"
+      ],
+      "damage": 6,
+      "tone": "playful",
+      "template": "Participation certificates have really boosted confidence.",
+      "reaction": "🏅"
+    },
+    {
+      "id": "sav_150",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "tell me one weakness",
+        "tell me a weakness",
+        "tell me your weakness",
+        "tell me a weakness of mine",
+        "tell me one of my weaknesses",
+        "tell me my weakness",
+        "tell me your honest weakness",
+        "tell me one weakness you see in me",
+        "what is my weakness",
+        "what are my weaknesses",
+        "what's my weakness",
+        "what is one weakness",
+        "give me one weakness",
+        "tell me one flaw",
+        "tell me a flaw",
+        "what is my biggest weakness",
+        "what's my biggest weakness"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "We might need a premium subscription for that list.",
+      "reaction": "💳"
+    },
+    {
+      "id": "sav_151",
+      "personalities": ["savage_one", "sarcastic_friend"],
+      "intents": ["identity_claim"],
+      "trigger_phrases": ["am i cooked", "am i cooked?", "im cooked", "im cooked?", "i am cooked", "i am cooked?", "i am so cooked", "im so cooked", "i'm so cooked", "i'm cooked", "i'm cooked?", "i think i am cooked", "i think im cooked", "i think i'm cooked", "am i done", "am i done?", "i am done", "im done", "i'm done", "am i finished", "am i finished?", "i am finished", "im finished", "i'm finished", "i think im finished", "i think i'm finished", "i think i am finished", "am i finished for", "am i cooked for", "am i so cooked", "am i really cooked", "am i that cooked", "i am so so cooked", "im so so cooked", "i'm so so cooked", "am i really done", "i think i am so cooked", "i think im so cooked", "i think i'm so cooked", "am i dead", "am i dead?", "i am dead", "im dead", "i'm dead", "i am so dead", "im so dead", "i'm so dead", "i am dead for", "am i dead for", "am i cooked or what", "am i done for", "i am done for", "im done for", "i'm done for", "i am finished for", "im finished for", "i'm finished for", "am i done for?", "am i cooked for?", "am i finished for?"],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Cooked? My friend, the kitchen closed, the chef went home, and they're using your story as a warning for future generations.",
+      "reaction": "🍳"
     }
   ]
 }
