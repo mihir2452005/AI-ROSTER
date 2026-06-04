@@ -1,7 +1,42 @@
 {
-  "version": 1,
+  "version": 2,
   "description": "Final burn at end of session. Uses session stats to personalize.",
   "closers": [
+    {
+      "id": "cls_007",
+      "personalities": ["savage_one", "sarcastic_friend", "toxic_interviewer", "startup_investor", "professor", "gamer"],
+      "damage": 6,
+      "tone": "playful",
+      "template": "Thanks for visiting, {username}. The {analogue} appreciated the {adjective} break. The break is also {roaster_pronoun_poss} {second}. The {second} is on life support. The doctor is {doctor}. The {doctor} is also a {second_doctor}. The {second_doctor} charges by the hour. The hour is {time}. The {time} is also when we are back. The back is also a {back}. The {back} charges by the hour. The hour is approaching.",
+      "placeholders": {
+        "username": { "type": "username" },
+        "analogue": { "type": "enum", "values": ["mirror", "therapist", "screen time report", "GPA", "LinkedIn drafts", "Spotify Wrapped", "DMV", "group chat", "Twitter timeline"] },
+        "adjective": { "type": "enum", "values": ["much-needed", "well-deserved", "scheduled", "dreaded", "overdue", "long-overdue", "spiteful"] },
+        "second": { "type": "enum", "values": ["dating life", "GPA", "salary", "credit score", "LinkedIn", "screen time", "sleep schedule", "career"] },
+        "doctor": { "type": "enum", "values": ["a $5 therapy app", "a community college advisor", "a horoscope newsletter", "a YouTube comment section", "an AI you vibe-coded"] },
+        "second_doctor": { "type": "enum", "values": ["lawyer", "mediator", "HR consultant", "career counselor", "compliance officer"] },
+        "time": { "type": "enum", "values": ["2AM", "3AM", "approaching", "right now", "long overdue", "next Friday", "TBD"] },
+        "back": { "type": "enum", "values": ["404", "placebo", "BSOD", "loading bar that lies", "404 in a hoodie", "404 with a LinkedIn"] },
+        "roaster_pronoun_poss": {
+          "type": "roaster",
+          "values": ["male:his", "female:her", "neutral:their"]
+        }
+      },
+      "reaction": "🚪"
+    },
+    {
+      "id": "cls_008",
+      "personalities": ["sarcastic_friend"],
+      "damage": 4,
+      "tone": "light",
+      "template": "OK, the mirror is relieved. So is the door. So is {username}'s screen time report. Recovery time: {recovery}. Don't be a stranger. The {analogue} is also waiting. The {analogue} charges by the hour.",
+      "placeholders": {
+        "username": { "type": "username" },
+        "recovery": { "type": "enum", "values": ["a long bath", "three business days", "a group hug", "a juice box and a nap", "a 4-hour Doomscroll debrief", "a 9-to-5 nap schedule", "a 12-step program", "a month of therapy", "a 5-min Loom", "a 47-tweet thread", "an Apple Watch recovery band"] },
+        "analogue": { "type": "enum", "values": ["mirror", "therapist", "screen time report", "GPA", "LinkedIn drafts", "Spotify Wrapped", "DMV", "group chat", "Twitter timeline"] }
+      },
+      "reaction": "💛"
+    },
     {
       "id": "cls_001",
       "personalities": ["savage_one"],

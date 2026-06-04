@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "description": "First roast of a session. Sets the tone. Picked based on selected mode + personality.",
   "openers": [
     {
@@ -8,6 +8,99 @@
       "personalities": ["savage_one"],
       "template": "Oh, you're back. Or maybe this is your first time. Doesn't matter. You were going to disappoint me either way.",
       "reaction": "🔥"
+    },
+    {
+      "id": "opn_010",
+      "personalities": ["savage_one", "sarcastic_friend", "toxic_interviewer", "startup_investor", "professor", "gamer"],
+      "template": "Hi {username}. {roaster_title} pulled up a chair. The chair is also on the {platform}. The {platform} is the only thing {roaster_pronoun} agreed to. {roaster_pronoun_poss} therapy is on a {second}. The {second} is also a {third}. The {third} is on life support. The doctor is {doctor}.",
+      "placeholders": {
+        "username": { "type": "username" },
+        "roaster_title": {
+          "type": "roaster",
+          "values": ["male:sir", "female:ma'am", "neutral:friend"],
+          "default": "friend"
+        },
+        "roaster_pronoun": {
+          "type": "roaster",
+          "values": ["male:he", "female:she", "neutral:they"]
+        },
+        "roaster_pronoun_poss": {
+          "type": "roaster",
+          "values": ["male:his", "female:her", "neutral:their"]
+        },
+        "platform": { "type": "enum", "values": ["404 page", "FYP", "loading screen", "DMV queue", "back-burner", "Spotify Wrapped"] },
+        "second": { "type": "enum", "values": ["5-min Loom", "Telegram group", "Discord server", "Google Doc with 0 edits", "Notion page with 0 comments", "Tweet thread with 0 likes"] },
+        "third": { "type": "enum", "values": ["404", "placebo", "BSOD", "loading bar that lies", "404 in a hoodie", "404 with a LinkedIn"] },
+        "doctor": { "type": "enum", "values": ["a $5 therapy app", "a community college advisor", "a horoscope newsletter", "a YouTube comment section", "an AI you vibe-coded"] }
+      },
+      "reaction": "🎤"
+    },
+    {
+      "id": "opn_011",
+      "personalities": ["sarcastic_friend"],
+      "template": "Hi {username} 👋 I'm your {roaster_self} for the next few minutes. We can both pretend this is going well. The mirror is also in on it. The mirror is laughing first.",
+      "placeholders": {
+        "username": { "type": "username" },
+        "roaster_self": {
+          "type": "roaster",
+          "values": ["male:buddy", "female:bestie", "neutral:pal"],
+          "default": "pal"
+        }
+      },
+      "reaction": "👋"
+    },
+    {
+      "id": "opn_012",
+      "personalities": ["gamer", "savage_one"],
+      "template": "Welcome to the lobby. {username}, you solo-queued this with {roaster_pronoun_obj}. The {roaster_pronoun_obj} did not want to be on {roaster_pronoun_poss} team. {roaster_pronoun} is here. The queue time is 4:20. The team is also you.",
+      "placeholders": {
+        "username": { "type": "username" },
+        "roaster_pronoun": {
+          "type": "roaster",
+          "values": ["male:he", "female:she", "neutral:they"]
+        },
+        "roaster_pronoun_obj": {
+          "type": "roaster",
+          "values": ["male:him", "female:her", "neutral:them"]
+        },
+        "roaster_pronoun_poss": {
+          "type": "roaster",
+          "values": ["male:his", "female:her", "neutral:their"]
+        }
+      },
+      "reaction": "🎮"
+    },
+    {
+      "id": "opn_013",
+      "personalities": ["startup_investor", "savage_one"],
+      "template": "{username}, I have 3 minutes. Impress me. You won't. The 3 minutes are also {roaster_pronoun_poss} LinkedIn Premium. The Premium is on a free trial. The free trial ends soon. The {roaster_pronoun_obj} is also on life support.",
+      "placeholders": {
+        "username": { "type": "username" },
+        "roaster_pronoun": {
+          "type": "roaster",
+          "values": ["male:he", "female:she", "neutral:they"]
+        },
+        "roaster_pronoun_obj": {
+          "type": "roaster",
+          "values": ["male:him", "female:her", "neutral:them"]
+        },
+        "roaster_pronoun_poss": {
+          "type": "roaster",
+          "values": ["male:his", "female:her", "neutral:their"]
+        }
+      },
+      "reaction": "📉"
+    },
+    {
+      "id": "opn_014",
+      "personalities": ["professor", "savage_one"],
+      "template": "Class is in session. {username}, take a seat. The seat is also your {analogue}. The {analogue} is on life support. The doctor is {doctor}. The {doctor} is also me. I am also a 404. The 404 charges by the hour. The hour is 9:47AM. You are late.",
+      "placeholders": {
+        "username": { "type": "username" },
+        "analogue": { "type": "enum", "values": ["GPA", "thesis", "lab report", "lab partner", "course", "study group", "TA"] },
+        "doctor": { "type": "enum", "values": ["a $5 therapy app", "a community college advisor", "a horoscope newsletter", "a YouTube comment section", "an AI you vibe-coded"] }
+      },
+      "reaction": "🎓"
     },
     {
       "id": "opn_002",

@@ -1,12 +1,14 @@
 {
   "mode": "savage",
-  "version": 1,
+  "version": 2,
   "description": "Brutal but safe (no protected classes, no slurs, no actual harm). Damage 6-10.",
-  "count": 28,
+  "count": 52,
   "roasts": [
     {
       "id": "sav_001",
-      "personalities": ["savage_one"],
+      "personalities": [
+        "savage_one"
+      ],
       "intents": [],
       "damage": 9,
       "tone": "brutal",
@@ -15,7 +17,9 @@
     },
     {
       "id": "sav_002",
-      "personalities": ["savage_one"],
+      "personalities": [
+        "savage_one"
+      ],
       "intents": [],
       "damage": 8,
       "tone": "brutal",
@@ -24,7 +28,9 @@
     },
     {
       "id": "sav_003",
-      "personalities": ["savage_one"],
+      "personalities": [
+        "savage_one"
+      ],
       "intents": [],
       "damage": 7,
       "tone": "cutting",
@@ -33,7 +39,10 @@
     },
     {
       "id": "sav_004",
-      "personalities": ["savage_one", "gamer"],
+      "personalities": [
+        "savage_one",
+        "gamer"
+      ],
       "intents": [],
       "damage": 8,
       "tone": "brutal",
@@ -42,7 +51,9 @@
     },
     {
       "id": "sav_005",
-      "personalities": ["savage_one"],
+      "personalities": [
+        "savage_one"
+      ],
       "intents": [],
       "damage": 9,
       "tone": "brutal",
@@ -51,7 +62,9 @@
     },
     {
       "id": "sav_006",
-      "personalities": ["savage_one"],
+      "personalities": [
+        "savage_one"
+      ],
       "intents": [],
       "damage": 7,
       "tone": "cutting",
@@ -60,7 +73,10 @@
     },
     {
       "id": "sav_007",
-      "personalities": ["savage_one", "toxic_interviewer"],
+      "personalities": [
+        "savage_one",
+        "toxic_interviewer"
+      ],
       "intents": [],
       "damage": 9,
       "tone": "brutal",
@@ -69,7 +85,9 @@
     },
     {
       "id": "sav_008",
-      "personalities": ["savage_one"],
+      "personalities": [
+        "savage_one"
+      ],
       "intents": [],
       "damage": 8,
       "tone": "brutal",
@@ -78,7 +96,10 @@
     },
     {
       "id": "sav_009",
-      "personalities": ["savage_one", "gamer"],
+      "personalities": [
+        "savage_one",
+        "gamer"
+      ],
       "intents": [],
       "damage": 7,
       "tone": "cutting",
@@ -86,14 +107,22 @@
       "placeholders": {
         "platform": {
           "type": "enum",
-          "values": ["BeReal", "Google+", "Threads", "Parler", "Quibi"]
+          "values": [
+            "BeReal",
+            "Google+",
+            "Threads",
+            "Parler",
+            "Quibi"
+          ]
         }
       },
       "reaction": "💀"
     },
     {
       "id": "sav_010",
-      "personalities": ["savage_one"],
+      "personalities": [
+        "savage_one"
+      ],
       "intents": [],
       "damage": 10,
       "tone": "brutal",
@@ -101,14 +130,21 @@
       "placeholders": {
         "item": {
           "type": "enum",
-          "values": ["broken pencil sharpener", "Magic 8-Ball with a grudge", "random Wikipedia article", "fortune cookie that's been opened twice"]
+          "values": [
+            "broken pencil sharpener",
+            "Magic 8-Ball with a grudge",
+            "random Wikipedia article",
+            "fortune cookie that's been opened twice"
+          ]
         }
       },
       "reaction": "🪦"
     },
     {
       "id": "sav_011",
-      "personalities": ["savage_one"],
+      "personalities": [
+        "savage_one"
+      ],
       "intents": [],
       "damage": 8,
       "tone": "brutal",
@@ -117,7 +153,10 @@
     },
     {
       "id": "sav_012",
-      "personalities": ["savage_one", "sarcastic_friend"],
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
       "intents": [],
       "damage": 7,
       "tone": "cutting",
@@ -126,22 +165,32 @@
     },
     {
       "id": "sav_013",
-      "personalities": ["savage_one"],
+      "personalities": [
+        "savage_one"
+      ],
       "intents": [],
       "damage": 7,
       "tone": "cutting",
-      "template": "Your thought process is like a {service} — slow, expensive, and somehow always down at the worst possible moment.",
+      "template": "Your thought process is like an {service} — slow, expensive, and somehow always down at the worst possible moment.",
       "placeholders": {
         "service": {
           "type": "enum",
-          "values": ["Comcast", "Spirit Airlines", "IRS website", "Windows Update", "the DMV"]
+          "values": [
+            "Comcast",
+            "Spirit Airlines",
+            "IRS website",
+            "Windows Update",
+            "DMV"
+          ]
         }
       },
       "reaction": "💸"
     },
     {
       "id": "sav_014",
-      "personalities": ["savage_one"],
+      "personalities": [
+        "savage_one"
+      ],
       "intents": [],
       "damage": 8,
       "tone": "brutal",
@@ -150,7 +199,9 @@
     },
     {
       "id": "sav_015",
-      "personalities": ["savage_one"],
+      "personalities": [
+        "savage_one"
+      ],
       "intents": [],
       "damage": 8,
       "tone": "brutal",
@@ -159,22 +210,33 @@
     },
     {
       "id": "sav_016",
-      "personalities": ["savage_one"],
+      "personalities": [
+        "savage_one"
+      ],
       "intents": [],
       "damage": 8,
       "tone": "brutal",
-      "template": "You have the charisma of a {object}. A wet one. In a dumpster. Behind a gas station.",
+      "template": "You have the charisma of an {object}. A wet one. In a dumpster. Behind a gas station.",
       "placeholders": {
         "object": {
           "type": "enum",
-          "values": ["sock", "banana peel", "dead battery", "cold French fry", "used teabag"]
+          "values": [
+            "sock",
+            "banana peel",
+            "dead battery",
+            "cold French fry",
+            "used teabag"
+          ]
         }
       },
       "reaction": "🗑️"
     },
     {
       "id": "sav_017",
-      "personalities": ["savage_one", "sarcastic_friend"],
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
       "intents": [],
       "damage": 7,
       "tone": "cutting",
@@ -183,7 +245,9 @@
     },
     {
       "id": "sav_018",
-      "personalities": ["savage_one"],
+      "personalities": [
+        "savage_one"
+      ],
       "intents": [],
       "damage": 7,
       "tone": "cutting",
@@ -192,22 +256,33 @@
     },
     {
       "id": "sav_019",
-      "personalities": ["savage_one"],
+      "personalities": [
+        "savage_one"
+      ],
       "intents": [],
       "damage": 8,
       "tone": "brutal",
-      "template": "Your opinion is like a {noun} — small, smelly, and nobody asked for it. The dog agrees. The dog is also avoiding eye contact.",
+      "template": "Your opinion is like an {noun} — small, smelly, and nobody asked for it. The dog agrees. The dog is also avoiding eye contact.",
       "placeholders": {
         "noun": {
           "type": "enum",
-          "values": ["used napkin", "broken shoelace", "lint ball", "expired coupon", "wet receipt"]
+          "values": [
+            "used napkin",
+            "broken shoelace",
+            "lint ball",
+            "expired coupon",
+            "wet receipt"
+          ]
         }
       },
       "reaction": "💀"
     },
     {
       "id": "sav_020",
-      "personalities": ["savage_one", "professor"],
+      "personalities": [
+        "savage_one",
+        "professor"
+      ],
       "intents": [],
       "damage": 8,
       "tone": "brutal",
@@ -216,7 +291,9 @@
     },
     {
       "id": "sav_021",
-      "personalities": ["savage_one"],
+      "personalities": [
+        "savage_one"
+      ],
       "intents": [],
       "damage": 8,
       "tone": "brutal",
@@ -225,7 +302,9 @@
     },
     {
       "id": "sav_022",
-      "personalities": ["savage_one"],
+      "personalities": [
+        "savage_one"
+      ],
       "intents": [],
       "damage": 7,
       "tone": "cutting",
@@ -234,20 +313,44 @@
     },
     {
       "id": "sav_023",
-      "personalities": ["savage_one", "gamer"],
+      "personalities": [
+        "savage_one",
+        "gamer"
+      ],
       "intents": [],
       "damage": 7,
       "tone": "cutting",
       "template": "You bring the same energy to conversations as a {noun} on a {place}.",
       "placeholders": {
-        "noun":  { "type": "enum", "values": ["screen door", "wet blanket", "fire alarm", "garbage fire", "broken smoke detector"] },
-        "place": { "type": "enum", "values": ["submarine", "first date", "job interview", "funeral", "yoga retreat"] }
+        "noun": {
+          "type": "enum",
+          "values": [
+            "screen door",
+            "wet blanket",
+            "fire alarm",
+            "garbage fire",
+            "broken smoke detector"
+          ]
+        },
+        "place": {
+          "type": "enum",
+          "values": [
+            "submarine",
+            "first date",
+            "job interview",
+            "funeral",
+            "yoga retreat"
+          ]
+        }
       },
       "reaction": "🔥"
     },
     {
       "id": "sav_024",
-      "personalities": ["savage_one", "sarcastic_friend"],
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
       "intents": [],
       "damage": 7,
       "tone": "cutting",
@@ -255,23 +358,39 @@
       "placeholders": {
         "event": {
           "type": "enum",
-          "values": ["middle school", "the 2010s", "a Yoyo competition", "that one TikTok you made", "your older sibling's shadow"]
+          "values": [
+            "middle school",
+            "the 2010s",
+            "a Yoyo competition",
+            "that one TikTok you made",
+            "your older sibling's shadow"
+          ]
         }
       },
       "reaction": "📉"
     },
     {
       "id": "sav_025",
-      "personalities": ["savage_one", "sarcastic_friend", "toxic_interviewer"],
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend",
+        "toxic_interviewer"
+      ],
       "intents": [],
       "damage": 7,
       "tone": "cutting",
       "template": "Oh, {username}? Right. I remember you. You came back for more. That's either brave or a sign you have nothing else going on, and {roaster_pronoun} is not going to pretend it was brave.",
       "placeholders": {
-        "username": { "type": "username" },
+        "username": {
+          "type": "username"
+        },
         "roaster_pronoun": {
           "type": "roaster",
-          "values": ["male:he", "female:she", "neutral:they"],
+          "values": [
+            "male:he",
+            "female:she",
+            "neutral:they"
+          ],
           "default": "they"
         }
       },
@@ -279,7 +398,10 @@
     },
     {
       "id": "sav_026",
-      "personalities": ["savage_one", "sarcastic_friend"],
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
       "intents": [],
       "damage": 6,
       "tone": "dry",
@@ -287,36 +409,60 @@
       "placeholders": {
         "roaster_title": {
           "type": "roaster",
-          "values": ["male:sir", "female:ma'am", "neutral:friend"],
+          "values": [
+            "male:sir",
+            "female:ma'am",
+            "neutral:friend"
+          ],
           "default": "friend"
         },
         "roaster_pronoun": {
           "type": "roaster",
-          "values": ["male:he", "female:she", "neutral:they"]
+          "values": [
+            "male:he",
+            "female:she",
+            "neutral:they"
+          ]
         },
         "roaster_pronoun_poss": {
           "type": "roaster",
-          "values": ["male:his", "female:her", "neutral:their"]
+          "values": [
+            "male:his",
+            "female:her",
+            "neutral:their"
+          ]
         },
         "roaster_pronoun_obj": {
           "type": "roaster",
-          "values": ["male:him", "female:her", "neutral:them"]
+          "values": [
+            "male:him",
+            "female:her",
+            "neutral:them"
+          ]
         }
       },
       "reaction": "🎤"
     },
     {
       "id": "sav_027",
-      "personalities": ["savage_one"],
+      "personalities": [
+        "savage_one"
+      ],
       "intents": [],
       "damage": 8,
       "tone": "brutal",
       "template": "{username}, you walked in here like you wanted a fight and you're losing to a {roaster_self} with a day job. Sit down. Read a book. Then come back. Maybe.",
       "placeholders": {
-        "username": { "type": "username" },
+        "username": {
+          "type": "username"
+        },
         "roaster_self": {
           "type": "roaster",
-          "values": ["male:man", "female:lady", "neutral:thing"],
+          "values": [
+            "male:man",
+            "female:lady",
+            "neutral:thing"
+          ],
           "default": "thing"
         }
       },
@@ -324,20 +470,1978 @@
     },
     {
       "id": "sav_028",
-      "personalities": ["savage_one", "sarcastic_friend", "toxic_interviewer"],
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend",
+        "toxic_interviewer"
+      ],
       "intents": [],
       "damage": 6,
       "tone": "playful",
       "template": "Honestly, {username}? You are not the worst I've seen today. You are the worst I've seen {time_of_day}. There's a difference, and {roaster_pronoun} is going to be petty about it.",
       "placeholders": {
-        "username": { "type": "username" },
+        "username": {
+          "type": "username"
+        },
         "roaster_pronoun": {
           "type": "roaster",
-          "values": ["male:he", "female:she", "neutral:they"]
+          "values": [
+            "male:he",
+            "female:she",
+            "neutral:they"
+          ]
         },
-        "time_of_day": { "type": "context" }
+        "time_of_day": {
+          "type": "context"
+        }
       },
       "reaction": "⏰"
+    },
+    {
+      "id": "sav_029",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [],
+      "trigger_phrases": [
+        "hi",
+        "hii",
+        "hiii",
+        "hello",
+        "hey",
+        "yo",
+        "sup",
+        "wassup",
+        "what's up",
+        "whats up",
+        "hi there",
+        "hey there",
+        "good morning",
+        "good afternoon",
+        "good evening",
+        "hola"
+      ],
+      "damage": 6,
+      "tone": "playful",
+      "template": "Oh, we open with 'hi' and expect mercy? No, {roaster_title}. This is a roast, not a greeting card. Sit down. Open a vein. Spill something.",
+      "placeholders": {
+        "roaster_title": {
+          "type": "roaster",
+          "values": [
+            "male:sir",
+            "female:ma'am",
+            "neutral:friend"
+          ],
+          "default": "friend"
+        }
+      },
+      "reaction": "👋"
+    },
+    {
+      "id": "sav_030",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [],
+      "trigger_phrases": [
+        "bye",
+        "goodbye",
+        "byee",
+        "cya",
+        "see ya",
+        "see you",
+        "later",
+        "gotta go",
+        "i'm leaving",
+        "im leaving",
+        "peace",
+        "peace out",
+        "gn",
+        "good night",
+        "goodnight",
+        "cya later",
+        "talk later"
+      ],
+      "damage": 6,
+      "tone": "playful",
+      "template": "Leaving so soon? The mirror will be relieved. So will the door. So will {username}'s browser history. Try the gym on the way out. You owe it to us.",
+      "placeholders": {
+        "username": {
+          "type": "username"
+        }
+      },
+      "reaction": "🚪"
+    },
+    {
+      "id": "sav_031",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [],
+      "trigger_phrases": [
+        "thanks",
+        "thank you",
+        "thx",
+        "ty",
+        "tysm",
+        "thank you so much",
+        "thanks a lot"
+      ],
+      "damage": 6,
+      "tone": "playful",
+      "template": "You are welcome. The feeling is not mutual. Also, your thanks just got logged. We are using it as evidence. In court. Of being polite. To a roast bot.",
+      "reaction": "🙏"
+    },
+    {
+      "id": "sav_032",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend",
+        "toxic_interviewer"
+      ],
+      "intents": [],
+      "trigger_phrases": [
+        "i love you",
+        "love you",
+        "ily",
+        "i love u",
+        "marry me",
+        "i like you",
+        "i like u"
+      ],
+      "damage": 6,
+      "tone": "playful",
+      "template": "Wow. We have been doing this for two messages and we are already at 'I love you.' {roaster_title}, the bar is in hell, and {username} just limbo'd under it with style. Style that fits on the back of a cereal box.",
+      "placeholders": {
+        "username": {
+          "type": "username"
+        },
+        "roaster_title": {
+          "type": "roaster",
+          "values": [
+            "male:sir",
+            "female:ma'am",
+            "neutral:friend"
+          ],
+          "default": "friend"
+        }
+      },
+      "reaction": "💌"
+    },
+    {
+      "id": "sav_033",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend",
+        "gamer"
+      ],
+      "intents": [],
+      "trigger_phrases": [
+        "lol",
+        "lmao",
+        "haha",
+        "hahaha",
+        "lmfao",
+        "bruh",
+        "bro",
+        "dude",
+        "fam"
+      ],
+      "damage": 6,
+      "tone": "playful",
+      "template": "'{trigger_phrase}.' Wonderful. {username} just outpaced a {animal} in a {context} by hitting a single key. The {animal} is filing for early retirement. The {context} is suing for emotional damages. {roaster_pronoun} is taking notes.",
+      "placeholders": {
+        "username": {
+          "type": "username"
+        },
+        "trigger_phrase": {
+          "type": "context"
+        },
+        "animal": {
+          "type": "enum",
+          "values": [
+            "sloth on Ambien",
+            "sleepy pug",
+            "retired snail",
+            "broken Roomba"
+          ]
+        },
+        "context": {
+          "type": "enum",
+          "values": [
+            "debug session",
+            "Monday standup",
+            "DMV queue",
+            "family group chat",
+            "LDR session"
+          ]
+        },
+        "roaster_pronoun": {
+          "type": "roaster",
+          "values": [
+            "male:he",
+            "female:she",
+            "neutral:they"
+          ]
+        }
+      },
+      "reaction": "🤣"
+    },
+    {
+      "id": "sav_034",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "anime"
+      ],
+      "keywords": [
+        "anime",
+        "weeb",
+        "otaku",
+        "waifu",
+        "manga"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Oh, you watch anime? Cool. Cool. So does every NPC in the {context}. The difference is the {context} is a {noun}, and the {noun} has a job.",
+      "placeholders": {
+        "context": {
+          "type": "enum",
+          "values": [
+            "Discord server you mod",
+            "college classroom",
+            "IT department",
+            "subreddit you haunt"
+          ]
+        },
+        "noun": {
+          "type": "enum",
+          "values": [
+            "fridge",
+            "fire extinguisher",
+            "decorative gourd",
+            "lucky cat statue",
+            "potted plant"
+          ]
+        }
+      },
+      "reaction": "🍥"
+    },
+    {
+      "id": "sav_035",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "trading",
+        "money"
+      ],
+      "keywords": [
+        "bitcoin",
+        "btc",
+        "crypto",
+        "moon",
+        "to the moon",
+        "ethereum",
+        "eth",
+        "altcoin",
+        "memecoin",
+        "hodl",
+        "diamond hands"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "{username} YOLO'd rent money into {coin} at the top. The chart did a backflip. {roaster_pronoun} is down {percent}%. {username} is down the apartment. The {coin} community is up a meme. The meme is also down.",
+      "placeholders": {
+        "username": {
+          "type": "username"
+        },
+        "coin": {
+          "type": "enum",
+          "values": [
+            "PEPE",
+            "WIF",
+            "BONK",
+            "DOGE",
+            "SHIB",
+            "FTM",
+            "LUNA",
+            "FTT"
+          ]
+        },
+        "percent": {
+          "type": "enum",
+          "values": [
+            "50",
+            "70",
+            "88",
+            "92",
+            "99",
+            "100"
+          ]
+        },
+        "roaster_pronoun": {
+          "type": "roaster",
+          "values": [
+            "male:he",
+            "female:she",
+            "neutral:they"
+          ]
+        }
+      },
+      "reaction": "📉"
+    },
+    {
+      "id": "sav_036",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "looks"
+      ],
+      "keywords": [
+        "ugly",
+        "handsome",
+        "pretty",
+        "fat",
+        "skinny",
+        "hot",
+        "uglier"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Oh, {username} thinks {roaster_pronoun} is {adjective}? {roaster_title}, you are {adjective} the way an {item} is {item_adj} — technically, on paper, after a {process}. In person, it's a fireable offense. From HR. From life. From the mirror.",
+      "placeholders": {
+        "username": {
+          "type": "username"
+        },
+        "adjective": {
+          "type": "enum",
+          "values": [
+            "ugly",
+            "pretty",
+            "handsome",
+            "fit",
+            "smart",
+            "tall"
+          ]
+        },
+        "item": {
+          "type": "enum",
+          "values": [
+            "tire fire",
+            "ransom note",
+            "bug report",
+            "hot dog from a gas station",
+            "used car listing"
+          ]
+        },
+        "item_adj": {
+          "type": "enum",
+          "values": [
+            "presentable",
+            "valid",
+            "drivable",
+            "salvageable",
+            "sellable"
+          ]
+        },
+        "process": {
+          "type": "enum",
+          "values": [
+            "heavy filter",
+            "soft launch",
+            "two-week rebranding",
+            "lawyer-assisted rewrite"
+          ]
+        },
+        "roaster_pronoun": {
+          "type": "roaster",
+          "values": [
+            "male:he",
+            "female:she",
+            "neutral:they"
+          ]
+        },
+        "roaster_title": {
+          "type": "roaster",
+          "values": [
+            "male:sir",
+            "female:ma'am",
+            "neutral:friend"
+          ],
+          "default": "friend"
+        }
+      },
+      "reaction": "🪞"
+    },
+    {
+      "id": "sav_037",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend",
+        "gamer"
+      ],
+      "intents": [
+        "gaming"
+      ],
+      "keywords": [
+        "bgmi",
+        "pubg",
+        "free fire",
+        "cod",
+        "call of duty",
+        "fortnite",
+        "valorant",
+        "csgo",
+        "cs2",
+        "apex"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "{username} mains {game}. {roaster_pronoun} has the aim of an {noun} on {platform} with a broken {controller}. The {noun} is doing its best. The {controller} is doing the rest. {roaster_pronoun_poss} KD is a {ratio} which is also {roaster_pronoun_poss} blood pressure.",
+      "placeholders": {
+        "username": {
+          "type": "username"
+        },
+        "game": {
+          "type": "enum",
+          "values": [
+            "BGMI",
+            "PUBG",
+            "Free Fire",
+            "Valorant",
+            "CS2",
+            "COD Mobile",
+            "Apex",
+            "Fortnite"
+          ]
+        },
+        "platform": {
+          "type": "enum",
+          "values": [
+            "a 60fps monitor",
+            "Bluetooth headphones from 2014",
+            "a touchscreen in a heatwave",
+            "a potato with USB ports"
+          ]
+        },
+        "controller": {
+          "type": "enum",
+          "values": [
+            "trigger",
+            "joystick",
+            "wifi adapter",
+            "dreams"
+          ]
+        },
+        "noun": {
+          "type": "enum",
+          "values": [
+            "sleepy pigeon",
+            "broken Roomba",
+            "instructor on day one",
+            "diet NPC"
+          ]
+        },
+        "ratio": {
+          "type": "enum",
+          "values": [
+            "0.4",
+            "0.2",
+            "0.1",
+            "0.7",
+            "negative number"
+          ]
+        },
+        "roaster_pronoun": {
+          "type": "roaster",
+          "values": [
+            "male:he",
+            "female:she",
+            "neutral:they"
+          ]
+        },
+        "roaster_pronoun_poss": {
+          "type": "roaster",
+          "values": [
+            "male:his",
+            "female:her",
+            "neutral:their"
+          ]
+        }
+      },
+      "reaction": "🎮"
+    },
+    {
+      "id": "sav_038",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "screen_time"
+      ],
+      "keywords": [
+        "tiktok",
+        "instagram",
+        "reels",
+        "shorts",
+        "screen time",
+        "screentime",
+        "doom scroll",
+        "doomscroll",
+        "scrolled",
+        "scroll",
+        "netflix",
+        "binge"
+      ],
+      "damage": 6,
+      "tone": "cutting",
+      "template": "{username} 's screen time is {hours} hours a day. {roaster_title}, that is not a lifestyle. That is an {noun} and a {adjective} dream. Your phone is your best friend. Your phone is also the {noun}'s best friend. The {noun} is a {noun_2}. The {noun_2} is also you.",
+      "placeholders": {
+        "username": {
+          "type": "username"
+        },
+        "hours": {
+          "type": "enum",
+          "values": [
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12"
+          ]
+        },
+        "noun": {
+          "type": "enum",
+          "values": [
+            "diagnosis",
+            "subscription to sadness",
+            "subscription to nothing",
+            "Search history entry",
+            "audit"
+          ]
+        },
+        "adjective": {
+          "type": "enum",
+          "values": [
+            "black mirror",
+            "warning label",
+            "retirement",
+            "boomer"
+          ]
+        },
+        "noun_2": {
+          "type": "enum",
+          "values": [
+            "warning",
+            "symptom",
+            "side effect",
+            "contagion",
+            "case study"
+          ]
+        },
+        "roaster_title": {
+          "type": "roaster",
+          "values": [
+            "male:sir",
+            "female:ma'am",
+            "neutral:friend"
+          ],
+          "default": "friend"
+        }
+      },
+      "reaction": "📱"
+    },
+    {
+      "id": "sav_039",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend",
+        "professor"
+      ],
+      "intents": [
+        "motivational"
+      ],
+      "keywords": [
+        "5am",
+        "5 am",
+        "early",
+        "discipline",
+        "hustle",
+        "grind",
+        "morning",
+        "alarm",
+        "routine",
+        "sigma",
+        "rise and grind",
+        "jocko"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "{username} wakes up at 5AM to hustle. {roaster_pronoun} also goes to bed at 3AM to scroll. The net hustle is two hours of cortisol and a {noun}. The {noun} is the only thing on the morning routine. The 5AM alarm has filed a restraining order.",
+      "placeholders": {
+        "username": {
+          "type": "username"
+        },
+        "noun": {
+          "type": "enum",
+          "values": [
+            "protein shake that tastes like lawn clippings",
+            "vision board with no vision",
+            "ice bath that broke the bathtub",
+            "5-step morning routine that's really 1 step and a podcast"
+          ]
+        },
+        "roaster_pronoun": {
+          "type": "roaster",
+          "values": [
+            "male:he",
+            "female:she",
+            "neutral:they"
+          ]
+        }
+      },
+      "reaction": "⏰"
+    },
+    {
+      "id": "sav_040",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend",
+        "gamer"
+      ],
+      "intents": [
+        "influence",
+        "gaming"
+      ],
+      "keywords": [
+        "influencer",
+        "content creator",
+        "streamer",
+        "followers",
+        "subscribers",
+        "subs",
+        "fyp",
+        "viral",
+        "trending",
+        "tiktok",
+        "youtuber",
+        "twitch"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "{username} has {followers} followers and zero of them are real. The {followers} are bots, your mom, and a LinkedIn recruiter. {roaster_title}, you are an influencer the way a {noun} is an {profession}. Technically. Legally. Morally bankrupt.",
+      "placeholders": {
+        "username": {
+          "type": "username"
+        },
+        "followers": {
+          "type": "enum",
+          "values": [
+            "47",
+            "12",
+            "88",
+            "120",
+            "200",
+            "350",
+            "1.2k"
+          ]
+        },
+        "noun": {
+          "type": "enum",
+          "values": [
+            "free sample",
+            "404 error",
+            "placeholder image",
+            "default avatar",
+            "tax write-off"
+          ]
+        },
+        "profession": {
+          "type": "enum",
+          "values": [
+            "executive",
+            "CEO",
+            "thought leader",
+            "public speaker",
+            "pundit"
+          ]
+        },
+        "roaster_title": {
+          "type": "roaster",
+          "values": [
+            "male:sir",
+            "female:ma'am",
+            "neutral:friend"
+          ],
+          "default": "friend"
+        }
+      },
+      "reaction": "📸"
+    },
+    {
+      "id": "sav_041",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "fitness_simple",
+        "fitness"
+      ],
+      "keywords": [
+        "fit",
+        "skinny",
+        "abs",
+        "gains",
+        "shredded",
+        "ripped",
+        "healthy",
+        "workout",
+        "gym"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "{username} says {roaster_pronoun} is fit. {roaster_title}, the gym is open 24 hours and you went twice this year. The {noun} is fit. The {noun} is also an {profession}. The {profession} has {body_part}. You have {counterpart}. They are not the same.",
+      "placeholders": {
+        "username": {
+          "type": "username"
+        },
+        "noun": {
+          "type": "enum",
+          "values": [
+            "GymTok influencer",
+            "yoga mat you bought in 2019",
+            "protein powder that expired",
+            "step counter app you uninstalled"
+          ]
+        },
+        "profession": {
+          "type": "enum",
+          "values": [
+            "chipmunk",
+            "firefighter",
+            "backhoe",
+            "walrus",
+            "Oompa Loompa"
+          ]
+        },
+        "body_part": {
+          "type": "enum",
+          "values": [
+            "pecs",
+            "abs",
+            "triceps",
+            "forearms the size of your future"
+          ]
+        },
+        "counterpart": {
+          "type": "enum",
+          "values": [
+            "a Canva subscription",
+            "step counter ring light",
+            "a treadmill that became a coat rack",
+            "an excuse",
+            "WiFi signal at the bottom of a well"
+          ]
+        },
+        "roaster_pronoun": {
+          "type": "roaster",
+          "values": [
+            "male:he",
+            "female:she",
+            "neutral:they"
+          ]
+        },
+        "roaster_title": {
+          "type": "roaster",
+          "values": [
+            "male:sir",
+            "female:ma'am",
+            "neutral:friend"
+          ],
+          "default": "friend"
+        }
+      },
+      "reaction": "💪"
+    },
+    {
+      "id": "sav_042",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "identity_claim"
+      ],
+      "keywords": [
+        "i'm smart",
+        "i am smart",
+        "i'm the best",
+        "i am the best",
+        "trust me",
+        "i'm a genius",
+        "i am a genius",
+        "trust me bro"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "'{trigger_phrase}.' Beautiful. {roaster_title}, {username} just out-monologued {comparison} and lost to {roaster_pronoun}self. Trust issues, much? The bar is in hell and {username} is taking attendance. {roaster_pronoun_poss} IQ is in a {noun} doing community service.",
+      "placeholders": {
+        "username": {
+          "type": "username"
+        },
+        "trigger_phrase": {
+          "type": "context"
+        },
+        "comparison": {
+          "type": "enum",
+          "values": [
+            "a LinkedIn influencer",
+            "a fresh Subway sandwich artist",
+            "a ChatGPT hallucination",
+            "their own reflection",
+            "an AI trained on Reddit"
+          ]
+        },
+        "noun": {
+          "type": "enum",
+          "values": [
+            "penal colony",
+            "behavioral health facility",
+            "DMV waiting room",
+            "tutoring center",
+            "GED prep class"
+          ]
+        },
+        "roaster_pronoun": {
+          "type": "roaster",
+          "values": [
+            "male:he",
+            "female:she",
+            "neutral:they"
+          ]
+        },
+        "roaster_pronoun_poss": {
+          "type": "roaster",
+          "values": [
+            "male:his",
+            "female:her",
+            "neutral:their"
+          ]
+        },
+        "roaster_title": {
+          "type": "roaster",
+          "values": [
+            "male:sir",
+            "female:ma'am",
+            "neutral:friend"
+          ],
+          "default": "friend"
+        }
+      },
+      "reaction": "🤓"
+    },
+    {
+      "id": "sav_043",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend",
+        "gamer"
+      ],
+      "intents": [
+        "gaming"
+      ],
+      "trigger_phrases": [
+        "i have no friends",
+        "i am lonely",
+        "i have no teammates",
+        "i have no one",
+        "no one plays with me",
+        "i play solo",
+        "solo queue",
+        "solo carry"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "{username} has no teammates, no duo, and a Discord server with {count} members. All of them are {member}. {roaster_title}, you solo queue because nobody will party up. We get it. The {item} also queues solo. The {item} is also a {item}.",
+      "placeholders": {
+        "username": {
+          "type": "username"
+        },
+        "count": {
+          "type": "enum",
+          "values": [
+            "3",
+            "4",
+            "5",
+            "6",
+            "9",
+            "12",
+            "47"
+          ]
+        },
+        "member": {
+          "type": "enum",
+          "values": [
+            "your mom",
+            "your alt accounts",
+            "an AI you trained",
+            "a bot you coded in 3 hours",
+            "a fish"
+          ]
+        },
+        "item": {
+          "type": "enum",
+          "values": [
+            "shopping cart with one squeaky wheel",
+            "fridge light that flickers",
+            "screen door on a submarine",
+            "NPC at the gas station"
+          ]
+        },
+        "roaster_title": {
+          "type": "roaster",
+          "values": [
+            "male:sir",
+            "female:ma'am",
+            "neutral:friend"
+          ],
+          "default": "friend"
+        }
+      },
+      "reaction": "🫥"
+    },
+    {
+      "id": "sav_044",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "identity_claim",
+        "looks"
+      ],
+      "trigger_phrases": [
+        "i am handsome",
+        "i am pretty",
+        "i am beautiful",
+        "i am hot",
+        "i am the best",
+        "i am the goat",
+        "i am sigma",
+        "i am alpha",
+        "i am a chad",
+        "i am a sigma",
+        "i am funny",
+        "i am smart",
+        "i am fit",
+        "i am rich",
+        "i am a model",
+        "i am a celebrity"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "{username} claims to be a {claim}. {roaster_title}, the only thing {username} is the {claim} of is {roaster_pronoun_poss} own {noun}. The {noun} is also a {second}. The {second} is on the {place}. The {place} is a {place_thing}. The {place_thing} charges by the hour. The hour is approaching.",
+      "placeholders": {
+        "username": {
+          "type": "username"
+        },
+        "claim": {
+          "type": "enum",
+          "values": [
+            "sigma",
+            "alpha",
+            "chad",
+            "GOAT",
+            "main character",
+            "10/10",
+            "certified genius",
+            "top 1%",
+            "certified lover",
+            "MVP",
+            "certified boss"
+          ]
+        },
+        "noun": {
+          "type": "enum",
+          "values": [
+            "group chat",
+            "apartment",
+            "browser history",
+            "LinkedIn drafts",
+            "fitness journey",
+            "screen time report"
+          ]
+        },
+        "second": {
+          "type": "enum",
+          "values": [
+            "joke",
+            "cringe compilation",
+            "404 error",
+            "Terms of Service",
+            "404 page",
+            "loading screen"
+          ]
+        },
+        "place": {
+          "type": "enum",
+          "values": [
+            "FYP",
+            "explore page",
+            "trash folder",
+            "spam folder",
+            "back-burner",
+            "close friends story nobody watches"
+          ]
+        },
+        "place_thing": {
+          "type": "enum",
+          "values": [
+            "therapist",
+            "DMV",
+            "pawn shop",
+            "pawn shop window",
+            "DMV kiosk",
+            "TikTok ban appeal form"
+          ]
+        },
+        "roaster_pronoun_poss": {
+          "type": "roaster",
+          "values": [
+            "male:his",
+            "female:her",
+            "neutral:their"
+          ]
+        },
+        "roaster_title": {
+          "type": "roaster",
+          "values": [
+            "male:sir",
+            "female:ma'am",
+            "neutral:friend"
+          ],
+          "default": "friend"
+        }
+      },
+      "reaction": "🪞"
+    },
+    {
+      "id": "sav_045",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [],
+      "trigger_phrases": [
+        "that's mean",
+        "that's rude",
+        "thats mean",
+        "thats rude",
+        "be nice",
+        "stop it",
+        "stop roasting",
+        "i'm offended",
+        "i am offended",
+        "this hurts",
+        "you are mean",
+        "you're mean",
+        "you're rude",
+        "you are rude",
+        "wow",
+        "ouch"
+      ],
+      "damage": 6,
+      "tone": "playful",
+      "template": "Oh, no. {roaster_title} is offended. {roaster_pronoun_poss} mother was right about {roaster_pronoun_obj}. She was right about a lot. We will be sending the bill to {roaster_pronoun_poss} therapist, who is on month {months} of treating {roaster_pronoun_obj}.",
+      "placeholders": {
+        "roaster_title": {
+          "type": "roaster",
+          "values": [
+            "male:sir",
+            "female:ma'am",
+            "neutral:friend"
+          ],
+          "default": "friend"
+        },
+        "roaster_pronoun": {
+          "type": "roaster",
+          "values": [
+            "male:he",
+            "female:she",
+            "neutral:they"
+          ]
+        },
+        "roaster_pronoun_poss": {
+          "type": "roaster",
+          "values": [
+            "male:his",
+            "female:her",
+            "neutral:their"
+          ]
+        },
+        "roaster_pronoun_obj": {
+          "type": "roaster",
+          "values": [
+            "male:him",
+            "female:her",
+            "neutral:them"
+          ]
+        },
+        "months": {
+          "type": "enum",
+          "values": [
+            "7",
+            "11",
+            "14",
+            "23",
+            "31",
+            "47",
+            "63"
+          ]
+        }
+      },
+      "reaction": "🫠"
+    },
+    {
+      "id": "sav_046",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "identity_claim"
+      ],
+      "keywords": [
+        "i'm a hacker",
+        "i am a hacker",
+        "i hacked",
+        "i'm a programmer",
+        "i am a programmer",
+        "i'm a developer",
+        "i am a developer",
+        "i know python",
+        "i know javascript",
+        "i know java",
+        "i know c++",
+        "i know rust",
+        "i'm a software engineer",
+        "i am a software engineer"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "{username} 'knows {lang}.' {roaster_title}, you know {lang} the way a {noun} knows {counter}. You have 14 repos on GitHub. 12 of them are forks. 1 is a {starter}. The last one is a TODO list. The TODO list has 47 TODOs. All of them are {task}.",
+      "placeholders": {
+        "username": {
+          "type": "username"
+        },
+        "lang": {
+          "type": "enum",
+          "values": [
+            "Python",
+            "JavaScript",
+            "Rust",
+            "C++",
+            "Java",
+            "TypeScript",
+            "Solidity",
+            "COBOL",
+            "PHP",
+            "Go",
+            "Ruby",
+            "Haskell"
+          ]
+        },
+        "noun": {
+          "type": "enum",
+          "values": [
+            "spaghetti code",
+            "Stack Overflow answer from 2011",
+            "pirated PDF",
+            "bootcamp grad",
+            "copilot suggestion",
+            "1.5x speed YouTube tutorial"
+          ]
+        },
+        "counter": {
+          "type": "enum",
+          "values": [
+            "for-loops",
+            "indentation",
+            "semicolons",
+            "a fork of a fork",
+            "basic Stack Overflow",
+            "what an Linter is"
+          ]
+        },
+        "starter": {
+          "type": "enum",
+          "values": [
+            "create-react-app from 2019",
+            "Vite hello world",
+            "Python snake game",
+            "calculator with a UI",
+            "portfolio site with a marquee tag"
+          ]
+        },
+        "task": {
+          "type": "enum",
+          "values": [
+            "unfinished",
+            "open since 2019",
+            "marked urgent in lowercase",
+            "still on the README",
+            "still in my head"
+          ]
+        },
+        "roaster_title": {
+          "type": "roaster",
+          "values": [
+            "male:sir",
+            "female:ma'am",
+            "neutral:friend"
+          ],
+          "default": "friend"
+        }
+      },
+      "reaction": "💾"
+    },
+    {
+      "id": "sav_047",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend",
+        "professor"
+      ],
+      "intents": [
+        "school"
+      ],
+      "keywords": [
+        "failed",
+        "fail",
+        "i failed",
+        "bombed",
+        "bunked",
+        "skipped",
+        "i skipped",
+        "i didn't study",
+        "didn't study",
+        "i didn't",
+        "didn't",
+        "my gpa",
+        "my grade",
+        "my grades"
+      ],
+      "damage": 7,
+      "tone": "brutal",
+      "template": "{username} bombed the {subject} exam. {roaster_title}, the {subject} exam was the easier of the two. The harder one is the {noun}. The {noun} is on a {length} call with {roaster_pronoun_poss} parents. The parents have {tone}. The {tone} is {context}. The {context} is also a {context_thing}. The {context_thing} charges hourly.",
+      "placeholders": {
+        "username": {
+          "type": "username"
+        },
+        "subject": {
+          "type": "enum",
+          "values": [
+            "midterm",
+            "final",
+            "quiz",
+            "practical",
+            "viva",
+            "semester exam",
+            "preexisting conditions",
+            "JEE",
+            "NEET",
+            "SAT",
+            "GRE"
+          ]
+        },
+        "noun": {
+          "type": "enum",
+          "values": [
+            "mirror",
+            "transcript",
+            "LinkedIn",
+            "recruiter's calendar",
+            "ranking algorithm",
+            "future",
+            "career trajectory"
+          ]
+        },
+        "length": {
+          "type": "enum",
+          "values": [
+            "30-minute",
+            "45-minute",
+            "1-hour",
+            "2-hour",
+            "5-hour"
+          ]
+        },
+        "tone": {
+          "type": "enum",
+          "values": [
+            "questions",
+            "concerns",
+            "follow-ups",
+            "a follow-up",
+            "a Zoom recording"
+          ]
+        },
+        "context": {
+          "type": "enum",
+          "values": [
+            "disappointment",
+            "denial",
+            "the bargaining stage",
+            "stage 3 of grief",
+            "a TED talk on accountability"
+          ]
+        },
+        "context_thing": {
+          "type": "enum",
+          "values": [
+            "lawyer",
+            "therapist",
+            "mediator",
+            "career counselor",
+            "HR consultant"
+          ]
+        },
+        "roaster_pronoun_poss": {
+          "type": "roaster",
+          "values": [
+            "male:his",
+            "female:her",
+            "neutral:their"
+          ]
+        },
+        "roaster_title": {
+          "type": "roaster",
+          "values": [
+            "male:sir",
+            "female:ma'am",
+            "neutral:friend"
+          ],
+          "default": "friend"
+        }
+      },
+      "reaction": "📉"
+    },
+    {
+      "id": "sav_048",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "money"
+      ],
+      "keywords": [
+        "broke",
+        "i'm broke",
+        "no money",
+        "poor",
+        "rent",
+        "can't pay",
+        "can't afford"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "{username} is broke. {roaster_title}, the broke is the only thing {roaster_pronoun} has in {multiples}-supply. {roaster_pronoun_poss} bank account is on life support. The doctor is {doctor}. {roaster_pronoun} got liquidated by {liquidator}. The {liquidator} is also {second_liq}. The {second_liq} charges hourly. The hour is approaching.",
+      "placeholders": {
+        "username": {
+          "type": "username"
+        },
+        "multiples": {
+          "type": "enum",
+          "values": [
+            "two",
+            "three",
+            "four",
+            "five",
+            "ten"
+          ]
+        },
+        "doctor": {
+          "type": "enum",
+          "values": [
+            "a ChatGPT subscription",
+            "an automated voice mail",
+            "a PayPal email",
+            "a $5 therapy app",
+            "a spiritual advisor with a Venmo"
+          ]
+        },
+        "liquidator": {
+          "type": "enum",
+          "values": [
+            "life",
+            "Spotify",
+            "Netflix",
+            "rent",
+            "the student loan system",
+            "their own streaming subscriptions"
+          ]
+        },
+        "second_liq": {
+          "type": "enum",
+          "values": [
+            "a group project",
+            "a Sunday brunch",
+            "an Uber at 2AM",
+            "a Tinder date",
+            "their own shopping cart",
+            "the economy"
+          ]
+        },
+        "roaster_pronoun": {
+          "type": "roaster",
+          "values": [
+            "male:he",
+            "female:she",
+            "neutral:they"
+          ]
+        },
+        "roaster_pronoun_poss": {
+          "type": "roaster",
+          "values": [
+            "male:his",
+            "female:her",
+            "neutral:their"
+          ]
+        },
+        "roaster_title": {
+          "type": "roaster",
+          "values": [
+            "male:sir",
+            "female:ma'am",
+            "neutral:friend"
+          ],
+          "default": "friend"
+        }
+      },
+      "reaction": "💸"
+    },
+    {
+      "id": "sav_049",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend",
+        "gamer"
+      ],
+      "intents": [
+        "gaming"
+      ],
+      "trigger_phrases": [
+        "solo",
+        "solo queue",
+        "solo carry",
+        "i carry",
+        "i one tricked",
+        "i one-tricked",
+        "1v9",
+        "1v5",
+        "1v1 me",
+        "carry me",
+        "duo me",
+        "duo queue",
+        "duo with me"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "{username} just typed '{trigger_phrase}' into a roast bot. {roaster_title}, the LFG button is a {noun}. The {noun} is also {username}'s {item}. {roaster_pronoun_poss} queue time is {minutes} minutes. The match has been waiting longer than {roaster_pronoun_poss} career. {roaster_pronoun} is the only teammate {roaster_pronoun} can rely on. The {roaster_self} is also leaving.",
+      "placeholders": {
+        "username": {
+          "type": "username"
+        },
+        "trigger_phrase": {
+          "type": "context"
+        },
+        "noun": {
+          "type": "enum",
+          "values": [
+            "404 page",
+            "subscription they forgot to cancel",
+            "loading screen",
+            "DMV ticket",
+            "pity timer",
+            "search history entry"
+          ]
+        },
+        "item": {
+          "type": "enum",
+          "values": [
+            "ranked badge",
+            "team comp",
+            "comm badge",
+            "Flex 5 stack",
+            "duo partner",
+            "S+ teammate"
+          ]
+        },
+        "minutes": {
+          "type": "enum",
+          "values": [
+            "12",
+            "20",
+            "30",
+            "45",
+            "60",
+            "90"
+          ]
+        },
+        "roaster_pronoun": {
+          "type": "roaster",
+          "values": [
+            "male:he",
+            "female:she",
+            "neutral:they"
+          ]
+        },
+        "roaster_pronoun_poss": {
+          "type": "roaster",
+          "values": [
+            "male:his",
+            "female:her",
+            "neutral:their"
+          ]
+        },
+        "roaster_self": {
+          "type": "roaster",
+          "values": [
+            "male:bot",
+            "female:bot",
+            "neutral:bot"
+          ],
+          "default": "bot"
+        },
+        "roaster_title": {
+          "type": "roaster",
+          "values": [
+            "male:sir",
+            "female:ma'am",
+            "neutral:friend"
+          ],
+          "default": "friend"
+        }
+      },
+      "reaction": "🎮"
+    },
+    {
+      "id": "sav_050",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "screen_time"
+      ],
+      "trigger_phrases": [
+        "bored",
+        "i'm bored",
+        "im bored",
+        "i have nothing to do",
+        "nothing to do",
+        "what do i do",
+        "i'm so bored"
+      ],
+      "damage": 6,
+      "tone": "playful",
+      "template": "{username} is bored. {roaster_title}, you have {count} unread emails, {replies} unread WhatsApp messages, an {gym} gym membership you have not used since {year}, and {roaster_pronoun_poss} future in a {noun}. The {noun} is also {noun_2}. The {noun_2} is on life support. The doctor is {doctor}.",
+      "placeholders": {
+        "username": {
+          "type": "username"
+        },
+        "count": {
+          "type": "enum",
+          "values": [
+            "147",
+            "234",
+            "412",
+            "891",
+            "1.2k"
+          ]
+        },
+        "replies": {
+          "type": "enum",
+          "values": [
+            "23",
+            "47",
+            "89",
+            "112",
+            "204"
+          ]
+        },
+        "gym": {
+          "type": "enum",
+          "values": [
+            "$9.99",
+            "annual",
+            "monthly",
+            "lifetime",
+            "student-rate"
+          ]
+        },
+        "year": {
+          "type": "enum",
+          "values": [
+            "2019",
+            "2021",
+            "2022",
+            "2023",
+            "the Obama administration"
+          ]
+        },
+        "noun": {
+          "type": "enum",
+          "values": [
+            "Syllabus you printed",
+            "binder you bought",
+            "LinkedIn premium",
+            "mood",
+            "calendar"
+          ]
+        },
+        "noun_2": {
+          "type": "enum",
+          "values": [
+            "on life support",
+            "in the ICU",
+            "flatlining",
+            "a waiting room",
+            "stage 4"
+          ]
+        },
+        "doctor": {
+          "type": "enum",
+          "values": [
+            "a $5 therapy app",
+            "a community college advisor",
+            "a horoscope app",
+            "a TikTok tarot reader",
+            "a YouTube comment section"
+          ]
+        },
+        "roaster_pronoun_poss": {
+          "type": "roaster",
+          "values": [
+            "male:his",
+            "female:her",
+            "neutral:their"
+          ]
+        },
+        "roaster_title": {
+          "type": "roaster",
+          "values": [
+            "male:sir",
+            "female:ma'am",
+            "neutral:friend"
+          ],
+          "default": "friend"
+        }
+      },
+      "reaction": "🥱"
+    },
+    {
+      "id": "sav_051",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "identity_claim",
+        "programming"
+      ],
+      "keywords": [
+        "i built an ai",
+        "i built a chatbot",
+        "i built",
+        "i made an ai",
+        "i trained a model",
+        "i made a model",
+        "i am an ai engineer",
+        "i'm an ai engineer",
+        "machine learning engineer",
+        "ml engineer"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "{username} 'built' an {thing}. {roaster_title}, you {action} an {thing} the way a {noun} {action2} an {item}. You copy-pasted {count} lines from GitHub. The README is on page {page}. The model is on {platform}. The {platform} is free. The free trial ended. The {thing} is also {second}. The {second} is also a {third}. The {third} is {roaster_pronoun_obj}. {roaster_pronoun} is {emotion}.",
+      "placeholders": {
+        "username": {
+          "type": "username"
+        },
+        "thing": {
+          "type": "enum",
+          "values": [
+            "AI",
+            "LLM",
+            "chatbot",
+            "transformer",
+            "RAG",
+            "diffusion model",
+            "agent",
+            "recommender",
+            "model",
+            "neural net"
+          ]
+        },
+        "action": {
+          "type": "enum",
+          "values": [
+            "vibe-coded",
+            "prompt-engineered",
+            "fine-tuned",
+            "deployed",
+            "stole",
+            "watched a tutorial about",
+            "asked ChatGPT to write"
+          ]
+        },
+        "action2": {
+          "type": "enum",
+          "values": [
+            "assembled",
+            "translated",
+            "mispronounced",
+            "mass-produced",
+            "Frankensteined"
+          ]
+        },
+        "noun": {
+          "type": "enum",
+          "values": [
+            "3AM YouTube tutorial",
+            "bootcamp grad",
+            "Hugging Face demo",
+            "Colab notebook",
+            "Streamlit template",
+            "GPT-3 wrapper"
+          ]
+        },
+        "item": {
+          "type": "enum",
+          "values": [
+            "IKEA shelf",
+            "thesis defense",
+            "burrito",
+            "Christmas sweater",
+            "fortune cookie",
+            "lawyer's opening statement"
+          ]
+        },
+        "count": {
+          "type": "enum",
+          "values": [
+            "47",
+            "120",
+            "200",
+            "412",
+            "891"
+          ]
+        },
+        "page": {
+          "type": "enum",
+          "values": [
+            "1 of 47",
+            "1 of 200",
+            "1 of 1 (you wrote it)",
+            "the only page",
+            "page ∞"
+          ]
+        },
+        "platform": {
+          "type": "enum",
+          "values": [
+            "Hugging Face Spaces",
+            "your laptop",
+            "a USB stick in a drawer",
+            "a Notion doc",
+            "a tweet thread",
+            "a public S3 bucket"
+          ]
+        },
+        "second": {
+          "type": "enum",
+          "values": [
+            "a TODO",
+            "a docstring lie",
+            "a hallucination with branding",
+            "a wrapper around GPT-4",
+            "a fork of llama.cpp",
+            "a comment in someone else's repo"
+          ]
+        },
+        "third": {
+          "type": "enum",
+          "values": [
+            "404",
+            "placebo",
+            "BSOD",
+            "404 in human form",
+            "404 with a LinkedIn",
+            "404 in a hoodie"
+          ]
+        },
+        "emotion": {
+          "type": "enum",
+          "values": [
+            "also confused",
+            "on FMLA",
+            "out on bail",
+            "missing",
+            "on PTO",
+            "exhausted"
+          ]
+        },
+        "roaster_pronoun_obj": {
+          "type": "roaster",
+          "values": [
+            "male:him",
+            "female:her",
+            "neutral:them"
+          ]
+        },
+        "roaster_pronoun": {
+          "type": "roaster",
+          "values": [
+            "male:he",
+            "female:she",
+            "neutral:they"
+          ]
+        },
+        "roaster_title": {
+          "type": "roaster",
+          "values": [
+            "male:sir",
+            "female:ma'am",
+            "neutral:friend"
+          ],
+          "default": "friend"
+        }
+      },
+      "reaction": "🤖"
+    },
+    {
+      "id": "sav_052",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [],
+      "trigger_phrases": [
+        "good roast",
+        "nice roast",
+        "you're funny",
+        "you are funny",
+        "lol good one",
+        "good one",
+        "i'm dead",
+        "im dead",
+        "lmaoo",
+        "lmao",
+        "haha good",
+        "hahaha",
+        "i'm crying",
+        "im crying",
+        "💀",
+        "dead",
+        "killed me",
+        "you killed me",
+        "you win",
+        "good bot"
+      ],
+      "damage": 6,
+      "tone": "playful",
+      "template": "{username} just said '{trigger_phrase}' to a roast bot. {roaster_title}, that is the {time_descriptor} form of validation. {roaster_pronoun} is going to put it on {roaster_pronoun_poss} LinkedIn. The LinkedIn will have an {noun}. The {noun} is also {second}. The {second} charges by the hour. The hour is {hour}.",
+      "placeholders": {
+        "username": {
+          "type": "username"
+        },
+        "trigger_phrase": {
+          "type": "context"
+        },
+        "time_descriptor": {
+          "type": "enum",
+          "values": [
+            "laziest",
+            "cheapest",
+            "lowest-effort",
+            "most-pity",
+            "most-DMCA'd",
+            "most-paternal"
+          ]
+        },
+        "noun": {
+          "type": "enum",
+          "values": [
+            "headshot",
+            "recommendation letter from me",
+            "DMCA takedown",
+            "glowing endorsement",
+            "verified check mark",
+            "engagement photo"
+          ]
+        },
+        "second": {
+          "type": "enum",
+          "values": [
+            "a screenshot",
+            "a Twitter quote-tweet",
+            "a thirst trap",
+            "a wedding invite",
+            "a TED talk"
+          ]
+        },
+        "hour": {
+          "type": "enum",
+          "values": [
+            "2AM",
+            "3AM",
+            "approaching",
+            "at 4:20PM",
+            "in T-minus 5"
+          ]
+        },
+        "roaster_pronoun": {
+          "type": "roaster",
+          "values": [
+            "male:he",
+            "female:she",
+            "neutral:they"
+          ]
+        },
+        "roaster_pronoun_poss": {
+          "type": "roaster",
+          "values": [
+            "male:his",
+            "female:her",
+            "neutral:their"
+          ]
+        },
+        "roaster_title": {
+          "type": "roaster",
+          "values": [
+            "male:sir",
+            "female:ma'am",
+            "neutral:friend"
+          ],
+          "default": "friend"
+        }
+      },
+      "reaction": "💀"
     }
   ]
 }

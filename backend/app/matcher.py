@@ -103,17 +103,24 @@ def _score_roast(
             score += hits * 2
             reasons.append(f"keywords:{hits}")
 
-    # Trigger phrase hit
+    # Trigger phrase hit. Trigger phrases are an explicit "if the user said
+    # THIS, deliver THAT" signal, so we apply a large bonus that effectively
+    # makes the matched roast the deterministic winner. Otherwise a generic
+    # savage roast at score 1.0 will out-compete the targeted roast 80%+ of
+    # the time just by sheer numbers in the candidate pool.
     if template.trigger_phrases:
         phrases_hit = [p for p in template.trigger_phrases if p.lower() in msg_low]
         if phrases_hit:
-            score += 5 * len(phrases_hit)
+            score += 100 * len(phrases_hit)
             reasons.append(f"phrases:{len(phrases_hit)}")
 
-    # Intent match bonus
+    # Intent match bonus. Intent detection is more reliable than keyword
+    # overlap, so we apply a much larger bonus than the keyword/keyword+1 hit
+    # (2x). 50x keeps intent-targeted roasts competitive against the ~25
+    # generic savage roasts in the pool (each at score 1.0).
     if template.intents and detected_intents:
         if any(i in template.intents for i in detected_intents):
-            score += 3
+            score += 50
             reasons.append("intent:match")
 
     # Novelty penalty for recent roasts

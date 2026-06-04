@@ -1,12 +1,14 @@
 {
   "mode": "general",
-  "version": 1,
+  "version": 2,
   "description": "Fallback roasts used when no intent matches or user picked Custom mode.",
-  "count": 10,
+  "count": 17,
   "roasts": [
     {
       "id": "gen_001",
-      "personalities": ["sarcastic_friend"],
+      "personalities": [
+        "sarcastic_friend"
+      ],
       "intents": [],
       "keywords": [],
       "damage": 4,
@@ -15,14 +17,23 @@
       "placeholders": {
         "place": {
           "type": "enum",
-          "values": ["mid-day Monday", "WiFi signal in a basement", "free trial antivirus", "loading screen of a person"]
+          "values": [
+            "mid-day Monday",
+            "WiFi signal in a basement",
+            "free trial antivirus",
+            "loading screen of a person"
+          ]
         }
       },
       "reaction": "🙃"
     },
     {
       "id": "gen_002",
-      "personalities": ["savage_one", "toxic_interviewer", "startup_investor"],
+      "personalities": [
+        "savage_one",
+        "toxic_interviewer",
+        "startup_investor"
+      ],
       "intents": [],
       "damage": 7,
       "tone": "brutal",
@@ -31,7 +42,9 @@
     },
     {
       "id": "gen_003",
-      "personalities": ["sarcastic_friend"],
+      "personalities": [
+        "sarcastic_friend"
+      ],
       "intents": [],
       "damage": 3,
       "tone": "playful",
@@ -40,7 +53,10 @@
     },
     {
       "id": "gen_004",
-      "personalities": ["savage_one", "professor"],
+      "personalities": [
+        "savage_one",
+        "professor"
+      ],
       "intents": [],
       "damage": 8,
       "tone": "cutting",
@@ -49,7 +65,10 @@
     },
     {
       "id": "gen_005",
-      "personalities": ["sarcastic_friend", "gamer"],
+      "personalities": [
+        "sarcastic_friend",
+        "gamer"
+      ],
       "intents": [],
       "damage": 5,
       "tone": "playful",
@@ -57,14 +76,21 @@
       "placeholders": {
         "item": {
           "type": "enum",
-          "values": ["stock screensaver", "rubber doorstop", "decorative pillow", "USB cable that only charges one way"]
+          "values": [
+            "stock screensaver",
+            "rubber doorstop",
+            "decorative pillow",
+            "USB cable that only charges one way"
+          ]
         }
       },
       "reaction": "😐"
     },
     {
       "id": "gen_006",
-      "personalities": ["sarcastic_friend"],
+      "personalities": [
+        "sarcastic_friend"
+      ],
       "intents": [],
       "damage": 2,
       "tone": "light",
@@ -73,7 +99,9 @@
     },
     {
       "id": "gen_007",
-      "personalities": ["savage_one"],
+      "personalities": [
+        "savage_one"
+      ],
       "intents": [],
       "damage": 9,
       "tone": "brutal",
@@ -82,7 +110,10 @@
     },
     {
       "id": "gen_008",
-      "personalities": ["sarcastic_friend", "professor"],
+      "personalities": [
+        "sarcastic_friend",
+        "professor"
+      ],
       "intents": [],
       "damage": 4,
       "tone": "dry",
@@ -91,27 +122,499 @@
     },
     {
       "id": "gen_009",
-      "personalities": ["gamer", "savage_one"],
+      "personalities": [
+        "gamer",
+        "savage_one"
+      ],
       "intents": [],
       "damage": 6,
       "tone": "cutting",
-      "template": "You're like a {game} tutorial — everyone's stuck on you, and most want to skip.",
+      "template": "You're like an {game} tutorial — everyone's stuck on you, and most want to skip.",
       "placeholders": {
         "game": {
           "type": "enum",
-          "values": ["Dark Souls", "Linux", "Elden Ring", "IRS website", "Windows update"]
+          "values": [
+            "Dark Souls",
+            "Linux",
+            "Elden Ring",
+            "IRS website",
+            "Windows update"
+          ]
         }
       },
       "reaction": "🎮"
     },
     {
       "id": "gen_010",
-      "personalities": ["sarcastic_friend"],
+      "personalities": [
+        "sarcastic_friend"
+      ],
       "intents": [],
       "damage": 5,
       "tone": "playful",
       "template": "I don't roast people. I just describe you accurately and let the audience decide.",
       "reaction": "🎤"
+    },
+    {
+      "id": "gen_011",
+      "personalities": [
+        "sarcastic_friend",
+        "gamer"
+      ],
+      "intents": [],
+      "keywords": [
+        "wifi",
+        "wi-fi",
+        "internet",
+        "connection",
+        "lag",
+        "buffering"
+      ],
+      "damage": 5,
+      "tone": "playful",
+      "template": "You have the personality of a {wifi_state}. People detect you, frown, and reconnect. The router has {emotion}. The {emotion} is valid.",
+      "placeholders": {
+        "wifi_state": {
+          "type": "enum",
+          "values": [
+            "coffee shop WiFi with captive portal",
+            "hotel WiFi that requires a password on the receipt",
+            "1 bar of 4G in an elevator",
+            "Bluetooth headset in a thunderstorm"
+          ]
+        },
+        "emotion": {
+          "type": "enum",
+          "values": [
+            "given up",
+            "left the chat",
+            "filed a complaint",
+            "gone home",
+            "gone to therapy"
+          ]
+        }
+      },
+      "reaction": "📶"
+    },
+    {
+      "id": "gen_012",
+      "personalities": [
+        "sarcastic_friend"
+      ],
+      "intents": [],
+      "keywords": [
+        "chatgpt",
+        "gpt",
+        "claude",
+        "gemini",
+        "copilot",
+        "ai",
+        "openai",
+        "anthropic",
+        "llm"
+      ],
+      "damage": 5,
+      "tone": "playful",
+      "template": "You are the human version of an {tool} answer — confident, vaguely formatted, and wrong in three places. One of them is your name.",
+      "placeholders": {
+        "tool": {
+          "type": "enum",
+          "values": [
+            "ChatGPT 3.5",
+            "autocorrect",
+            "Google translate",
+            "Siri at 3AM",
+            "early Bing AI reply"
+          ]
+        }
+      },
+      "reaction": "🤖"
+    },
+    {
+      "id": "gen_013",
+      "personalities": [
+        "sarcastic_friend",
+        "gamer"
+      ],
+      "intents": [],
+      "keywords": [
+        "tired",
+        "exhausted",
+        "sleepy",
+        "no sleep",
+        "no energy",
+        "drained",
+        "burnt out",
+        "burnout"
+      ],
+      "damage": 5,
+      "tone": "playful",
+      "template": "Tired? Babe, you run on {energy_source} and {second_source}. {roaster_title}, the {energy_source} is also your personality. {roaster_pronoun_poss} sleep schedule is a {schedule}. The {schedule} is on life support. The doctor is {doctor}.",
+      "placeholders": {
+        "energy_source": {
+          "type": "enum",
+          "values": [
+            "cold brew",
+            "Celsius",
+            "cold brew and denial",
+            "mango Celsius",
+            "iced coffee with a YouTube tutorial"
+          ]
+        },
+        "second_source": {
+          "type": "enum",
+          "values": [
+            "spite",
+            "anxiety",
+            "YouTube rabbit holes",
+            "mild sleep paralysis",
+            "a podcast about productivity"
+          ]
+        },
+        "schedule": {
+          "type": "enum",
+          "values": [
+            "404",
+            "ransom note",
+            "DMV ticket",
+            "Spotify Wrapped",
+            "DMV number"
+          ]
+        },
+        "doctor": {
+          "type": "enum",
+          "values": [
+            "a $5 therapy app",
+            "a Horoscope newsletter",
+            "a college counselor",
+            "a YouTube comment section",
+            "an online quiz"
+          ]
+        },
+        "roaster_title": {
+          "type": "roaster",
+          "values": [
+            "male:sir",
+            "female:ma'am",
+            "neutral:friend"
+          ],
+          "default": "friend"
+        },
+        "roaster_pronoun_poss": {
+          "type": "roaster",
+          "values": [
+            "male:his",
+            "female:her",
+            "neutral:their"
+          ]
+        }
+      },
+      "reaction": "🥱"
+    },
+    {
+      "id": "gen_014",
+      "personalities": [
+        "sarcastic_friend"
+      ],
+      "intents": [],
+      "keywords": [
+        "broke",
+        "no money",
+        "poor",
+        "rent",
+        "rich",
+        "wealthy",
+        "fired"
+      ],
+      "damage": 6,
+      "tone": "playful",
+      "template": "You treat money like a {concept} — fleeting, mythical, and something other people have. {roaster_title}, the {concept} is also {roaster_pronoun_poss} retirement plan. The retirement plan is on {platform}. The {platform} is also a {platform_thing}. The {platform_thing} charges hourly.",
+      "placeholders": {
+        "concept": {
+          "type": "enum",
+          "values": [
+            "rumor",
+            "Satoshi white paper",
+            "DMV queue number",
+            "WiFi in a basement",
+            "Pokemon GO"
+          ]
+        },
+        "platform": {
+          "type": "enum",
+          "values": [
+            "life support",
+            "FMLA",
+            "PTO",
+            "Cobra",
+            "TikTok ban appeal form"
+          ]
+        },
+        "platform_thing": {
+          "type": "enum",
+          "values": [
+            "pawn shop",
+            "lawyer",
+            "mediator",
+            "404 page",
+            "OpenTable reservation"
+          ]
+        },
+        "roaster_title": {
+          "type": "roaster",
+          "values": [
+            "male:sir",
+            "female:ma'am",
+            "neutral:friend"
+          ],
+          "default": "friend"
+        },
+        "roaster_pronoun_poss": {
+          "type": "roaster",
+          "values": [
+            "male:his",
+            "female:her",
+            "neutral:their"
+          ]
+        }
+      },
+      "reaction": "💸"
+    },
+    {
+      "id": "gen_015",
+      "personalities": [
+        "sarcastic_friend"
+      ],
+      "intents": [],
+      "keywords": [
+        "mood",
+        "vibe",
+        "vibes",
+        "energy",
+        "vibing",
+        "feeling"
+      ],
+      "damage": 4,
+      "tone": "playful",
+      "template": "Your vibe is an {vibe} posted at {time} with a {audio} and an {caption}. The {caption} is also {roaster_pronoun_poss} personality. The personality has {n_comments} comments. {n_comments} of them are {commenter}. The {commenter} charges hourly.",
+      "placeholders": {
+        "vibe": {
+          "type": "enum",
+          "values": [
+            "mood board",
+            "Pinterest board",
+            "Spotify Wrapped",
+            "Instagram story",
+            "Finsta"
+          ]
+        },
+        "time": {
+          "type": "enum",
+          "values": [
+            "3:47AM",
+            "2AM",
+            "11:11PM",
+            "4:20PM",
+            "11:59PM"
+          ]
+        },
+        "audio": {
+          "type": "enum",
+          "values": [
+            "lo-fi loop",
+            "trending TikTok sound",
+            "sad acoustic cover",
+            "mumble rap",
+            "doom metal"
+          ]
+        },
+        "caption": {
+          "type": "enum",
+          "values": [
+            "lowercase affirmation",
+            "lowercase threat",
+            "emoji with a period",
+            "no caption just vibes",
+            "single black heart"
+          ]
+        },
+        "n_comments": {
+          "type": "enum",
+          "values": [
+            "0",
+            "2",
+            "3",
+            "4",
+            "47",
+            "147"
+          ]
+        },
+        "commenter": {
+          "type": "enum",
+          "values": [
+            "your mom",
+            "your alt account",
+            "a bot you coded",
+            "a screenshot in a group chat",
+            "an AI you trained"
+          ]
+        },
+        "roaster_pronoun_poss": {
+          "type": "roaster",
+          "values": [
+            "male:his",
+            "female:her",
+            "neutral:their"
+          ]
+        }
+      },
+      "reaction": "✨"
+    },
+    {
+      "id": "gen_016",
+      "personalities": [
+        "sarcastic_friend"
+      ],
+      "intents": [],
+      "keywords": [
+        "single",
+        "no girlfriend",
+        "no boyfriend",
+        "forever alone",
+        "lonely",
+        "no friends"
+      ],
+      "damage": 6,
+      "tone": "playful",
+      "template": "{username} is single. {roaster_title}, you are single the way a {item} is single — present, technically functional, and the only one in the room. The {item} is also {second}. The {second} is on an {place}. The {place} charges by the hour.",
+      "placeholders": {
+        "username": {
+          "type": "username"
+        },
+        "item": {
+          "type": "enum",
+          "values": [
+            "shoe at the thrift store",
+            "roll of tape in a junk drawer",
+            "lucky cat in the window",
+            "load-bearing brick in a wall no one visits"
+          ]
+        },
+        "second": {
+          "type": "enum",
+          "values": [
+            "on Hinge",
+            "a Tinder Gold subscriber",
+            "a Discord mod",
+            "Bumble Boost",
+            "the group chat",
+            "a long-distance situationship"
+          ]
+        },
+        "place": {
+          "type": "enum",
+          "values": [
+            "waiting list",
+            "DMV queue",
+            "therapy waitlist",
+            "Spotify Wrapped",
+            "OpenTable reservation"
+          ]
+        },
+        "roaster_title": {
+          "type": "roaster",
+          "values": [
+            "male:sir",
+            "female:ma'am",
+            "neutral:friend"
+          ],
+          "default": "friend"
+        }
+      },
+      "reaction": "🫥"
+    },
+    {
+      "id": "gen_017",
+      "personalities": [
+        "sarcastic_friend",
+        "gamer"
+      ],
+      "intents": [],
+      "keywords": [
+        "friends",
+        "friend",
+        "best friend",
+        "bff",
+        "group chat",
+        "homies",
+        "squad"
+      ],
+      "damage": 5,
+      "tone": "playful",
+      "template": "{username} 'has friends.' {roaster_title}, the {count} people in {roaster_pronoun_poss} group chat are {member}. The {member} is also {second_member}. The {second_member} is on life support. The doctor is {doctor}.",
+      "placeholders": {
+        "username": {
+          "type": "username"
+        },
+        "count": {
+          "type": "enum",
+          "values": [
+            "3",
+            "4",
+            "5",
+            "9",
+            "12"
+          ]
+        },
+        "member": {
+          "type": "enum",
+          "values": [
+            "your mom",
+            "your alt account",
+            "an AI you coded",
+            "a bot you trained",
+            "a group project you didn't carry"
+          ]
+        },
+        "second_member": {
+          "type": "enum",
+          "values": [
+            "a screenshot in a Discord you don't read",
+            "a reply guy you ghosted",
+            "a Finsta follower",
+            "a Spotify blend partner",
+            "a Match group date"
+          ]
+        },
+        "doctor": {
+          "type": "enum",
+          "values": [
+            "a $5 therapy app",
+            "a horoscope newsletter",
+            "a community college advisor",
+            "a YouTube comment section",
+            "an online quiz"
+          ]
+        },
+        "roaster_title": {
+          "type": "roaster",
+          "values": [
+            "male:sir",
+            "female:ma'am",
+            "neutral:friend"
+          ],
+          "default": "friend"
+        },
+        "roaster_pronoun_poss": {
+          "type": "roaster",
+          "values": [
+            "male:his",
+            "female:her",
+            "neutral:their"
+          ]
+        }
+      },
+      "reaction": "👥"
     }
   ]
 }

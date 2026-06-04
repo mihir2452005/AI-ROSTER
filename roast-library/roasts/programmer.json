@@ -2,37 +2,75 @@
   "mode": "programmer",
   "version": 1,
   "description": "For developers. Tech references land hardest.",
-  "count": 27,
+  "count": 33,
   "roasts": [
     {
       "id": "prog_001",
-      "personalities": ["savage_one", "sarcastic_friend", "professor"],
-      "intents": ["programming", "career"],
-      "keywords": ["code", "coding", "function", "class", "method", "compile", "debug"],
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend",
+        "professor"
+      ],
+      "intents": [
+        "programming",
+        "career"
+      ],
+      "keywords": [
+        "code",
+        "coding",
+        "function",
+        "class",
+        "method",
+        "compile",
+        "debug"
+      ],
       "damage": 7,
       "tone": "cutting",
       "template": "Your code has more bugs than {place}. Did you write it with your {body_part}, or is that just your default {activity}?",
       "placeholders": {
         "place": {
           "type": "enum",
-          "values": ["a motel in July", "a Windows ME installation", "a free antivirus trial", "the comment section on YouTube"]
+          "values": [
+            "a motel in July",
+            "a Windows ME installation",
+            "a free antivirus trial",
+            "the comment section on YouTube"
+          ]
         },
         "body_part": {
           "type": "enum",
-          "values": ["eyes closed", "non-dominant hand", "fingers crossed", "elbows"]
+          "values": [
+            "eyes closed",
+            "non-dominant hand",
+            "fingers crossed",
+            "elbows"
+          ]
         },
         "activity": {
           "type": "enum",
-          "values": ["debugging strategy", "definition of 'done'", "code review process", "quality assurance"]
+          "values": [
+            "debugging strategy",
+            "definition of 'done'",
+            "code review process",
+            "quality assurance"
+          ]
         }
       },
       "reaction": "🐛"
     },
     {
       "id": "prog_002",
-      "personalities": ["savage_one", "sarcastic_friend"],
-      "intents": ["programming"],
-      "keywords": ["stackoverflow", "stack overflow"],
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "programming"
+      ],
+      "keywords": [
+        "stackoverflow",
+        "stack overflow"
+      ],
       "damage": 7,
       "tone": "cutting",
       "template": "Stack Overflow sent me a notification: 'Please stop. We're begging you.' 📚",
@@ -40,9 +78,18 @@
     },
     {
       "id": "prog_003",
-      "personalities": ["savage_one", "gamer"],
-      "intents": ["programming"],
-      "keywords": ["git", "commit", "push"],
+      "personalities": [
+        "savage_one",
+        "gamer"
+      ],
+      "intents": [
+        "programming"
+      ],
+      "keywords": [
+        "git",
+        "commit",
+        "push"
+      ],
       "damage": 6,
       "tone": "playful",
       "template": "Your Git commit messages read like a cry for help. 'pls work' isn't a commit message — it's a prayer.",
@@ -50,9 +97,18 @@
     },
     {
       "id": "prog_004",
-      "personalities": ["savage_one"],
-      "intents": ["programming"],
-      "keywords": ["production", "prod", "deploy", "deployment"],
+      "personalities": [
+        "savage_one"
+      ],
+      "intents": [
+        "programming"
+      ],
+      "keywords": [
+        "production",
+        "prod",
+        "deploy",
+        "deployment"
+      ],
       "damage": 8,
       "tone": "brutal",
       "template": "You don't have bugs. You have features that haven't been diagnosed yet.",
@@ -60,8 +116,13 @@
     },
     {
       "id": "prog_005",
-      "personalities": ["savage_one", "sarcastic_friend"],
-      "intents": ["programming"],
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "programming"
+      ],
       "damage": 6,
       "tone": "cutting",
       "template": "Your function has more parameters than your dating history has red flags.",
@@ -69,8 +130,13 @@
     },
     {
       "id": "prog_006",
-      "personalities": ["savage_one", "professor"],
-      "intents": ["programming"],
+      "personalities": [
+        "savage_one",
+        "professor"
+      ],
+      "intents": [
+        "programming"
+      ],
       "damage": 7,
       "tone": "cutting",
       "template": "I'm not saying your code is bad, but even your linter gave up and is looking for a new repo.",
@@ -78,23 +144,38 @@
     },
     {
       "id": "prog_007",
-      "personalities": ["savage_one"],
-      "intents": ["programming"],
+      "personalities": [
+        "savage_one"
+      ],
+      "intents": [
+        "programming"
+      ],
       "damage": 6,
       "tone": "playful",
       "template": "Your variable names suggest you learned programming from a {source}.",
       "placeholders": {
         "source": {
           "type": "enum",
-          "values": ["cereal box", "fortune cookie", "broken Magic 8-Ball", "Huffington Post comments", "Morse code tutorial"]
+          "values": [
+            "cereal box",
+            "fortune cookie",
+            "broken Magic 8-Ball",
+            "Huffington Post comments",
+            "Morse code tutorial"
+          ]
         }
       },
       "reaction": "🤔"
     },
     {
       "id": "prog_008",
-      "personalities": ["savage_one", "sarcastic_friend"],
-      "intents": ["programming"],
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "programming"
+      ],
       "damage": 7,
       "tone": "cutting",
       "template": "You write code the way I write apologies — lots of effort, no actual result.",
@@ -102,9 +183,18 @@
     },
     {
       "id": "prog_009",
-      "personalities": ["savage_one", "toxic_interviewer"],
-      "intents": ["programming", "career"],
-      "keywords": ["pull request", "pr"],
+      "personalities": [
+        "savage_one",
+        "toxic_interviewer"
+      ],
+      "intents": [
+        "programming",
+        "career"
+      ],
+      "keywords": [
+        "pull request",
+        "pr"
+      ],
       "damage": 8,
       "tone": "brutal",
       "template": "Your pull request has been 'pending review' for so long, the reviewer died of old age. Twice.",
@@ -112,8 +202,12 @@
     },
     {
       "id": "prog_010",
-      "personalities": ["savage_one"],
-      "intents": ["programming"],
+      "personalities": [
+        "savage_one"
+      ],
+      "intents": [
+        "programming"
+      ],
       "damage": 7,
       "tone": "cutting",
       "template": "Even ChatGPT is tired of explaining recursion to you. It added you to its do-not-respond list.",
@@ -121,8 +215,13 @@
     },
     {
       "id": "prog_011",
-      "personalities": ["savage_one", "sarcastic_friend"],
-      "intents": ["programming"],
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "programming"
+      ],
       "damage": 6,
       "tone": "playful",
       "template": "Your tech stack was outdated when you started learning it. Even the docs have a funeral date.",
@@ -130,8 +229,12 @@
     },
     {
       "id": "prog_012",
-      "personalities": ["savage_one"],
-      "intents": ["programming"],
+      "personalities": [
+        "savage_one"
+      ],
+      "intents": [
+        "programming"
+      ],
       "damage": 6,
       "tone": "dry",
       "template": "You don't debug code. You emotionally support it until it works.",
@@ -139,9 +242,17 @@
     },
     {
       "id": "prog_013",
-      "personalities": ["savage_one"],
-      "intents": ["programming"],
-      "keywords": ["css", "frontend", "html"],
+      "personalities": [
+        "savage_one"
+      ],
+      "intents": [
+        "programming"
+      ],
+      "keywords": [
+        "css",
+        "frontend",
+        "html"
+      ],
       "damage": 7,
       "tone": "cutting",
       "template": "Your CSS is so broken, even Flexbox filed a restraining order. Grid just moved apartments.",
@@ -149,8 +260,13 @@
     },
     {
       "id": "prog_014",
-      "personalities": ["savage_one", "sarcastic_friend"],
-      "intents": ["programming"],
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "programming"
+      ],
       "damage": 6,
       "tone": "playful",
       "template": "Your 'works on my machine' is just your machine being a liar too.",
@@ -158,8 +274,14 @@
     },
     {
       "id": "prog_015",
-      "personalities": ["savage_one", "professor"],
-      "intents": ["programming", "career"],
+      "personalities": [
+        "savage_one",
+        "professor"
+      ],
+      "intents": [
+        "programming",
+        "career"
+      ],
       "damage": 8,
       "tone": "brutal",
       "template": "I'd refactor your code, but my therapist said I should stop taking on hopeless cases.",
@@ -167,8 +289,14 @@
     },
     {
       "id": "prog_016",
-      "personalities": ["savage_one", "toxic_interviewer"],
-      "intents": ["programming", "career"],
+      "personalities": [
+        "savage_one",
+        "toxic_interviewer"
+      ],
+      "intents": [
+        "programming",
+        "career"
+      ],
       "damage": 7,
       "tone": "cutting",
       "template": "Your code review comments have more red flags than a Soviet parade. The party is concerning. The flags are wet.",
@@ -176,9 +304,19 @@
     },
     {
       "id": "prog_017",
-      "personalities": ["savage_one", "sarcastic_friend"],
-      "intents": ["programming", "career"],
-      "keywords": ["github", "open source", "contribution"],
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "programming",
+        "career"
+      ],
+      "keywords": [
+        "github",
+        "open source",
+        "contribution"
+      ],
       "damage": 6,
       "tone": "playful",
       "template": "You have a GitHub profile with more green squares than your lawn has grass. Both are suspicious. The HOA has opinions.",
@@ -186,9 +324,17 @@
     },
     {
       "id": "prog_018",
-      "personalities": ["savage_one", "professor"],
-      "intents": ["programming"],
-      "keywords": ["regex", "regular expression"],
+      "personalities": [
+        "savage_one",
+        "professor"
+      ],
+      "intents": [
+        "programming"
+      ],
+      "keywords": [
+        "regex",
+        "regular expression"
+      ],
       "damage": 8,
       "tone": "brutal",
       "template": "Your regex looks like someone had a seizure on a keyboard. I mean, technically it works. Theoretically. In a universe with different rules of syntax.",
@@ -196,8 +342,13 @@
     },
     {
       "id": "prog_019",
-      "personalities": ["savage_one", "sarcastic_friend"],
-      "intents": ["programming"],
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "programming"
+      ],
       "damage": 6,
       "tone": "playful",
       "template": "You name variables like you're trying to get fired. 'temp', 'temp2', 'tempFinal_v3_USE_THIS_ONE' — the holy trinity of giving up.",
@@ -205,8 +356,13 @@
     },
     {
       "id": "prog_020",
-      "personalities": ["savage_one"],
-      "intents": ["programming", "career"],
+      "personalities": [
+        "savage_one"
+      ],
+      "intents": [
+        "programming",
+        "career"
+      ],
       "damage": 7,
       "tone": "cutting",
       "template": "Your architecture diagram is a single box that says 'magic happens here.' Sometimes the magic is on fire. Sometimes it never loaded.",
@@ -214,8 +370,15 @@
     },
     {
       "id": "prog_021",
-      "personalities": ["savage_one", "toxic_interviewer", "startup_investor"],
-      "intents": ["programming", "career"],
+      "personalities": [
+        "savage_one",
+        "toxic_interviewer",
+        "startup_investor"
+      ],
+      "intents": [
+        "programming",
+        "career"
+      ],
       "damage": 8,
       "tone": "brutal",
       "template": "You don't have a tech debt. You have a tech bankruptcy. The creditors have formed a coalition. The coalition has a Slack.",
@@ -223,8 +386,14 @@
     },
     {
       "id": "prog_022",
-      "personalities": ["savage_one", "gamer"],
-      "intents": ["programming", "career"],
+      "personalities": [
+        "savage_one",
+        "gamer"
+      ],
+      "intents": [
+        "programming",
+        "career"
+      ],
       "damage": 6,
       "tone": "playful",
       "template": "Your CI/CD pipeline is more of a CI/Maybe pipeline. The 'D' is doing whatever it wants. The 'C' is on vacation.",
@@ -232,8 +401,12 @@
     },
     {
       "id": "prog_023",
-      "personalities": ["savage_one"],
-      "intents": ["programming"],
+      "personalities": [
+        "savage_one"
+      ],
+      "intents": [
+        "programming"
+      ],
       "damage": 7,
       "tone": "cutting",
       "template": "You treat warnings like suggestions, and suggestions like insults. Your code shows. Loudly. In production. On the front page.",
@@ -241,8 +414,14 @@
     },
     {
       "id": "prog_024",
-      "personalities": ["savage_one", "sarcastic_friend"],
-      "intents": ["programming", "career"],
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "programming",
+        "career"
+      ],
       "damage": 7,
       "tone": "cutting",
       "template": "Your test coverage is like your dating life — technically present, mostly empty, and full of regret. The coverage report is in denial.",
@@ -250,9 +429,19 @@
     },
     {
       "id": "prog_025",
-      "personalities": ["savage_one", "gamer"],
-      "intents": ["programming"],
-      "keywords": ["node", "npm", "dependency", "dependencies"],
+      "personalities": [
+        "savage_one",
+        "gamer"
+      ],
+      "intents": [
+        "programming"
+      ],
+      "keywords": [
+        "node",
+        "npm",
+        "dependency",
+        "dependencies"
+      ],
       "damage": 7,
       "tone": "cutting",
       "template": "You've never met a dependency you didn't want to add. Your node_modules weighs more than a small car. The car is healthier.",
@@ -260,9 +449,20 @@
     },
     {
       "id": "prog_026",
-      "personalities": ["savage_one", "toxic_interviewer"],
-      "intents": ["programming", "career"],
-      "keywords": ["production", "deploy", "friday", "main"],
+      "personalities": [
+        "savage_one",
+        "toxic_interviewer"
+      ],
+      "intents": [
+        "programming",
+        "career"
+      ],
+      "keywords": [
+        "production",
+        "deploy",
+        "friday",
+        "main"
+      ],
       "damage": 8,
       "tone": "brutal",
       "template": "You push to main on Friday at 5pm. Your on-call rotation has a file on you. So does HR. So does the CEO's dog.",
@@ -270,13 +470,804 @@
     },
     {
       "id": "prog_027",
-      "personalities": ["savage_one"],
-      "intents": ["programming", "career"],
-      "keywords": ["docker", "dockerfile", "container", "kubernetes"],
+      "personalities": [
+        "savage_one"
+      ],
+      "intents": [
+        "programming",
+        "career"
+      ],
+      "keywords": [
+        "docker",
+        "dockerfile",
+        "container",
+        "kubernetes"
+      ],
       "damage": 6,
       "tone": "playful",
       "template": "Your Dockerfile has 47 layers. Each one is a regret. The image is a cry for help. The help has been dispatched. The help is also crying.",
       "reaction": "🐳"
+    },
+    {
+      "id": "prog_028",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend",
+        "toxic_interviewer"
+      ],
+      "intents": [
+        "programming",
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i am a programmer",
+        "i'm a programmer",
+        "i am a software engineer",
+        "i'm a software engineer",
+        "i am a developer",
+        "i'm a developer",
+        "i code",
+        "i am a coder",
+        "i'm a coder",
+        "i am an engineer",
+        "i'm an engineer",
+        "i am a dev",
+        "i'm a dev",
+        "i am a swe",
+        "i'm a swe"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "{username} 'is a programmer.' {roaster_title}, you have {repo_count} GitHub repos, {fork_count} of them are forks, and one is a {starter} you pushed in 2019 and never opened again. Your pinned project is a {pinned}. The pinned has 0 stars. The 0 are your {relation}. The {relation} charges by the hour.",
+      "placeholders": {
+        "username": {
+          "type": "username"
+        },
+        "repo_count": {
+          "type": "enum",
+          "values": [
+            "3",
+            "5",
+            "7",
+            "11",
+            "14",
+            "23"
+          ]
+        },
+        "fork_count": {
+          "type": "enum",
+          "values": [
+            "2",
+            "3",
+            "4",
+            "5",
+            "9",
+            "12"
+          ]
+        },
+        "starter": {
+          "type": "enum",
+          "values": [
+            "create-react-app",
+            "to-do list",
+            "calculator with a UI",
+            "hello world in 7 languages",
+            "weather app with the OpenWeatherMap default key"
+          ]
+        },
+        "pinned": {
+          "type": "enum",
+          "values": [
+            "Vite hello world",
+            "Python snake game",
+            "Todoist clone",
+            "calculator",
+            "chatbot wrapper around GPT-4"
+          ]
+        },
+        "relation": {
+          "type": "enum",
+          "values": [
+            "parents",
+            "therapist",
+            "LinkedIn recruiter",
+            "DMV",
+            "group project partner"
+          ]
+        },
+        "roaster_title": {
+          "type": "roaster",
+          "values": [
+            "male:sir",
+            "female:ma'am",
+            "neutral:friend"
+          ],
+          "default": "friend"
+        }
+      },
+      "reaction": "💻"
+    },
+    {
+      "id": "prog_029",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend",
+        "toxic_interviewer"
+      ],
+      "intents": [
+        "programming",
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i am a hacker",
+        "i'm a hacker",
+        "i hacked",
+        "i'm in cybersecurity",
+        "i'm a security researcher",
+        "i am a security researcher",
+        "i do pentesting",
+        "i am an ethical hacker",
+        "i'm an ethical hacker",
+        "i am a red teamer",
+        "i'm a red teamer",
+        "i am a blueteamer",
+        "i'm a blueteamer"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "{username} 'is a hacker.' {roaster_title}, the {tool} you learned is in a {stage} YouTube tutorial. Your Kali is a {kali_state}. Your {artifact} is a {artifact_state}. The only thing you have ever hacked is a {low_bar}. The {low_bar} is also {roaster_pronoun_poss} LinkedIn. The LinkedIn is on life support. The doctor is {doctor}.",
+      "placeholders": {
+        "username": {
+          "type": "username"
+        },
+        "tool": {
+          "type": "enum",
+          "values": [
+            "nmap",
+            "metasploit",
+            "burp suite",
+            "wireshark",
+            "sqlmap",
+            "aircrack",
+            "hashcat"
+          ]
+        },
+        "stage": {
+          "type": "enum",
+          "values": [
+            "3AM",
+            "1.5x speed",
+            "closed-captioned",
+            "subtitled",
+            "no-skip",
+            "ad-paused"
+          ]
+        },
+        "kali_state": {
+          "type": "enum",
+          "values": [
+            "VM you haven't opened since the install",
+            "USB stick in a drawer",
+            "trial VM with a watermark",
+            "Raspberry Pi in a closet",
+            "ISO in a Downloads folder"
+          ]
+        },
+        "artifact": {
+          "type": "enum",
+          "values": [
+            "first CTF write-up",
+            "TryHackMe profile",
+            "HackTheBox rank",
+            "OWASP top-10 list you printed",
+            "GitHub with a Kali ASCII art README"
+          ]
+        },
+        "artifact_state": {
+          "type": "enum",
+          "values": [
+            "0 followers",
+            "Hacker rank 0",
+            "no stars",
+            "TODO list",
+            "flagged account"
+          ]
+        },
+        "low_bar": {
+          "type": "enum",
+          "values": [
+            "Captcha",
+            "ToS checkbox",
+            "WPA2 default password",
+            "router admin",
+            "school WiFi",
+            "family printer"
+          ]
+        },
+        "doctor": {
+          "type": "enum",
+          "values": [
+            "a $5 therapy app",
+            "a community college advisor",
+            "a horoscope newsletter",
+            "a YouTube comment section",
+            "a Discord mod in a hacking server"
+          ]
+        },
+        "roaster_pronoun_poss": {
+          "type": "roaster",
+          "values": [
+            "male:his",
+            "female:her",
+            "neutral:their"
+          ]
+        },
+        "roaster_title": {
+          "type": "roaster",
+          "values": [
+            "male:sir",
+            "female:ma'am",
+            "neutral:friend"
+          ],
+          "default": "friend"
+        }
+      },
+      "reaction": "🕵️"
+    },
+    {
+      "id": "prog_030",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend",
+        "toxic_interviewer"
+      ],
+      "intents": [
+        "programming",
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i know python",
+        "i know javascript",
+        "i know typescript",
+        "i know java",
+        "i know c++",
+        "i know rust",
+        "i know golang",
+        "i know go",
+        "i know php",
+        "i know ruby",
+        "i know solidity",
+        "i know swift",
+        "i know kotlin"
+      ],
+      "damage": 6,
+      "tone": "cutting",
+      "template": "{username} 'knows {lang}.' {roaster_title}, you know {lang} the way a {tool} knows {skill}. You have {n} repos on GitHub. {n2} of them are forks. The other {n3} are {repo_state}. Your LeetCode rank is {rank}. The {rank} is also {roaster_pronoun_poss} dating life.",
+      "placeholders": {
+        "username": {
+          "type": "username"
+        },
+        "lang": {
+          "type": "enum",
+          "values": [
+            "Python",
+            "JavaScript",
+            "TypeScript",
+            "Rust",
+            "C++",
+            "Java",
+            "Go",
+            "PHP",
+            "Ruby",
+            "Solidity",
+            "Swift",
+            "Kotlin",
+            "Haskell",
+            "Scala",
+            "Perl",
+            "COBOL"
+          ]
+        },
+        "tool": {
+          "type": "enum",
+          "values": [
+            "bootcamp grad",
+            "pirated PDF reader",
+            "Stack Overflow answer from 2011",
+            "1.5x YouTube tutorial",
+            "GitHub Copilot suggestion",
+            "vibe-coded AI chatbot"
+          ]
+        },
+        "skill": {
+          "type": "enum",
+          "values": [
+            "for-loops",
+            "indentation",
+            "semicolons",
+            "a fork of a fork",
+            "what a Linter is",
+            "basic Stack Overflow",
+            "closures",
+            "monads",
+            "recursion without stack overflow"
+          ]
+        },
+        "n": {
+          "type": "enum",
+          "values": [
+            "3",
+            "5",
+            "7",
+            "12",
+            "14",
+            "23"
+          ]
+        },
+        "n2": {
+          "type": "enum",
+          "values": [
+            "2",
+            "3",
+            "4",
+            "5",
+            "9",
+            "12"
+          ]
+        },
+        "n3": {
+          "type": "enum",
+          "values": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5"
+          ]
+        },
+        "repo_state": {
+          "type": "enum",
+          "values": [
+            "unfinished",
+            "TODO-stuffed",
+            "abandoned since 2019",
+            "with 0 stars",
+            "with a single commit",
+            "with only a README"
+          ]
+        },
+        "rank": {
+          "type": "enum",
+          "values": [
+            "in the bottom 10%",
+            "below 1500",
+            "in the 4th percentile",
+            "knighted by the Pope",
+            "0",
+            "a single digit"
+          ]
+        },
+        "roaster_pronoun_poss": {
+          "type": "roaster",
+          "values": [
+            "male:his",
+            "female:her",
+            "neutral:their"
+          ]
+        },
+        "roaster_title": {
+          "type": "roaster",
+          "values": [
+            "male:sir",
+            "female:ma'am",
+            "neutral:friend"
+          ],
+          "default": "friend"
+        }
+      },
+      "reaction": "🐍"
+    },
+    {
+      "id": "prog_031",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "programming"
+      ],
+      "trigger_phrases": [
+        "i built an ai",
+        "i made an ai",
+        "i trained a model",
+        "i built a chatbot",
+        "i made a chatbot",
+        "i am an ai engineer",
+        "i'm an ai engineer",
+        "i am an ml engineer",
+        "i'm an ml engineer",
+        "i work in ai",
+        "i work in ml",
+        "machine learning engineer",
+        "ml engineer",
+        "ai engineer"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "{username} 'built an {thing}.' {roaster_title}, the {thing} is {thing_state}. The README is {readme_state}. The model is hosted on {host}. The {host} is also {roaster_pronoun_poss} salary. The salary is on {salary_state}. The {salary_state} has a {noun}. The {noun} is also {second}. The {second} is also a {third}. The {third} is {roaster_pronoun_obj}. {roaster_pronoun} is also hallucinating.",
+      "placeholders": {
+        "username": {
+          "type": "username"
+        },
+        "thing": {
+          "type": "enum",
+          "values": [
+            "AI",
+            "LLM",
+            "RAG",
+            "chatbot",
+            "recommender",
+            "transformer",
+            "diffusion model",
+            "agent",
+            "model",
+            "neural net",
+            "ML pipeline",
+            "vector DB"
+          ]
+        },
+        "thing_state": {
+          "type": "enum",
+          "values": [
+            "a wrapper around GPT-4",
+            "an API key with confidence",
+            "a Colab notebook that expired",
+            "a Hugging Face Space with 2 visits (yours)",
+            "a fork of llama.cpp with a CSS pass",
+            "a TODO with funding"
+          ]
+        },
+        "readme_state": {
+          "type": "enum",
+          "values": [
+            "1 page",
+            "47 pages",
+            "an emoji and a shrug",
+            "a single TODO",
+            "the only one with more text than code",
+            "still in your Notion"
+          ]
+        },
+        "host": {
+          "type": "enum",
+          "values": [
+            "Vercel",
+            "a Render free tier",
+            "a public S3 bucket",
+            "your laptop",
+            "a free trial",
+            "a hackathon submission"
+          ]
+        },
+        "salary_state": {
+          "type": "enum",
+          "values": [
+            "life support",
+            "FMLA",
+            "PTO",
+            "Cobra",
+            "stage 4",
+            "the back-burner"
+          ]
+        },
+        "noun": {
+          "type": "enum",
+          "values": [
+            "DMV ticket",
+            "ransom note",
+            "404 page",
+            "loading screen",
+            "DMV queue number",
+            "Spotify Wrapped"
+          ]
+        },
+        "second": {
+          "type": "enum",
+          "values": [
+            "a screen-share you didn't want",
+            "a Zoom call you can't leave",
+            "a 5-min Loom that became 47 min",
+            "a 1:1 you didn't sign up for",
+            "a team retro"
+          ]
+        },
+        "third": {
+          "type": "enum",
+          "values": [
+            "placebo",
+            "404",
+            "BSOD",
+            "loading bar that lies",
+            "404 in a hoodie",
+            "wrapper with a wrapper"
+          ]
+        },
+        "roaster_pronoun_obj": {
+          "type": "roaster",
+          "values": [
+            "male:him",
+            "female:her",
+            "neutral:them"
+          ]
+        },
+        "roaster_pronoun": {
+          "type": "roaster",
+          "values": [
+            "male:he",
+            "female:she",
+            "neutral:they"
+          ]
+        },
+        "roaster_pronoun_poss": {
+          "type": "roaster",
+          "values": [
+            "male:his",
+            "female:her",
+            "neutral:their"
+          ]
+        },
+        "roaster_title": {
+          "type": "roaster",
+          "values": [
+            "male:sir",
+            "female:ma'am",
+            "neutral:friend"
+          ],
+          "default": "friend"
+        }
+      },
+      "reaction": "🤖"
+    },
+    {
+      "id": "prog_032",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend",
+        "gamer"
+      ],
+      "intents": [
+        "programming",
+        "gaming"
+      ],
+      "keywords": [
+        "chatgpt",
+        "gpt",
+        "claude",
+        "gemini",
+        "copilot",
+        "openai",
+        "anthropic",
+        "llm",
+        "ai",
+        "prompts",
+        "prompt"
+      ],
+      "damage": 6,
+      "tone": "playful",
+      "template": "{username} uses {tool} to {action}. {roaster_title}, that is not {action2}. That is {action3} with a subscription. The subscription is on {sub}. The {sub} is on life support. The doctor is {doctor}. The {doctor} is also {roaster_pronoun}. {roaster_pronoun} is the {tool} of humans.",
+      "placeholders": {
+        "username": {
+          "type": "username"
+        },
+        "tool": {
+          "type": "enum",
+          "values": [
+            "ChatGPT",
+            "Copilot",
+            "Claude",
+            "Gemini",
+            "Midjourney",
+            "Stable Diffusion",
+            "Suno",
+            "ElevenLabs"
+          ]
+        },
+        "action": {
+          "type": "enum",
+          "values": [
+            "write code",
+            "do your homework",
+            "prompt-engineer your way out of effort",
+            "vibe-code",
+            "summarize your emails",
+            "talk to instead of friends",
+            "draft your messages"
+          ]
+        },
+        "action2": {
+          "type": "enum",
+          "values": [
+            "coding",
+            "thinking",
+            "creating",
+            "engineering",
+            "writing",
+            "communicating"
+          ]
+        },
+        "action3": {
+          "type": "enum",
+          "values": [
+            "plagiarism with a UI",
+            "auto-complete with confidence",
+            "delusion with a chat box",
+            "Ctrl+C with a subscription",
+            "a hallucination with branding"
+          ]
+        },
+        "sub": {
+          "type": "enum",
+          "values": [
+            "the family plan",
+            "your last $20",
+            "the credit card you forgot to cancel",
+            "the trial that auto-renewed",
+            "a PayPal subscription you don't recognize"
+          ]
+        },
+        "doctor": {
+          "type": "enum",
+          "values": [
+            "a $5 therapy app",
+            "a community college advisor",
+            "a horoscope newsletter",
+            "a YouTube comment section",
+            "an AI you vibe-coded"
+          ]
+        },
+        "roaster_pronoun": {
+          "type": "roaster",
+          "values": [
+            "male:he",
+            "female:she",
+            "neutral:they"
+          ]
+        },
+        "roaster_title": {
+          "type": "roaster",
+          "values": [
+            "male:sir",
+            "female:ma'am",
+            "neutral:friend"
+          ],
+          "default": "friend"
+        }
+      },
+      "reaction": "💬"
+    },
+    {
+      "id": "prog_033",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend",
+        "professor"
+      ],
+      "intents": [
+        "programming",
+        "career",
+        "school"
+      ],
+      "keywords": [
+        "leetcode",
+        "interview",
+        "faang",
+        "google",
+        "meta",
+        "amazon",
+        "apple",
+        "microsoft",
+        "tcs",
+        "infosys",
+        "wipro",
+        "h1b",
+        "h-1b",
+        "onsite",
+        "onsite interview",
+        "phone screen",
+        "system design"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "{username} grinds LeetCode for the {company} interview. {roaster_title}, you have solved {solved} problems. The {solved} are also {roaster_pronoun_poss} {solved_thing}. The {solved_thing} is on {state}. The {state} has a {noun}. The {noun} is {noun_state}. The {noun_state} is also {roaster_pronoun_poss} system design answer.",
+      "placeholders": {
+        "username": {
+          "type": "username"
+        },
+        "company": {
+          "type": "enum",
+          "values": [
+            "FAANG",
+            "MAANG",
+            "Big Tech",
+            "TCS",
+            "Infosys",
+            "H1B sponsor",
+            "Series B startup with kombucha on tap"
+          ]
+        },
+        "solved": {
+          "type": "enum",
+          "values": [
+            "47",
+            "120",
+            "412",
+            "891",
+            "1200",
+            "two-sum twice",
+            "two-sum 47 times"
+          ]
+        },
+        "solved_thing": {
+          "type": "enum",
+          "values": [
+            "dating life",
+            "LinkedIn drafts",
+            "therapist bills",
+            "Discord messages",
+            "Spotify Wrapped top 1%"
+          ]
+        },
+        "state": {
+          "type": "enum",
+          "values": [
+            "life support",
+            "FMLA",
+            "PTO",
+            "Cobra",
+            "the back-burner",
+            "stage 4"
+          ]
+        },
+        "noun": {
+          "type": "enum",
+          "values": [
+            "DMV ticket",
+            "ransom note",
+            "404 page",
+            "loading screen",
+            "DMV queue number",
+            "Spotify Wrapped"
+          ]
+        },
+        "noun_state": {
+          "type": "enum",
+          "values": [
+            "a placeholder",
+            "an empty file",
+            "a Notion doc",
+            "404",
+            "the same merge conflict for 6 years"
+          ]
+        },
+        "roaster_pronoun_poss": {
+          "type": "roaster",
+          "values": [
+            "male:his",
+            "female:her",
+            "neutral:their"
+          ]
+        },
+        "roaster_title": {
+          "type": "roaster",
+          "values": [
+            "male:sir",
+            "female:ma'am",
+            "neutral:friend"
+          ],
+          "default": "friend"
+        }
+      },
+      "reaction": "🧩"
     }
   ]
 }

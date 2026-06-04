@@ -2,12 +2,19 @@
   "mode": "startup",
   "version": 1,
   "description": "Founders, pitch decks, MVPs that aren't actually minimum.",
-  "count": 26,
+  "count": 30,
   "roasts": [
     {
       "id": "sup_001",
-      "personalities": ["startup_investor", "savage_one", "toxic_interviewer"],
-      "intents": ["startup", "career"],
+      "personalities": [
+        "startup_investor",
+        "savage_one",
+        "toxic_interviewer"
+      ],
+      "intents": [
+        "startup",
+        "career"
+      ],
       "damage": 9,
       "tone": "brutal",
       "template": "You're not a founder. You're a person with a Notion doc and a dream. The dream is also a doc.",
@@ -15,9 +22,17 @@
     },
     {
       "id": "sup_002",
-      "personalities": ["startup_investor"],
-      "intents": ["startup"],
-      "keywords": ["tam", "market", "users"],
+      "personalities": [
+        "startup_investor"
+      ],
+      "intents": [
+        "startup"
+      ],
+      "keywords": [
+        "tam",
+        "market",
+        "users"
+      ],
       "damage": 8,
       "tone": "brutal",
       "template": "Your TAM is 'everyone.' Your actual customers are 'mom,' 'dad,' and 'mom's friend Janice.'",
@@ -25,9 +40,16 @@
     },
     {
       "id": "sup_003",
-      "personalities": ["startup_investor", "savage_one"],
-      "intents": ["startup"],
-      "keywords": ["mvp"],
+      "personalities": [
+        "startup_investor",
+        "savage_one"
+      ],
+      "intents": [
+        "startup"
+      ],
+      "keywords": [
+        "mvp"
+      ],
       "damage": 8,
       "tone": "cutting",
       "template": "Your MVP is just V. And the V is for 'Vague.'",
@@ -35,8 +57,13 @@
     },
     {
       "id": "sup_004",
-      "personalities": ["startup_investor", "savage_one"],
-      "intents": ["startup"],
+      "personalities": [
+        "startup_investor",
+        "savage_one"
+      ],
+      "intents": [
+        "startup"
+      ],
       "damage": 9,
       "tone": "brutal",
       "template": "You don't have a startup. You have a delusion with a domain name and a Squarespace subscription.",
@@ -44,24 +71,44 @@
     },
     {
       "id": "sup_005",
-      "personalities": ["startup_investor", "savage_one"],
-      "intents": ["startup"],
+      "personalities": [
+        "startup_investor",
+        "savage_one"
+      ],
+      "intents": [
+        "startup"
+      ],
       "damage": 7,
       "tone": "cutting",
       "template": "Your 'next Facebook' has fewer daily users than my {item}. And my {item} doesn't even exist.",
       "placeholders": {
         "item": {
           "type": "enum",
-          "values": ["spice rack", "therapy dog", "USB hub", "motivational calendar", "LinkedIn draft folder"]
+          "values": [
+            "spice rack",
+            "therapy dog",
+            "USB hub",
+            "motivational calendar",
+            "LinkedIn draft folder"
+          ]
         }
       },
       "reaction": "📱"
     },
     {
       "id": "sup_006",
-      "personalities": ["startup_investor", "sarcastic_friend"],
-      "intents": ["startup"],
-      "keywords": ["pitch", "deck", "pitch deck"],
+      "personalities": [
+        "startup_investor",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "startup"
+      ],
+      "keywords": [
+        "pitch",
+        "deck",
+        "pitch deck"
+      ],
       "damage": 7,
       "tone": "dry",
       "template": "Your pitch deck has more fiction than a Tolkien novel. At least Tolkien committed to a sequel.",
@@ -69,9 +116,17 @@
     },
     {
       "id": "sup_007",
-      "personalities": ["startup_investor", "savage_one"],
-      "intents": ["startup"],
-      "keywords": ["pre-revenue", "revenue"],
+      "personalities": [
+        "startup_investor",
+        "savage_one"
+      ],
+      "intents": [
+        "startup"
+      ],
+      "keywords": [
+        "pre-revenue",
+        "revenue"
+      ],
       "damage": 8,
       "tone": "brutal",
       "template": "You're pre-revenue, pre-product, and pre-qualified to be in this conversation.",
@@ -79,9 +134,18 @@
     },
     {
       "id": "sup_008",
-      "personalities": ["startup_investor", "savage_one"],
-      "intents": ["startup"],
-      "keywords": ["runway", "burn", "burn rate"],
+      "personalities": [
+        "startup_investor",
+        "savage_one"
+      ],
+      "intents": [
+        "startup"
+      ],
+      "keywords": [
+        "runway",
+        "burn",
+        "burn rate"
+      ],
       "damage": 7,
       "tone": "cutting",
       "template": "Your runway isn't a runway — it's a runway to bankruptcy with a first-class seat.",
@@ -89,8 +153,13 @@
     },
     {
       "id": "sup_009",
-      "personalities": ["startup_investor", "savage_one"],
-      "intents": ["startup"],
+      "personalities": [
+        "startup_investor",
+        "savage_one"
+      ],
+      "intents": [
+        "startup"
+      ],
       "damage": 8,
       "tone": "brutal",
       "template": "Investors don't ghost you. They never saw you. There is a meaningful difference.",
@@ -98,8 +167,14 @@
     },
     {
       "id": "sup_010",
-      "personalities": ["startup_investor", "savage_one"],
-      "intents": ["startup", "money"],
+      "personalities": [
+        "startup_investor",
+        "savage_one"
+      ],
+      "intents": [
+        "startup",
+        "money"
+      ],
       "damage": 7,
       "tone": "cutting",
       "template": "You 'bootstrapped' with your parents' credit card. The VCs can smell the parental financing from here.",
@@ -107,9 +182,18 @@
     },
     {
       "id": "sup_011",
-      "personalities": ["startup_investor", "savage_one"],
-      "intents": ["startup"],
-      "keywords": ["10x", "engineer", "developer"],
+      "personalities": [
+        "startup_investor",
+        "savage_one"
+      ],
+      "intents": [
+        "startup"
+      ],
+      "keywords": [
+        "10x",
+        "engineer",
+        "developer"
+      ],
       "damage": 7,
       "tone": "cutting",
       "template": "Your '10x engineer' is you, and you have a 1x work ethic and a 0x sense of urgency.",
@@ -117,8 +201,14 @@
     },
     {
       "id": "sup_012",
-      "personalities": ["startup_investor", "savage_one"],
-      "intents": ["startup", "money"],
+      "personalities": [
+        "startup_investor",
+        "savage_one"
+      ],
+      "intents": [
+        "startup",
+        "money"
+      ],
       "damage": 8,
       "tone": "brutal",
       "template": "Your startup doesn't need funding. It needs a refund, a refund, and a refund.",
@@ -126,25 +216,54 @@
     },
     {
       "id": "sup_013",
-      "personalities": ["startup_investor", "savage_one"],
-      "intents": ["startup"],
-      "keywords": ["ai", "blockchain", "web3", "nft", "crypto"],
+      "personalities": [
+        "startup_investor",
+        "savage_one"
+      ],
+      "intents": [
+        "startup"
+      ],
+      "keywords": [
+        "ai",
+        "blockchain",
+        "web3",
+        "nft",
+        "crypto"
+      ],
       "damage": 6,
       "tone": "dry",
       "template": "Another day, another {trend} startup. The only thing you're disrupting is the dictionary's definition of 'idea.'",
       "placeholders": {
         "trend": {
           "type": "enum",
-          "values": ["AI", "blockchain", "Web3", "NFT", "metaverse", "RAG", "AI agent"]
+          "values": [
+            "AI",
+            "blockchain",
+            "Web3",
+            "NFT",
+            "metaverse",
+            "RAG",
+            "AI agent"
+          ]
         }
       },
       "reaction": "🤖"
     },
     {
       "id": "sup_014",
-      "personalities": ["startup_investor", "savage_one"],
-      "intents": ["startup"],
-      "keywords": ["ai", "team", "customer", "customers"],
+      "personalities": [
+        "startup_investor",
+        "savage_one"
+      ],
+      "intents": [
+        "startup"
+      ],
+      "keywords": [
+        "ai",
+        "team",
+        "customer",
+        "customers"
+      ],
       "damage": 8,
       "tone": "brutal",
       "template": "Your 'AI startup' has 47 people on the team and 0 customers. 3 of them are your mom. One is a bot you built to look like a customer. The bot is also leaving.",
@@ -152,9 +271,20 @@
     },
     {
       "id": "sup_015",
-      "personalities": ["startup_investor", "savage_one"],
-      "intents": ["startup", "money"],
-      "keywords": ["series a", "funding", "raise", "raised"],
+      "personalities": [
+        "startup_investor",
+        "savage_one"
+      ],
+      "intents": [
+        "startup",
+        "money"
+      ],
+      "keywords": [
+        "series a",
+        "funding",
+        "raise",
+        "raised"
+      ],
       "damage": 8,
       "tone": "brutal",
       "template": "Your Series A is your mom's credit card. The interest rate is conversations about your future. They're not going well. The card is also maxed out.",
@@ -162,8 +292,13 @@
     },
     {
       "id": "sup_016",
-      "personalities": ["startup_investor", "savage_one"],
-      "intents": ["startup"],
+      "personalities": [
+        "startup_investor",
+        "savage_one"
+      ],
+      "intents": [
+        "startup"
+      ],
       "damage": 7,
       "tone": "cutting",
       "template": "Your 'we're like Uber for X' is the most common sentence in startup graveyards. The headstones are numbered. Yours is being engraved.",
@@ -171,9 +306,19 @@
     },
     {
       "id": "sup_017",
-      "personalities": ["startup_investor", "savage_one"],
-      "intents": ["startup"],
-      "keywords": ["exit", "exit strategy", "ipo", "acquisition"],
+      "personalities": [
+        "startup_investor",
+        "savage_one"
+      ],
+      "intents": [
+        "startup"
+      ],
+      "keywords": [
+        "exit",
+        "exit strategy",
+        "ipo",
+        "acquisition"
+      ],
       "damage": 7,
       "tone": "cutting",
       "template": "You have a 5-year exit strategy. The exit strategy is your parents' basement. They've started charging rent. The rent has also gone up.",
@@ -181,8 +326,12 @@
     },
     {
       "id": "sup_018",
-      "personalities": ["startup_investor"],
-      "intents": ["startup"],
+      "personalities": [
+        "startup_investor"
+      ],
+      "intents": [
+        "startup"
+      ],
       "damage": 6,
       "tone": "dry",
       "template": "Your 'moat' is vibes and a Squarespace domain. Both are leaking. The ducks are leaving. The moat is also a koi pond with one fish. The fish is leaving.",
@@ -190,9 +339,17 @@
     },
     {
       "id": "sup_019",
-      "personalities": ["startup_investor", "savage_one"],
-      "intents": ["startup"],
-      "keywords": ["advisor", "advisory"],
+      "personalities": [
+        "startup_investor",
+        "savage_one"
+      ],
+      "intents": [
+        "startup"
+      ],
+      "keywords": [
+        "advisor",
+        "advisory"
+      ],
       "damage": 7,
       "tone": "cutting",
       "template": "Your advisory board is your roommate, your dog, and a guy you met at a networking event who ghosted you. The dog has the most equity. The dog is also leaving.",
@@ -200,8 +357,13 @@
     },
     {
       "id": "sup_020",
-      "personalities": ["startup_investor", "savage_one"],
-      "intents": ["startup"],
+      "personalities": [
+        "startup_investor",
+        "savage_one"
+      ],
+      "intents": [
+        "startup"
+      ],
       "damage": 7,
       "tone": "cutting",
       "template": "Your 'next big thing' has been 'next big' for 4 years. The big thing is overdue. So is your refund. So is your therapist's appointment.",
@@ -209,9 +371,19 @@
     },
     {
       "id": "sup_021",
-      "personalities": ["startup_investor", "savage_one"],
-      "intents": ["startup"],
-      "keywords": ["medium", "followers", "content", "subscribers"],
+      "personalities": [
+        "startup_investor",
+        "savage_one"
+      ],
+      "intents": [
+        "startup"
+      ],
+      "keywords": [
+        "medium",
+        "followers",
+        "content",
+        "subscribers"
+      ],
       "damage": 7,
       "tone": "cutting",
       "template": "Your startup's only 'metric' is your Medium follower count. It's 12. 4 are bots. One is your mom. The rest are recruiters who are about to unsubscribe.",
@@ -219,8 +391,14 @@
     },
     {
       "id": "sup_022",
-      "personalities": ["startup_investor", "savage_one"],
-      "intents": ["startup", "money"],
+      "personalities": [
+        "startup_investor",
+        "savage_one"
+      ],
+      "intents": [
+        "startup",
+        "money"
+      ],
       "damage": 7,
       "tone": "cutting",
       "template": "You raise from angels. They're your friends. They're not angels. They're worried. About you, not the company. The company is a concern. The friends are leaving.",
@@ -228,9 +406,19 @@
     },
     {
       "id": "sup_023",
-      "personalities": ["startup_investor", "savage_one"],
-      "intents": ["startup", "money"],
-      "keywords": ["cac", "ltv", "unit economics"],
+      "personalities": [
+        "startup_investor",
+        "savage_one"
+      ],
+      "intents": [
+        "startup",
+        "money"
+      ],
+      "keywords": [
+        "cac",
+        "ltv",
+        "unit economics"
+      ],
       "damage": 8,
       "tone": "brutal",
       "template": "Your CAC is higher than your LTV. Your accountant is in therapy. Their therapist is also in therapy. The therapy bills are higher than revenue.",
@@ -238,25 +426,51 @@
     },
     {
       "id": "sup_024",
-      "personalities": ["startup_investor", "savage_one"],
-      "intents": ["startup"],
-      "keywords": ["name", "branding", "logo"],
+      "personalities": [
+        "startup_investor",
+        "savage_one"
+      ],
+      "intents": [
+        "startup"
+      ],
+      "keywords": [
+        "name",
+        "branding",
+        "logo"
+      ],
       "damage": 6,
       "tone": "playful",
       "template": "You named your startup after a {food}. There's already 6 of them. Yours is the worst. The {food} is suing. The lawyer is also a {food}. The {food} is winning.",
       "placeholders": {
         "food": {
           "type": "enum",
-          "values": ["pear", "kiwi", "fig", "coconut", "tangerine", "mango"]
+          "values": [
+            "pear",
+            "kiwi",
+            "fig",
+            "coconut",
+            "tangerine",
+            "mango"
+          ]
         }
       },
       "reaction": "🍐"
     },
     {
       "id": "sup_025",
-      "personalities": ["startup_investor", "savage_one"],
-      "intents": ["startup", "career"],
-      "keywords": ["story", "founder story", "origin"],
+      "personalities": [
+        "startup_investor",
+        "savage_one"
+      ],
+      "intents": [
+        "startup",
+        "career"
+      ],
+      "keywords": [
+        "story",
+        "founder story",
+        "origin"
+      ],
       "damage": 6,
       "tone": "dry",
       "template": "Your 'founder story' is 'I quit my job.' That's not a story. That's a LinkedIn post. The engagement is single digits. The post is also wrong.",
@@ -264,13 +478,690 @@
     },
     {
       "id": "sup_026",
-      "personalities": ["startup_investor", "savage_one"],
-      "intents": ["startup", "career"],
-      "keywords": ["co-founder", "cofounder", "team"],
+      "personalities": [
+        "startup_investor",
+        "savage_one"
+      ],
+      "intents": [
+        "startup",
+        "career"
+      ],
+      "keywords": [
+        "co-founder",
+        "cofounder",
+        "team"
+      ],
       "damage": 7,
       "tone": "cutting",
       "template": "Your 'co-founder' is your cat. The cat is also the CTO. The cat is also the only one who has seen the roadmap. The cat is also taking meetings.",
       "reaction": "🐈"
+    },
+    {
+      "id": "sup_027",
+      "personalities": [
+        "startup_investor",
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "startup",
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i am a founder",
+        "i'm a founder",
+        "i am a ceo",
+        "i'm a ceo",
+        "i have a startup",
+        "i want to build a startup",
+        "i want to start a startup",
+        "i want to launch a startup",
+        "i have a startup idea",
+        "i have an idea",
+        "i will launch",
+        "i'm launching",
+        "i am launching",
+        "i have a saas",
+        "i have an app idea",
+        "i want to start a company",
+        "i will start a company",
+        "i want to build an app",
+        "i want to build a saas"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "{username} 'has a startup idea.' {roaster_title}, the idea is an {thing}. There are {n} of them on the App Store. Yours is in {state}. The {state} is on {second}. The {second} has a {noun}. The {noun} is also {roaster_pronoun_poss} {analogue}. The {analogue} is on life support. The doctor is {doctor}. The {doctor} is also a {second_doctor}. The {second_doctor} is also a {third_doctor}. The {third_doctor} charges by the hour.",
+      "placeholders": {
+        "username": {
+          "type": "username"
+        },
+        "thing": {
+          "type": "enum",
+          "values": [
+            "AI PDF summarizer",
+            "AI note-taker",
+            "AI dating coach",
+            "AI meal planner",
+            "AI workout coach",
+            "AI therapy bot",
+            "AI journaling app",
+            "another Notion clone",
+            "Slack with a chat",
+            "AI wrapper around GPT-4",
+            "Discord for groups",
+            "YC killer",
+            "another task manager",
+            "AI Twitter ghostwriter",
+            "AI blog SEO tool",
+            "AI cold email tool",
+            "AI resume reviewer",
+            "AI tutor for kids"
+          ]
+        },
+        "n": {
+          "type": "enum",
+          "values": [
+            "47",
+            "120",
+            "412",
+            "891",
+            "1.2k",
+            "two times the population of iceland"
+          ]
+        },
+        "state": {
+          "type": "enum",
+          "values": [
+            "Notion with a logo",
+            "a Framer preview",
+            "a Figma that opens in 4 minutes",
+            "a Stripe page with 0 sales",
+            "a landing page that has 47 visits (you)",
+            "an Excel with 3 rows",
+            "a Tweet thread",
+            "a pitch deck on Canva with 0 downloads"
+          ]
+        },
+        "second": {
+          "type": "enum",
+          "values": [
+            "life support",
+            "FMLA",
+            "PTO",
+            "Cobra",
+            "stage 4",
+            "the back-burner",
+            "the YC reject pile"
+          ]
+        },
+        "noun": {
+          "type": "enum",
+          "values": [
+            "DMV ticket",
+            "ransom note",
+            "404 page",
+            "loading screen",
+            "Spotify Wrapped",
+            "DMV queue number"
+          ]
+        },
+        "analogue": {
+          "type": "enum",
+          "values": [
+            "dating life",
+            "GPA",
+            "salary",
+            "credit score",
+            "LinkedIn",
+            "screen time",
+            "sleep schedule"
+          ]
+        },
+        "doctor": {
+          "type": "enum",
+          "values": [
+            "a $5 therapy app",
+            "a community college advisor",
+            "a horoscope newsletter",
+            "a YouTube comment section",
+            "an AI you vibe-coded"
+          ]
+        },
+        "second_doctor": {
+          "type": "enum",
+          "values": [
+            "lawyer",
+            "mediator",
+            "HR consultant",
+            "career counselor",
+            "compliance officer"
+          ]
+        },
+        "third_doctor": {
+          "type": "enum",
+          "values": [
+            "DMV kiosk",
+            "pawn shop window",
+            "TikTok ban appeal form",
+            "404 with a LinkedIn",
+            "OpenTable reservation",
+            "Spotify Wrapped"
+          ]
+        },
+        "roaster_pronoun_poss": {
+          "type": "roaster",
+          "values": [
+            "male:his",
+            "female:her",
+            "neutral:their"
+          ]
+        },
+        "roaster_title": {
+          "type": "roaster",
+          "values": [
+            "male:sir",
+            "female:ma'am",
+            "neutral:friend"
+          ],
+          "default": "friend"
+        }
+      },
+      "reaction": "🚀"
+    },
+    {
+      "id": "sup_028",
+      "personalities": [
+        "startup_investor",
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "trading",
+        "money"
+      ],
+      "trigger_phrases": [
+        "bitcoin will hit",
+        "btc to the moon",
+        "to the moon",
+        "i am a trader",
+        "i'm a trader",
+        "i trade crypto",
+        "i am into crypto",
+        "i'm into crypto",
+        "i do trading",
+        "i day trade",
+        "i am a day trader",
+        "i'm a day trader",
+        "i am into stocks",
+        "i'm into stocks",
+        "i trade stocks",
+        "altseason is coming",
+        "wen moon",
+        "wen lambo",
+        "i aped in",
+        "i aped"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "{username} 'is an {role}.' {roaster_title}, you YOLO'd {amount} into {coin} at the top. The chart did a backflip. {roaster_pronoun} is down {percent}%. {username} is down the {down_item}. The {down_item} is also {roaster_pronoun_poss} {analogue}. The {analogue} is on {state}. The {state} has a {noun}. The {noun} is also {second}. The {second} charges by the hour. The hour is {time}.",
+      "placeholders": {
+        "username": {
+          "type": "username"
+        },
+        "role": {
+          "type": "enum",
+          "values": [
+            "trader",
+            "day trader",
+            "crypto investor",
+            "stock picker",
+            "swing trader",
+            "degen",
+            "whale",
+            "alpha caller"
+          ]
+        },
+        "amount": {
+          "type": "enum",
+          "values": [
+            "rent",
+            "tuition",
+            "the savings",
+            "$2k",
+            "$5k",
+            "$20k",
+            "the down-payment",
+            "the wedding fund",
+            "the emergency fund"
+          ]
+        },
+        "coin": {
+          "type": "enum",
+          "values": [
+            "BTC",
+            "ETH",
+            "SOL",
+            "PEPE",
+            "WIF",
+            "BONK",
+            "DOGE",
+            "SHIB",
+            "LUNA",
+            "FTT",
+            "FTM",
+            "SUI"
+          ]
+        },
+        "percent": {
+          "type": "enum",
+          "values": [
+            "30",
+            "50",
+            "70",
+            "88",
+            "92",
+            "99",
+            "100"
+          ]
+        },
+        "down_item": {
+          "type": "enum",
+          "values": [
+            "apartment",
+            "rent",
+            "tuition",
+            "car",
+            "lambo",
+            "lifestyle",
+            "gym membership",
+            "date night budget"
+          ]
+        },
+        "analogue": {
+          "type": "enum",
+          "values": [
+            "dating life",
+            "GPA",
+            "salary",
+            "credit score",
+            "LinkedIn",
+            "screen time",
+            "sleep schedule"
+          ]
+        },
+        "state": {
+          "type": "enum",
+          "values": [
+            "life support",
+            "FMLA",
+            "PTO",
+            "Cobra",
+            "stage 4",
+            "the back-burner"
+          ]
+        },
+        "noun": {
+          "type": "enum",
+          "values": [
+            "DMV ticket",
+            "ransom note",
+            "404 page",
+            "loading screen",
+            "Spotify Wrapped",
+            "DMV queue number"
+          ]
+        },
+        "second": {
+          "type": "enum",
+          "values": [
+            "lawyer",
+            "therapist",
+            "mediator",
+            "career counselor",
+            "HR consultant",
+            "compliance officer",
+            "pawn shop",
+            "a Spot trading app",
+            "OpenTable reservation"
+          ]
+        },
+        "time": {
+          "type": "enum",
+          "values": [
+            "2AM",
+            "3AM",
+            "approaching",
+            "right now",
+            "long overdue",
+            "next Friday"
+          ]
+        },
+        "roaster_pronoun": {
+          "type": "roaster",
+          "values": [
+            "male:he",
+            "female:she",
+            "neutral:they"
+          ]
+        },
+        "roaster_pronoun_poss": {
+          "type": "roaster",
+          "values": [
+            "male:his",
+            "female:her",
+            "neutral:their"
+          ]
+        },
+        "roaster_title": {
+          "type": "roaster",
+          "values": [
+            "male:sir",
+            "female:ma'am",
+            "neutral:friend"
+          ],
+          "default": "friend"
+        }
+      },
+      "reaction": "📉"
+    },
+    {
+      "id": "sup_029",
+      "personalities": [
+        "startup_investor",
+        "savage_one"
+      ],
+      "intents": [
+        "startup",
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i will be a millionaire",
+        "i will be a billionaire",
+        "i'm going to be rich",
+        "i will be rich",
+        "i will make it",
+        "i'll make it",
+        "trust me bro",
+        "trust me",
+        "i know what i'm doing",
+        "i am a hustler",
+        "i'm a hustler",
+        "i am a visionary",
+        "i'm a visionary",
+        "i am changing the world",
+        "i'm changing the world",
+        "i will be the next elon",
+        "i'll be the next elon",
+        "i will be the next steve jobs",
+        "i will be the next zuckerberg"
+      ],
+      "damage": 8,
+      "tone": "brutal",
+      "template": "{username} is going to be an {target}. {roaster_title}, the {target} requires an {noun}. The {noun} is also {roaster_pronoun_poss} {analogue}. The {analogue} is on life support. The doctor is {doctor}. The {doctor} is also a {second_doctor}. The {second_doctor} is a {third_doctor}. The {third_doctor} charges by the hour. The hour is {time}. The {time} is also when the {target} ship sails. The {target} ship is also {state}. The {state} is also {roaster_pronoun}. {roaster_pronoun} is on FMLA.",
+      "placeholders": {
+        "username": {
+          "type": "username"
+        },
+        "target": {
+          "type": "enum",
+          "values": [
+            "millionaire",
+            "billionaire",
+            "trillionaire",
+            "unicorn founder",
+            "FAANG engineer",
+            "next Elon",
+            "next Steve Jobs",
+            "next Zuckerberg",
+            "next Nvidia",
+            "next Sam Altman"
+          ]
+        },
+        "noun": {
+          "type": "enum",
+          "values": [
+            "business model",
+            "MVP",
+            "product",
+            "team",
+            "vision",
+            "execution",
+            "revenue",
+            "go-to-market",
+            "traction",
+            "skill"
+          ]
+        },
+        "analogue": {
+          "type": "enum",
+          "values": [
+            "dating life",
+            "GPA",
+            "salary",
+            "credit score",
+            "LinkedIn",
+            "screen time",
+            "sleep schedule"
+          ]
+        },
+        "doctor": {
+          "type": "enum",
+          "values": [
+            "a $5 therapy app",
+            "a community college advisor",
+            "a horoscope newsletter",
+            "a YouTube comment section",
+            "an AI you vibe-coded"
+          ]
+        },
+        "second_doctor": {
+          "type": "enum",
+          "values": [
+            "lawyer",
+            "mediator",
+            "HR consultant",
+            "career counselor",
+            "compliance officer"
+          ]
+        },
+        "third_doctor": {
+          "type": "enum",
+          "values": [
+            "pawn shop window",
+            "DMV kiosk",
+            "TikTok ban appeal form",
+            "404 with a LinkedIn",
+            "OpenTable reservation",
+            "Spotify Wrapped"
+          ]
+        },
+        "time": {
+          "type": "enum",
+          "values": [
+            "2AM",
+            "3AM",
+            "approaching",
+            "right now",
+            "long overdue",
+            "next Friday",
+            "next quarter",
+            "TBD"
+          ]
+        },
+        "state": {
+          "type": "enum",
+          "values": [
+            "scuttled",
+            "in dry dock",
+            "on life support",
+            "in dry dock",
+            "in dry dock again",
+            "TBD"
+          ]
+        },
+        "roaster_pronoun": {
+          "type": "roaster",
+          "values": [
+            "male:he",
+            "female:she",
+            "neutral:they"
+          ]
+        },
+        "roaster_pronoun_poss": {
+          "type": "roaster",
+          "values": [
+            "male:his",
+            "female:her",
+            "neutral:their"
+          ]
+        },
+        "roaster_title": {
+          "type": "roaster",
+          "values": [
+            "male:sir",
+            "female:ma'am",
+            "neutral:friend"
+          ],
+          "default": "friend"
+        }
+      },
+      "reaction": "💰"
+    },
+    {
+      "id": "sup_030",
+      "personalities": [
+        "startup_investor",
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "startup",
+        "programming",
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i will build an ai",
+        "i will build a chatbot",
+        "i will vibe code",
+        "i will ship it",
+        "i will launch it",
+        "i have a saas",
+        "i have a side project",
+        "i have a side hustle",
+        "i will 10x",
+        "i will 100x",
+        "10x engineer",
+        "i am a 10x engineer",
+        "i'm a 10x engineer",
+        "i am a 100x engineer",
+        "i'm a 100x engineer"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "{username} is a {claim} engineer. {roaster_title}, the {claim} is an {state}. The {state} is also {roaster_pronoun_poss} {analogue}. The {analogue} is on life support. The doctor is {doctor}. The {doctor} is also a {second_doctor}. The {second_doctor} is a {third_doctor}. The {third_doctor} charges by the hour. The hour is {time}.",
+      "placeholders": {
+        "username": {
+          "type": "username"
+        },
+        "claim": {
+          "type": "enum",
+          "values": [
+            "10x",
+            "100x",
+            "vibe-code",
+            "AI",
+            "ML",
+            "vibe",
+            "founder-mode",
+            "grindset"
+          ]
+        },
+        "state": {
+          "type": "enum",
+          "values": [
+            "Notion doc",
+            "Framer preview",
+            "Figma that opens in 4 minutes",
+            "Stripe page with 0 sales",
+            "landing page with 47 visits (you)",
+            "Excel with 3 rows",
+            "Tweet thread"
+          ]
+        },
+        "analogue": {
+          "type": "enum",
+          "values": [
+            "dating life",
+            "GPA",
+            "salary",
+            "credit score",
+            "LinkedIn",
+            "screen time",
+            "sleep schedule"
+          ]
+        },
+        "doctor": {
+          "type": "enum",
+          "values": [
+            "a $5 therapy app",
+            "a community college advisor",
+            "a horoscope newsletter",
+            "a YouTube comment section",
+            "an AI you vibe-coded"
+          ]
+        },
+        "second_doctor": {
+          "type": "enum",
+          "values": [
+            "lawyer",
+            "mediator",
+            "HR consultant",
+            "career counselor",
+            "compliance officer"
+          ]
+        },
+        "third_doctor": {
+          "type": "enum",
+          "values": [
+            "pawn shop window",
+            "DMV kiosk",
+            "TikTok ban appeal form",
+            "404 with a LinkedIn",
+            "OpenTable reservation",
+            "Spotify Wrapped"
+          ]
+        },
+        "time": {
+          "type": "enum",
+          "values": [
+            "2AM",
+            "3AM",
+            "approaching",
+            "right now",
+            "long overdue",
+            "next Friday",
+            "TBD"
+          ]
+        },
+        "roaster_pronoun_poss": {
+          "type": "roaster",
+          "values": [
+            "male:his",
+            "female:her",
+            "neutral:their"
+          ]
+        },
+        "roaster_title": {
+          "type": "roaster",
+          "values": [
+            "male:sir",
+            "female:ma'am",
+            "neutral:friend"
+          ],
+          "default": "friend"
+        }
+      },
+      "reaction": "⚡"
     }
   ]
 }

@@ -222,6 +222,213 @@
         "i applied to", "i'm applying to", "i'm job hunting", "job hunting",
         "i'm looking for a job", "i'm looking for work", "i got an interview"
       ]
+    },
+    "anime": {
+      "label": "Anime",
+      "weight": 0.9,
+      "min_keyword_score": 1,
+      "keywords": [
+        "anime", "manga", "waifu", "waifus", "otaku", "weeb", "naruto",
+        "sasuke", "sakura", "itachi", "kakashi", "goku", "vegeta", "gohan",
+        "luffy", "zoro", "sanji", "nami", "ichigo", "levi", "eren", "mikasa",
+        "naruto", "one piece", "bleach", "demon slayer", "kimetsu",
+        "jujutsu kaisen", "jujutsu", "gojo", "sukuna", "tanjiro", "nezuko",
+        "zenitsu", "inosuke", "attack on titan", "aot", "fullmetal alchemist",
+        "death note", "tokyo ghoul", "spy x family", "anya", "kaguya",
+        "rem", "emilia", "asuna", "kirito", "sword art online", "sao",
+        "isekai", "hentai", "ecchi", "shonen", "shounen", "seinen",
+        "cosplay", "amv", "opening", "ost", "aniplex", "crunchyroll",
+        "bocchi", "bocchi the rock", "k-on", "kobayashi", "maid cafe",
+        "vtuber", "vtubers", "hololive", "kizuna ai", "kafka", "akira",
+        "tetsuo", "spirited away", "totoro", "ghibli", "makoto shinkai",
+        "your name", "weathering with you", "suzume", "madoka", "eva",
+        "neon genesis evangelion", "cowboy bebop", "samurai champloo",
+        "monogatari", "senpai", "sensei", "chan", "kun", "sama", "san",
+        "rawr", "uwu", "owo", "xd", "xd", "nani", "baka", "sugoi",
+        "yabai", "kawaii", "kimochi", "yandere", "tsundere", "kuudere",
+        "one punch man", "mob psycho", "boruto", "dragon ball", "dbz",
+        "hunter x hunter", "hxh", "fairy tail", "black clover"
+      ],
+      "phrases": [
+        "i love anime", "i watch anime", "i'm a weeb", "i have a waifu",
+        "i main gojo", "i main levi", "isekai protagonist", "i'm the main character",
+        "my waifu", "waifu material", "best girl", "best boy", "best girl is",
+        "trash anime", "anime sucks", "anime is mid", "anime ruined my life",
+        "i cried at the ending", "i named my cat"
+      ]
+    },
+    "looks": {
+      "label": "Looks",
+      "weight": 0.7,
+      "min_keyword_score": 1,
+      "keywords": [
+        "ugly", "uglier", "ugliest", "handsome", "hot", "pretty", "beautiful",
+        "attractive", "unattractive", "fat", "skinny", "skinny fat", "skibidi",
+        "rizz", "rizzler", "gyatt", "sigma", "alpha", "beta", "chad", "looksmaxxing",
+        "looksmax", "glow up", "glowup", "glow-up", "face", "jawline", "jawline",
+        "mewing", "mew", "pretty boy", "pretty privilege", "ugly duckling",
+        "10/10", "0/10", "5/10", "1/10", "i'm ugly", "i'm fat", "i'm skinny",
+        "i'm pretty", "i'm handsome", "no rizz", "negative rizz", "down bad",
+        "tiktok face", "instagram face", "filter face"
+      ],
+      "phrases": [
+        "i'm ugly", "i'm so ugly", "am i ugly", "i'm fat", "i'm skinny",
+        "am i pretty", "i'm so pretty", "i'm so handsome", "glow up",
+        "i'm down bad", "no rizz", "negative rizz", "i got no rizz",
+        "looksmaxxing", "looksmax", "tell me i'm pretty", "rate me",
+        "rate my face", "am i attractive", "i'm attractive"
+      ]
+    },
+    "fitness_simple": {
+      "label": "Fitness (lifestyle claims)",
+      "weight": 0.8,
+      "min_keyword_score": 1,
+      "keywords": [
+        "fit", "healthy", "skinny", "gains", "shredded", "ripped", "swole",
+        "physique", "physiques", "abs", "six pack", "sixpack", "fat loss",
+        "lose weight", "gain weight", "fat", "skinny", "obese", "skinny",
+        "anorexia", "anorexic", "skinny", "healthy"
+      ],
+      "phrases": [
+        "i am fit", "i'm fit", "i am skinny", "i'm skinny", "i'm so fit",
+        "i work out", "i go to the gym", "i am on a diet", "i'm on a diet",
+        "i have abs", "i'm shredded", "i'm ripped", "i have no gains",
+        "i'm healthy", "i eat clean", "i drink protein"
+      ]
+    },
+    "motivational": {
+      "label": "Motivational / discipline",
+      "weight": 0.7,
+      "min_keyword_score": 1,
+      "keywords": [
+        "5am", "5 am", "early morning", "wake up early", "alarm", "alarms",
+        "discipline", "hustle", "grind", "grindset", "rise and grind",
+        "routine", "morning routine", "early riser", "early bird", "lark",
+        "no days off", "no excuses", "no days off", "grind 24/7", "24/7",
+        "1%", "one percent", "atomic habits", "habit", "habits", "goals",
+        "goal setting", "vision board", "manifest", "manifesting",
+        "law of attraction", "motivational", "motivational video",
+        "motivational speech", "sigma grindset", "sigma male", "alpha male"
+      ],
+      "phrases": [
+        "i wake up at 5am", "i wake up at 5", "i wake up early",
+        "i'm up at 5am", "i'm up at 5", "i'm a morning person",
+        "i'm disciplined", "i hustle", "i grind", "rise and grind",
+        "no days off", "no excuses", "the grind never stops",
+        "i have a morning routine", "i follow jocko", "jocko willink",
+        "i'm a sigma", "sigma grindset", "i'm the alpha",
+        "i don't take days off", "i don't rest"
+      ]
+    },
+    "screen_time": {
+      "label": "Screen time / phone",
+      "weight": 0.7,
+      "min_keyword_score": 1,
+      "keywords": [
+        "tiktok", "instagram", "snapchat", "snap", "reels", "shorts",
+        "youtube shorts", "youtube", "reddit", "twitter", "x.com", "x app",
+        "threads", "bluesky", "mastodon", "screen time", "screentime",
+        "scroll", "scrolling", "doom scroll", "doomscroll", "doomscrolling",
+        "binge watch", "binge", "binged", "bingewatch", "binging",
+        "netflix", "disney plus", "disney+", "hulu", "prime video",
+        "paramount plus", "hbo max", "max", "spotify", "apple music",
+        "podcast", "podcasts", "twitch", "kick", "rumble"
+      ],
+      "phrases": [
+        "my screen time", "screen time is", "i'm on my phone",
+        "i scrolled for", "i doom scrolled", "i was on tiktok for",
+        "i was on reels for", "i watched the whole", "i binged the whole",
+        "i finished the season", "i finished the show", "i finished the anime"
+      ]
+    },
+    "trading": {
+      "label": "Trading / crypto",
+      "weight": 0.9,
+      "min_keyword_score": 2,
+      "keywords": [
+        "trader", "trading", "day trader", "day trading", "swing trade",
+        "swing trading", "scalper", "scalping", "whale", "pump", "dump",
+        "pump and dump", "rug pull", "rugpull", "rug", "mooning",
+        "bitcoin", "btc", "ethereum", "eth", "altcoin", "altcoins", "memecoin",
+        "meme coin", "memecoins", "doge", "shiba", "shib", "pepe", "wif",
+        "bonk", "floki", "elon", "solana", "sol", "cardano", "ada",
+        "polkadot", "dot", "ripple", "xrp", "binance", "coinbase", "kraken",
+        "ftx", "celsius", "voyager", "blockfi", "3ac", "terra", "luna",
+        "usdt", "usdc", "stablecoin", "defi", "nft", "nfts", "web3",
+        "metaverse", "blockchain", "cold wallet", "hot wallet",
+        "seed phrase", "private key", "diamond hands", "paper hands", "hodl",
+        "btfd", "fomo", "fud", "bear market", "bull market", "bull run",
+        "bear run", "all time high", "ath", "all time low", "atl",
+        "fib retracement", "rsi", "macd", "moving average", "candlestick",
+        "candlesticks", "resistance", "breakout", "breakdown",
+        "short squeeze", "gamma squeeze", "gamma", "delta", "theta", "vega",
+        "options", "strike price", "expiry",
+        "leverage", "liquidation", "stop loss", "take profit",
+        "limit order", "market order"
+      ],
+      "phrases": [
+        "bitcoin will hit", "btc to the moon", "to the moon", "buy the dip",
+        "btfd", "diamond hands", "paper hands", "i'm holding", "hodl",
+        "i got liquidated", "i got rekt", "i lost everything", "rug pulled",
+        "i'm a trader", "i trade crypto", "i day trade", "i swing trade",
+        "bitcoin will go", "ethereum will go", "solana will go",
+        "i aped in", "i aped", "ape in", "all in on", "yolo'd into",
+        "altseason", "alt season", "memecoin season", "memecoin rally",
+        "i'm up", "i'm down", "i'm down bad", "down only", "up only",
+        "wen moon", "wen lambo", "when moon", "when lambo"
+      ]
+    },
+    "identity_claim": {
+      "label": "Self-claim / introduction",
+      "weight": 0.8,
+      "min_keyword_score": 1,
+      "keywords": [
+        "i am a", "i'm a", "i am an", "i'm an", "i work as", "i work in",
+        "i'm studying", "i study", "i go to", "i attend", "i'm in", "i'm from",
+        "i'm actually", "trust me", "i promise", "i swear", "believe me"
+      ],
+      "phrases": [
+        "i am a programmer", "i'm a programmer", "i am a software engineer",
+        "i'm a software engineer", "i am a developer", "i'm a developer",
+        "i am a hacker", "i'm a hacker", "i am a hacker", "i'm a hacker",
+        "i am a gamer", "i'm a gamer", "i am a weeb", "i'm a weeb",
+        "i am an engineer", "i'm an engineer", "i am a trader", "i'm a trader",
+        "i am a student", "i'm a student", "i am a founder", "i'm a founder",
+        "i am a ceo", "i'm a ceo", "i am a hustler", "i'm a hustler",
+        "i am a sigma", "i'm a sigma", "i am a chad", "i'm a chad",
+        "i am handsome", "i'm handsome", "i am beautiful", "i'm beautiful",
+        "i am funny", "i'm funny", "i am smart", "i'm smart", "i am rich",
+        "i'm rich", "i am fit", "i'm fit", "i am skinny", "i'm skinny",
+        "i am a model", "i'm a model", "i am a celebrity", "i'm a celebrity",
+        "i am a doctor", "i'm a doctor", "i am a lawyer", "i'm a lawyer",
+        "trust me bro", "trust me", "no for real", "for real though",
+        "i am the best", "i'm the best", "i am the goat", "i'm the goat",
+        "the goat", "goat", "g.o.a.t.", "main character", "the main character"
+      ]
+    },
+    "influence": {
+      "label": "Social media / influencer",
+      "weight": 0.8,
+      "min_keyword_score": 1,
+      "keywords": [
+        "influencer", "influencers", "content creator", "content creators",
+        "creator", "creators", "tiktoker", "youtuber", "streamer", "twitch",
+        "kick streamer", "instagram influencer", "followers", "follower count",
+        "sub count", "subs", "subscribers", "subscriber", "views", "impressions",
+        "engagement", "engagement rate", "reach", "reach rate", "monetize",
+        "monetization", "monetized", "monetise", "monetisation", "brand deal",
+        "sponsored", "sponsor", "sponsorship", "collab", "collab with",
+        "collab post", "collab video", "viral", "trending", "trending video",
+        "trending post", "fyp", "foryou", "for you", "for you page", "fyp page"
+      ],
+      "phrases": [
+        "i have 100 followers", "i only have 100 followers", "i got followers",
+        "i have 0 followers", "no one follows me", "no followers",
+        "i'm an influencer", "i want to be an influencer", "i'm a content creator",
+        "i want to be famous", "i want more followers", "buy me a coffee",
+        "buy me a ko-fi", "i'm monetized", "i'm not monetized",
+        "i'm a small creator", "i'm a small influencer", "i'm big on tiktok"
+      ]
     }
   }
 }

@@ -2,13 +2,23 @@
   "mode": "student",
   "version": 1,
   "description": "For the chronically procrastinating, currently-failing, GPA-on-life-support crowd.",
-  "count": 26,
+  "count": 30,
   "roasts": [
     {
       "id": "std_001",
-      "personalities": ["savage_one", "professor"],
-      "intents": ["school"],
-      "keywords": ["gpa", "grade", "grades", "transcript"],
+      "personalities": [
+        "savage_one",
+        "professor"
+      ],
+      "intents": [
+        "school"
+      ],
+      "keywords": [
+        "gpa",
+        "grade",
+        "grades",
+        "transcript"
+      ],
       "damage": 8,
       "tone": "brutal",
       "template": "Your GPA and your future are both on academic probation. The doctors are discussing when to pull the plug.",
@@ -16,8 +26,13 @@
     },
     {
       "id": "std_002",
-      "personalities": ["savage_one", "sarcastic_friend"],
-      "intents": ["school"],
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "school"
+      ],
       "damage": 6,
       "tone": "playful",
       "template": "You don't procrastinate. You just prefer doing things in a future you haven't ruined yet.",
@@ -25,9 +40,18 @@
     },
     {
       "id": "std_003",
-      "personalities": ["savage_one"],
-      "intents": ["school"],
-      "keywords": ["study", "studying", "studied", "homework"],
+      "personalities": [
+        "savage_one"
+      ],
+      "intents": [
+        "school"
+      ],
+      "keywords": [
+        "study",
+        "studying",
+        "studied",
+        "homework"
+      ],
       "damage": 7,
       "tone": "cutting",
       "template": "Your study group is just you, your phone, and denial. And your phone is winning.",
@@ -35,9 +59,18 @@
     },
     {
       "id": "std_004",
-      "personalities": ["savage_one"],
-      "intents": ["school"],
-      "keywords": ["exam", "test", "fail", "failed"],
+      "personalities": [
+        "savage_one"
+      ],
+      "intents": [
+        "school"
+      ],
+      "keywords": [
+        "exam",
+        "test",
+        "fail",
+        "failed"
+      ],
       "damage": 9,
       "tone": "brutal",
       "template": "You failed so hard the curve gave up on you. The curve is unionized now.",
@@ -45,9 +78,18 @@
     },
     {
       "id": "std_005",
-      "personalities": ["savage_one", "sarcastic_friend"],
-      "intents": ["school"],
-      "keywords": ["essay", "paper", "thesis"],
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "school"
+      ],
+      "keywords": [
+        "essay",
+        "paper",
+        "thesis"
+      ],
       "damage": 7,
       "tone": "cutting",
       "template": "Your essay has the same structure as a house of cards — impressive on paper, collapses on contact.",
@@ -55,8 +97,13 @@
     },
     {
       "id": "std_006",
-      "personalities": ["savage_one", "professor"],
-      "intents": ["school"],
+      "personalities": [
+        "savage_one",
+        "professor"
+      ],
+      "intents": [
+        "school"
+      ],
       "damage": 6,
       "tone": "dry",
       "template": "You don't need a degree. You need a participation certificate and a long, honest conversation.",
@@ -64,8 +111,12 @@
     },
     {
       "id": "std_007",
-      "personalities": ["savage_one"],
-      "intents": ["school"],
+      "personalities": [
+        "savage_one"
+      ],
+      "intents": [
+        "school"
+      ],
       "damage": 7,
       "tone": "cutting",
       "template": "Your transcript reads like a cry for help written in course codes. CRY101: Required.",
@@ -73,8 +124,13 @@
     },
     {
       "id": "std_008",
-      "personalities": ["savage_one", "sarcastic_friend"],
-      "intents": ["school"],
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "school"
+      ],
       "damage": 6,
       "tone": "playful",
       "template": "You study the way I check my phone — with no real commitment to the outcome.",
@@ -82,9 +138,19 @@
     },
     {
       "id": "std_009",
-      "personalities": ["savage_one", "professor"],
-      "intents": ["school"],
-      "keywords": ["professor", "prof", "teacher", "lecture"],
+      "personalities": [
+        "savage_one",
+        "professor"
+      ],
+      "intents": [
+        "school"
+      ],
+      "keywords": [
+        "professor",
+        "prof",
+        "teacher",
+        "lecture"
+      ],
       "damage": 7,
       "tone": "cutting",
       "template": "Your professor has you in their 'students to avoid remembering' folder. It's a thick folder.",
@@ -92,9 +158,17 @@
     },
     {
       "id": "std_010",
-      "personalities": ["savage_one"],
-      "intents": ["school"],
-      "keywords": ["senior", "senioritis", "junior"],
+      "personalities": [
+        "savage_one"
+      ],
+      "intents": [
+        "school"
+      ],
+      "keywords": [
+        "senior",
+        "senioritis",
+        "junior"
+      ],
       "damage": 6,
       "tone": "playful",
       "template": "You don't have senioritis. You have junior regret and a senior workload.",
@@ -102,8 +176,12 @@
     },
     {
       "id": "std_011",
-      "personalities": ["sarcastic_friend"],
-      "intents": ["school"],
+      "personalities": [
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "school"
+      ],
       "damage": 5,
       "tone": "playful",
       "template": "The only A you're getting is in attendance. And even that's iffy.",
@@ -111,8 +189,12 @@
     },
     {
       "id": "std_012",
-      "personalities": ["savage_one"],
-      "intents": ["school"],
+      "personalities": [
+        "savage_one"
+      ],
+      "intents": [
+        "school"
+      ],
       "damage": 7,
       "tone": "cutting",
       "template": "You treat deadlines like suggestions and suggestions like rules. Both are wrong.",
@@ -120,9 +202,17 @@
     },
     {
       "id": "std_013",
-      "personalities": ["savage_one"],
-      "intents": ["school"],
-      "keywords": ["major", "career", "future"],
+      "personalities": [
+        "savage_one"
+      ],
+      "intents": [
+        "school"
+      ],
+      "keywords": [
+        "major",
+        "career",
+        "future"
+      ],
       "damage": 6,
       "tone": "playful",
       "template": "You majored in 'figuring it out later.' Spoiler: you didn't.",
@@ -130,9 +220,18 @@
     },
     {
       "id": "std_014",
-      "personalities": ["savage_one", "professor"],
-      "intents": ["school"],
-      "keywords": ["dropout", "quit", "dropped out"],
+      "personalities": [
+        "savage_one",
+        "professor"
+      ],
+      "intents": [
+        "school"
+      ],
+      "keywords": [
+        "dropout",
+        "quit",
+        "dropped out"
+      ],
       "damage": 8,
       "tone": "brutal",
       "template": "You didn't drop out. You were expelled by reality. And reality doesn't accept appeals.",
@@ -140,9 +239,17 @@
     },
     {
       "id": "std_015",
-      "personalities": ["sarcastic_friend"],
-      "intents": ["school"],
-      "keywords": ["attendance", "absent", "missed class"],
+      "personalities": [
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "school"
+      ],
+      "keywords": [
+        "attendance",
+        "absent",
+        "missed class"
+      ],
       "damage": 5,
       "tone": "playful",
       "template": "Your attendance is the only thing passing. Like a lighthouse in a sea of F's. The lighthouse union has filed a complaint.",
@@ -150,9 +257,18 @@
     },
     {
       "id": "std_016",
-      "personalities": ["savage_one", "professor"],
-      "intents": ["school"],
-      "keywords": ["essay", "paper", "wrote"],
+      "personalities": [
+        "savage_one",
+        "professor"
+      ],
+      "intents": [
+        "school"
+      ],
+      "keywords": [
+        "essay",
+        "paper",
+        "wrote"
+      ],
       "damage": 7,
       "tone": "cutting",
       "template": "You wrote a 12-page essay on why you couldn't write a 12-page essay. The professor gave you an A for honesty. They were being sarcastic. Mostly.",
@@ -160,8 +276,13 @@
     },
     {
       "id": "std_017",
-      "personalities": ["savage_one", "professor"],
-      "intents": ["school"],
+      "personalities": [
+        "savage_one",
+        "professor"
+      ],
+      "intents": [
+        "school"
+      ],
       "damage": 7,
       "tone": "cutting",
       "template": "You treat the syllabus like a suggestion document, the rubric like a rumor, and the deadline like a hoax. The academic integrity office has your photo on a dartboard.",
@@ -169,9 +290,18 @@
     },
     {
       "id": "std_018",
-      "personalities": ["savage_one", "sarcastic_friend"],
-      "intents": ["school"],
-      "keywords": ["major", "undeclared", "undecided"],
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "school"
+      ],
+      "keywords": [
+        "major",
+        "undeclared",
+        "undecided"
+      ],
       "damage": 6,
       "tone": "playful",
       "template": "Your major says 'undeclared' but your transcript says 'unmotivated.' And the bar is on the floor. The bar is also on fire.",
@@ -179,8 +309,13 @@
     },
     {
       "id": "std_019",
-      "personalities": ["savage_one", "sarcastic_friend"],
-      "intents": ["school"],
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "school"
+      ],
       "damage": 6,
       "tone": "playful",
       "template": "You have a 4.0 in sleeping through 8ams and a 0.0 in showing up. The math is overwhelming. So is your sleep schedule.",
@@ -188,9 +323,17 @@
     },
     {
       "id": "std_020",
-      "personalities": ["savage_one", "professor"],
-      "intents": ["school"],
-      "keywords": ["office hours", "advisor"],
+      "personalities": [
+        "savage_one",
+        "professor"
+      ],
+      "intents": [
+        "school"
+      ],
+      "keywords": [
+        "office hours",
+        "advisor"
+      ],
       "damage": 6,
       "tone": "dry",
       "template": "You treat office hours like they don't exist. The professor has accepted it. They have other students. Better students. They send holiday cards.",
@@ -198,8 +341,13 @@
     },
     {
       "id": "std_021",
-      "personalities": ["savage_one", "sarcastic_friend"],
-      "intents": ["school"],
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "school"
+      ],
       "damage": 6,
       "tone": "playful",
       "template": "Your parents brag about your 'potential.' Potential doesn't have a GPA. Yours wouldn't, anyway. Your parents' friends know this.",
@@ -207,9 +355,17 @@
     },
     {
       "id": "std_022",
-      "personalities": ["savage_one"],
-      "intents": ["school"],
-      "keywords": ["abroad", "exchange", "study abroad"],
+      "personalities": [
+        "savage_one"
+      ],
+      "intents": [
+        "school"
+      ],
+      "keywords": [
+        "abroad",
+        "exchange",
+        "study abroad"
+      ],
       "damage": 6,
       "tone": "playful",
       "template": "You study abroad — abroad from your responsibilities, that is. The trip is endless. The passport is full of excuses.",
@@ -217,9 +373,18 @@
     },
     {
       "id": "std_023",
-      "personalities": ["savage_one", "professor"],
-      "intents": ["school"],
-      "keywords": ["wikipedia", "source", "cite"],
+      "personalities": [
+        "savage_one",
+        "professor"
+      ],
+      "intents": [
+        "school"
+      ],
+      "keywords": [
+        "wikipedia",
+        "source",
+        "cite"
+      ],
       "damage": 7,
       "tone": "cutting",
       "template": "You cite Wikipedia in academic papers. Wikipedia cited you back, asking you to stop. Publicly. The article is in the edit history.",
@@ -227,8 +392,13 @@
     },
     {
       "id": "std_024",
-      "personalities": ["savage_one", "professor"],
-      "intents": ["school"],
+      "personalities": [
+        "savage_one",
+        "professor"
+      ],
+      "intents": [
+        "school"
+      ],
       "damage": 7,
       "tone": "cutting",
       "template": "You don't have a thesis statement. You have a thesis suggestion. And you're not following it. Or any other instruction. Or any other suggestion.",
@@ -236,9 +406,18 @@
     },
     {
       "id": "std_025",
-      "personalities": ["savage_one", "sarcastic_friend"],
-      "intents": ["school"],
-      "keywords": ["group project", "team", "partner"],
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "school"
+      ],
+      "keywords": [
+        "group project",
+        "team",
+        "partner"
+      ],
       "damage": 6,
       "tone": "playful",
       "template": "You treat the group project like it's group punishment. Your partners agree. They have a group chat without you. You're not in the read receipt.",
@@ -246,13 +425,657 @@
     },
     {
       "id": "std_026",
-      "personalities": ["savage_one"],
-      "intents": ["school"],
-      "keywords": ["graduate", "graduated", "graduation"],
+      "personalities": [
+        "savage_one"
+      ],
+      "intents": [
+        "school"
+      ],
+      "keywords": [
+        "graduate",
+        "graduated",
+        "graduation"
+      ],
       "damage": 7,
       "tone": "cutting",
       "template": "You graduated. The only thing that graduated is your student debt. It has its own zip code now. The IRS sends you holiday cards.",
       "reaction": "🎓"
+    },
+    {
+      "id": "std_027",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend",
+        "professor"
+      ],
+      "intents": [
+        "school",
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i am a student",
+        "i'm a student",
+        "i am studying",
+        "i'm studying",
+        "i study hard",
+        "i am a topper",
+        "i'm a topper",
+        "i am a nerd",
+        "i'm a nerd",
+        "i am a geek",
+        "i'm a geek",
+        "i am in college",
+        "i'm in college",
+        "i am in school",
+        "i'm in school",
+        "i am at uni",
+        "i'm at uni",
+        "i am in uni",
+        "i'm in uni",
+        "i am in university",
+        "i'm in university",
+        "i go to college",
+        "i go to uni",
+        "i go to university"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "{username} 'is a student.' {roaster_title}, you have {n} assignments due tomorrow, {n2} tabs open to a {tab_thing}, and your GPA is a {gpa}. The {gpa} is also {roaster_pronoun_poss} {analogue}. The {analogue} is on life support. The doctor is {doctor}. {roaster_pronoun} should pivot to {pivot}. The {pivot} is also {pivot_state}.",
+      "placeholders": {
+        "username": {
+          "type": "username"
+        },
+        "n": {
+          "type": "enum",
+          "values": [
+            "3",
+            "4",
+            "5",
+            "7",
+            "12",
+            "47"
+          ]
+        },
+        "n2": {
+          "type": "enum",
+          "values": [
+            "12",
+            "23",
+            "47",
+            "89",
+            "112",
+            "204"
+          ]
+        },
+        "tab_thing": {
+          "type": "enum",
+          "values": [
+            "Stack Overflow",
+            "Chegg answer that costs $5",
+            "Brainly",
+            "YouTube tutorial with no audio",
+            "Discord server you should be muted in"
+          ]
+        },
+        "gpa": {
+          "type": "enum",
+          "values": [
+            "2.4",
+            "2.1",
+            "1.9",
+            "1.7",
+            "1.4",
+            "1.1",
+            "0.9"
+          ]
+        },
+        "analogue": {
+          "type": "enum",
+          "values": [
+            "dating life",
+            "sleep schedule",
+            "screen time",
+            "credit score",
+            "career",
+            "Spotify Wrapped"
+          ]
+        },
+        "doctor": {
+          "type": "enum",
+          "values": [
+            "a $5 therapy app",
+            "a community college advisor",
+            "a horoscope newsletter",
+            "a YouTube comment section",
+            "an AI you vibe-coded"
+          ]
+        },
+        "pivot": {
+          "type": "enum",
+          "values": [
+            "dropping out",
+            "an unpaid internship",
+            "YouTube",
+            "Twitch streaming",
+            "a coding bootcamp",
+            "dropshipping"
+          ]
+        },
+        "pivot_state": {
+          "type": "enum",
+          "values": [
+            "a 404",
+            "a placeholder",
+            "an empty file",
+            "a Notion doc",
+            "a vision board with no vision",
+            "a LinkedIn with no recruiters"
+          ]
+        },
+        "roaster_pronoun_poss": {
+          "type": "roaster",
+          "values": [
+            "male:his",
+            "female:her",
+            "neutral:their"
+          ]
+        },
+        "roaster_pronoun": {
+          "type": "roaster",
+          "values": [
+            "male:he",
+            "female:she",
+            "neutral:they"
+          ]
+        },
+        "roaster_title": {
+          "type": "roaster",
+          "values": [
+            "male:sir",
+            "female:ma'am",
+            "neutral:friend"
+          ],
+          "default": "friend"
+        }
+      },
+      "reaction": "📚"
+    },
+    {
+      "id": "std_028",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend",
+        "professor"
+      ],
+      "intents": [
+        "school"
+      ],
+      "trigger_phrases": [
+        "i failed",
+        "i failed my exam",
+        "i failed my test",
+        "i bombed the exam",
+        "i bombed my exam",
+        "i bombed the test",
+        "i bombed my test",
+        "i got an f",
+        "i got a zero",
+        "i failed the class",
+        "i'm failing",
+        "im failing",
+        "i'm on academic probation",
+        "i got held back",
+        "academic probation"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "{username} failed the {subject} {exam_type}. {roaster_title}, the {exam_type} was on {topic}. The {topic} is in chapter {chapter}. The chapter is also {roaster_pronoun_poss} {analogue}. The {analogue} is on life support. The doctor is {doctor}. The {doctor} is also {roaster_pronoun}. {roaster_pronoun} is a {noun}. The {noun} charges by the hour. The hour is {time}.",
+      "placeholders": {
+        "username": {
+          "type": "username"
+        },
+        "subject": {
+          "type": "enum",
+          "values": [
+            "math",
+            "physics",
+            "chemistry",
+            "biology",
+            "history",
+            "English",
+            "CS",
+            "economics",
+            "philosophy",
+            "PTE",
+            "IELTS",
+            "TOEFL",
+            "GRE",
+            "JEE",
+            "NEET",
+            "SAT",
+            "calculus",
+            "organic chem",
+            "thermodynamics",
+            "electromagnetism"
+          ]
+        },
+        "exam_type": {
+          "type": "enum",
+          "values": [
+            "midterm",
+            "final",
+            "practical",
+            "viva",
+            "quiz",
+            "preexisting conditions",
+            "mock test"
+          ]
+        },
+        "topic": {
+          "type": "enum",
+          "values": [
+            "linear algebra",
+            "the French Revolution",
+            "mitochondria",
+            "OOP",
+            "macroeconomics",
+            "the Pythagorean theorem",
+            "stoichiometry",
+            "Renaissance art",
+            "Cold War",
+            "Newton's third law"
+          ]
+        },
+        "chapter": {
+          "type": "enum",
+          "values": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "the only one",
+            "the first one"
+          ]
+        },
+        "analogue": {
+          "type": "enum",
+          "values": [
+            "dating life",
+            "GPA",
+            "salary",
+            "credit score",
+            "LinkedIn",
+            "screen time",
+            "sleep schedule"
+          ]
+        },
+        "doctor": {
+          "type": "enum",
+          "values": [
+            "a $5 therapy app",
+            "a community college advisor",
+            "a horoscope newsletter",
+            "a YouTube comment section",
+            "an AI you vibe-coded"
+          ]
+        },
+        "noun": {
+          "type": "enum",
+          "values": [
+            "DMV ticket",
+            "ransom note",
+            "404 page",
+            "loading screen",
+            "Spotify Wrapped",
+            "DMV queue number"
+          ]
+        },
+        "time": {
+          "type": "enum",
+          "values": [
+            "2AM",
+            "3AM",
+            "approaching",
+            "right now",
+            "long overdue",
+            "next Friday"
+          ]
+        },
+        "roaster_pronoun_poss": {
+          "type": "roaster",
+          "values": [
+            "male:his",
+            "female:her",
+            "neutral:their"
+          ]
+        },
+        "roaster_pronoun": {
+          "type": "roaster",
+          "values": [
+            "male:he",
+            "female:she",
+            "neutral:they"
+          ]
+        },
+        "roaster_title": {
+          "type": "roaster",
+          "values": [
+            "male:sir",
+            "female:ma'am",
+            "neutral:friend"
+          ],
+          "default": "friend"
+        }
+      },
+      "reaction": "📉"
+    },
+    {
+      "id": "std_029",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend",
+        "professor"
+      ],
+      "intents": [
+        "school",
+        "motivational"
+      ],
+      "trigger_phrases": [
+        "i wake up at 5am",
+        "i wake up at 5",
+        "i'm up at 5am",
+        "i'm up at 5",
+        "i wake up early",
+        "i'm an early riser",
+        "i am an early riser",
+        "i have a morning routine",
+        "i follow jocko",
+        "i'm a sigma",
+        "i am a sigma",
+        "i hustle",
+        "i grind",
+        "rise and grind",
+        "no days off",
+        "i don't take days off",
+        "i don't rest"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "{username} wakes up at 5AM to {action}. {roaster_title}, the 5AM is also when {roaster_pronoun_poss} {noun} shuts off. The {noun} is on {state}. The {state} has a {item}. The {item} charges by the hour. The hour is {time}. The {time} is also when {roaster_pronoun} finally admits the 5AM was for the {reason}. The {reason} is also an {second}. The {second} is on life support. The doctor is {doctor}.",
+      "placeholders": {
+        "username": {
+          "type": "username"
+        },
+        "action": {
+          "type": "enum",
+          "values": [
+            "hustle",
+            "grind",
+            "lift",
+            "read 47 pages",
+            "journal",
+            "ice-bath",
+            "meditate on LinkedIn",
+            "scroll the morning routine of someone cooler"
+          ]
+        },
+        "noun": {
+          "type": "enum",
+          "values": [
+            "productivity",
+            "dopamine",
+            "discipline",
+            "motivation",
+            "Cortisol",
+            "career"
+          ]
+        },
+        "state": {
+          "type": "enum",
+          "values": [
+            "life support",
+            "FMLA",
+            "PTO",
+            "Cobra",
+            "stage 4",
+            "the back-burner"
+          ]
+        },
+        "item": {
+          "type": "enum",
+          "values": [
+            "DMV ticket",
+            "ransom note",
+            "404 page",
+            "loading screen",
+            "Spotify Wrapped",
+            "DMV queue number"
+          ]
+        },
+        "time": {
+          "type": "enum",
+          "values": [
+            "2AM",
+            "3AM",
+            "approaching",
+            "right now",
+            "long overdue",
+            "next Friday"
+          ]
+        },
+        "reason": {
+          "type": "enum",
+          "values": [
+            "TikTok",
+            "Reels",
+            "doom scroll",
+            "anxiety",
+            "FOMO",
+            "excuse to not sleep"
+          ]
+        },
+        "second": {
+          "type": "enum",
+          "values": [
+            "crisis",
+            "red flag",
+            "warning sign",
+            "side effect",
+            "early symptom",
+            "stage 1 of something"
+          ]
+        },
+        "doctor": {
+          "type": "enum",
+          "values": [
+            "a $5 therapy app",
+            "a community college advisor",
+            "a horoscope newsletter",
+            "a YouTube comment section",
+            "an AI you vibe-coded"
+          ]
+        },
+        "roaster_pronoun_poss": {
+          "type": "roaster",
+          "values": [
+            "male:his",
+            "female:her",
+            "neutral:their"
+          ]
+        },
+        "roaster_pronoun": {
+          "type": "roaster",
+          "values": [
+            "male:he",
+            "female:she",
+            "neutral:they"
+          ]
+        },
+        "roaster_title": {
+          "type": "roaster",
+          "values": [
+            "male:sir",
+            "female:ma'am",
+            "neutral:friend"
+          ],
+          "default": "friend"
+        }
+      },
+      "reaction": "⏰"
+    },
+    {
+      "id": "std_030",
+      "personalities": [
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "school"
+      ],
+      "trigger_phrases": [
+        "i study",
+        "i am studying",
+        "i'm studying",
+        "i studied",
+        "i read the chapter",
+        "i read the book",
+        "i did the reading",
+        "i made notes",
+        "i did the homework",
+        "i did homework",
+        "i went to class",
+        "i attended",
+        "i did the assignment"
+      ],
+      "damage": 6,
+      "tone": "playful",
+      "template": "{username} 'studied for {hours} hours.' {roaster_title}, those {hours} hours include {tab_count} tabs of {tab_thing}, an {snack}, and a {snack_2}. The {snack_2} is also {roaster_pronoun_poss} {analogue}. The {analogue} is on life support. The doctor is {doctor}. {roaster_pronoun} should pivot to {pivot}. The {pivot} is also {pivot_state}.",
+      "placeholders": {
+        "username": {
+          "type": "username"
+        },
+        "hours": {
+          "type": "enum",
+          "values": [
+            "2",
+            "3",
+            "4",
+            "5",
+            "7",
+            "8"
+          ]
+        },
+        "tab_count": {
+          "type": "enum",
+          "values": [
+            "12",
+            "23",
+            "47",
+            "89",
+            "112",
+            "204"
+          ]
+        },
+        "tab_thing": {
+          "type": "enum",
+          "values": [
+            "YouTube tutorials that go nowhere",
+            "Stack Overflow answers from 2011",
+            "Brainly",
+            "Chegg",
+            "Discord servers that should be muted"
+          ]
+        },
+        "snack": {
+          "type": "enum",
+          "values": [
+            "half-eaten maggi",
+            "granola bar from 2019",
+            "family's leftovers",
+            "banana that's seen better days",
+            "empty cereal box"
+          ]
+        },
+        "snack_2": {
+          "type": "enum",
+          "values": [
+            "2AM YouTube spiral",
+            "anxiety spiral",
+            "47-tweet thread",
+            "Discord call you should have left",
+            "friend you ghosted"
+          ]
+        },
+        "analogue": {
+          "type": "enum",
+          "values": [
+            "dating life",
+            "GPA",
+            "salary",
+            "credit score",
+            "LinkedIn",
+            "screen time"
+          ]
+        },
+        "doctor": {
+          "type": "enum",
+          "values": [
+            "a $5 therapy app",
+            "a community college advisor",
+            "a horoscope newsletter",
+            "a YouTube comment section",
+            "an AI you vibe-coded"
+          ]
+        },
+        "pivot": {
+          "type": "enum",
+          "values": [
+            "dropping out",
+            "an unpaid internship",
+            "YouTube",
+            "Twitch streaming",
+            "a coding bootcamp",
+            "dropshipping"
+          ]
+        },
+        "pivot_state": {
+          "type": "enum",
+          "values": [
+            "a 404",
+            "a placeholder",
+            "an empty file",
+            "a Notion doc",
+            "a vision board with no vision",
+            "a LinkedIn with no recruiters"
+          ]
+        },
+        "roaster_pronoun_poss": {
+          "type": "roaster",
+          "values": [
+            "male:his",
+            "female:her",
+            "neutral:their"
+          ]
+        },
+        "roaster_pronoun": {
+          "type": "roaster",
+          "values": [
+            "male:he",
+            "female:she",
+            "neutral:they"
+          ]
+        },
+        "roaster_title": {
+          "type": "roaster",
+          "values": [
+            "male:sir",
+            "female:ma'am",
+            "neutral:friend"
+          ],
+          "default": "friend"
+        }
+      },
+      "reaction": "📖"
     }
   ]
 }

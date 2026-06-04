@@ -2,13 +2,24 @@
   "mode": "gamer",
   "version": 1,
   "description": "Trash-talk with game lingo. Plays well with the Gamer personality.",
-  "count": 24,
+  "count": 29,
   "roasts": [
     {
       "id": "gam_001",
-      "personalities": ["gamer", "savage_one"],
-      "intents": ["gaming"],
-      "keywords": ["k/d", "kd", "kda", "kills", "deaths"],
+      "personalities": [
+        "gamer",
+        "savage_one"
+      ],
+      "intents": [
+        "gaming"
+      ],
+      "keywords": [
+        "k/d",
+        "kd",
+        "kda",
+        "kills",
+        "deaths"
+      ],
       "damage": 8,
       "tone": "cutting",
       "template": "Your K/D ratio is so low it's basically a suicide prevention hotline number. Please call it.",
@@ -16,8 +27,13 @@
     },
     {
       "id": "gam_002",
-      "personalities": ["gamer", "savage_one"],
-      "intents": ["gaming"],
+      "personalities": [
+        "gamer",
+        "savage_one"
+      ],
+      "intents": [
+        "gaming"
+      ],
       "damage": 7,
       "tone": "cutting",
       "template": "You're the reason the enemy team has more fun than yours. They're sending thank-you cards.",
@@ -25,9 +41,17 @@
     },
     {
       "id": "gam_003",
-      "personalities": ["gamer"],
-      "intents": ["gaming"],
-      "keywords": ["rank", "ranked", "tier"],
+      "personalities": [
+        "gamer"
+      ],
+      "intents": [
+        "gaming"
+      ],
+      "keywords": [
+        "rank",
+        "ranked",
+        "tier"
+      ],
       "damage": 7,
       "tone": "cutting",
       "template": "Your rank isn't a rank, it's a cry for help. The system keeps you around for diversity.",
@@ -35,9 +59,18 @@
     },
     {
       "id": "gam_004",
-      "personalities": ["gamer", "savage_one"],
-      "intents": ["gaming"],
-      "keywords": ["support", "healer", "heal"],
+      "personalities": [
+        "gamer",
+        "savage_one"
+      ],
+      "intents": [
+        "gaming"
+      ],
+      "keywords": [
+        "support",
+        "healer",
+        "heal"
+      ],
       "damage": 6,
       "tone": "playful",
       "template": "You play support like a hostage — present, but not helping. We tried to negotiate, but you just sat there.",
@@ -45,9 +78,19 @@
     },
     {
       "id": "gam_005",
-      "personalities": ["gamer", "savage_one"],
-      "intents": ["gaming"],
-      "keywords": ["aim", "shoot", "headshot", "shot"],
+      "personalities": [
+        "gamer",
+        "savage_one"
+      ],
+      "intents": [
+        "gaming"
+      ],
+      "keywords": [
+        "aim",
+        "shoot",
+        "headshot",
+        "shot"
+      ],
       "damage": 7,
       "tone": "cutting",
       "template": "Your aim is so bad, the game has you flagged as a lag switch. Or maybe just lag.",
@@ -55,8 +98,12 @@
     },
     {
       "id": "gam_006",
-      "personalities": ["gamer"],
-      "intents": ["gaming"],
+      "personalities": [
+        "gamer"
+      ],
+      "intents": [
+        "gaming"
+      ],
       "damage": 6,
       "tone": "playful",
       "template": "You don't lose. You just redistribute victories to better players. Out of the goodness of your heart.",
@@ -64,9 +111,17 @@
     },
     {
       "id": "gam_007",
-      "personalities": ["gamer", "savage_one"],
-      "intents": ["gaming"],
-      "keywords": ["team", "teammate"],
+      "personalities": [
+        "gamer",
+        "savage_one"
+      ],
+      "intents": [
+        "gaming"
+      ],
+      "keywords": [
+        "team",
+        "teammate"
+      ],
       "damage": 7,
       "tone": "cutting",
       "template": "Your team would carry you, but they already used up their carry slots. Try again next season.",
@@ -74,24 +129,43 @@
     },
     {
       "id": "gam_008",
-      "personalities": ["gamer"],
-      "intents": ["gaming"],
+      "personalities": [
+        "gamer"
+      ],
+      "intents": [
+        "gaming"
+      ],
       "damage": 6,
       "tone": "playful",
-      "template": "Your strategy is the gaming equivalent of bringing a {item} to a gunfight.",
+      "template": "Your strategy is the gaming equivalent of bringing an {item} to a gunfight.",
       "placeholders": {
         "item": {
           "type": "enum",
-          "values": ["spoon", "pool noodle", "USB-A cable", "fidget spinner", "participation certificate"]
+          "values": [
+            "spoon",
+            "pool noodle",
+            "USB-A cable",
+            "fidget spinner",
+            "participation certificate"
+          ]
         }
       },
       "reaction": "🥄"
     },
     {
       "id": "gam_009",
-      "personalities": ["gamer", "savage_one"],
-      "intents": ["gaming"],
-      "keywords": ["rage", "tilt", "angry"],
+      "personalities": [
+        "gamer",
+        "savage_one"
+      ],
+      "intents": [
+        "gaming"
+      ],
+      "keywords": [
+        "rage",
+        "tilt",
+        "angry"
+      ],
       "damage": 7,
       "tone": "cutting",
       "template": "You don't rage quit. You rage continue. Which is honestly a worse reflection on everyone involved.",
@@ -99,8 +173,12 @@
     },
     {
       "id": "gam_010",
-      "personalities": ["gamer"],
-      "intents": ["gaming"],
+      "personalities": [
+        "gamer"
+      ],
+      "intents": [
+        "gaming"
+      ],
       "damage": 6,
       "tone": "playful",
       "template": "You're the loading screen of the team — everyone waits for you to be useful, and they never find out.",
@@ -108,8 +186,13 @@
     },
     {
       "id": "gam_011",
-      "personalities": ["gamer", "savage_one"],
-      "intents": ["gaming"],
+      "personalities": [
+        "gamer",
+        "savage_one"
+      ],
+      "intents": [
+        "gaming"
+      ],
       "damage": 7,
       "tone": "cutting",
       "template": "Your gameplay is so bad the tutorial came back to check on you. It brought snacks. Sympathy snacks.",
@@ -117,9 +200,17 @@
     },
     {
       "id": "gam_012",
-      "personalities": ["gamer"],
-      "intents": ["gaming"],
-      "keywords": ["grind", "grinding", "farm"],
+      "personalities": [
+        "gamer"
+      ],
+      "intents": [
+        "gaming"
+      ],
+      "keywords": [
+        "grind",
+        "grinding",
+        "farm"
+      ],
       "damage": 5,
       "tone": "playful",
       "template": "You grind like you're paying rent on the game. Everyone else is just visiting.",
@@ -127,9 +218,19 @@
     },
     {
       "id": "gam_013",
-      "personalities": ["gamer", "savage_one"],
-      "intents": ["gaming"],
-      "keywords": ["inventory", "loot", "item", "items"],
+      "personalities": [
+        "gamer",
+        "savage_one"
+      ],
+      "intents": [
+        "gaming"
+      ],
+      "keywords": [
+        "inventory",
+        "loot",
+        "item",
+        "items"
+      ],
       "damage": 6,
       "tone": "playful",
       "template": "Your inventory management is a war crime. The Geneva Convention has a clause about it. We need to talk. Preferably with lawyers.",
@@ -137,8 +238,13 @@
     },
     {
       "id": "gam_014",
-      "personalities": ["gamer", "savage_one"],
-      "intents": ["gaming"],
+      "personalities": [
+        "gamer",
+        "savage_one"
+      ],
+      "intents": [
+        "gaming"
+      ],
       "damage": 6,
       "tone": "playful",
       "template": "You die so much the respawn point sends you Christmas cards. They have your name on the list. The list is long. The list is worried.",
@@ -146,9 +252,17 @@
     },
     {
       "id": "gam_015",
-      "personalities": ["gamer"],
-      "intents": ["gaming"],
-      "keywords": ["sensitivity", "mouse", "settings"],
+      "personalities": [
+        "gamer"
+      ],
+      "intents": [
+        "gaming"
+      ],
+      "keywords": [
+        "sensitivity",
+        "mouse",
+        "settings"
+      ],
       "damage": 6,
       "tone": "playful",
       "template": "Your sensitivity is so high, the cursor is in a different timezone. And it's losing. The cursor has filed a transfer request.",
@@ -156,8 +270,13 @@
     },
     {
       "id": "gam_016",
-      "personalities": ["gamer", "savage_one"],
-      "intents": ["gaming"],
+      "personalities": [
+        "gamer",
+        "savage_one"
+      ],
+      "intents": [
+        "gaming"
+      ],
       "damage": 6,
       "tone": "playful",
       "template": "You're the boss check before the actual boss. Easy to beat. Annoying to deal with. Mandatory. Just like therapy. And taxes.",
@@ -165,9 +284,18 @@
     },
     {
       "id": "gam_017",
-      "personalities": ["gamer", "sarcastic_friend"],
-      "intents": ["gaming"],
-      "keywords": ["inventory", "loot", "item"],
+      "personalities": [
+        "gamer",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "gaming"
+      ],
+      "keywords": [
+        "inventory",
+        "loot",
+        "item"
+      ],
       "damage": 6,
       "tone": "playful",
       "template": "Your inventory is full of items you don't need and a shortage of the ones you do. That's also your love life. Coincidence? I think not.",
@@ -175,9 +303,17 @@
     },
     {
       "id": "gam_018",
-      "personalities": ["gamer", "savage_one"],
-      "intents": ["gaming"],
-      "keywords": ["support", "healer"],
+      "personalities": [
+        "gamer",
+        "savage_one"
+      ],
+      "intents": [
+        "gaming"
+      ],
+      "keywords": [
+        "support",
+        "healer"
+      ],
       "damage": 7,
       "tone": "cutting",
       "template": "You main support but you don't support. You just spectate from the back. The back doesn't even know you're there. The back is confused.",
@@ -185,9 +321,18 @@
     },
     {
       "id": "gam_019",
-      "personalities": ["gamer", "savage_one"],
-      "intents": ["gaming"],
-      "keywords": ["life", "irl", "real life"],
+      "personalities": [
+        "gamer",
+        "savage_one"
+      ],
+      "intents": [
+        "gaming"
+      ],
+      "keywords": [
+        "life",
+        "irl",
+        "real life"
+      ],
       "damage": 8,
       "tone": "brutal",
       "template": "Your K/D in life is 0.0/1.0. You have been permanently muted. By the universe. The universe also added you to the do-not-respawn list.",
@@ -195,9 +340,18 @@
     },
     {
       "id": "gam_020",
-      "personalities": ["gamer"],
-      "intents": ["gaming"],
-      "keywords": ["fps", "lag", "frame", "frames"],
+      "personalities": [
+        "gamer"
+      ],
+      "intents": [
+        "gaming"
+      ],
+      "keywords": [
+        "fps",
+        "lag",
+        "frame",
+        "frames"
+      ],
       "damage": 5,
       "tone": "playful",
       "template": "Your FPS is dropping faster than your rank. Both are reaching bedrock. Bedrock is also a ranking tier in some games. You're heading there.",
@@ -205,9 +359,17 @@
     },
     {
       "id": "gam_021",
-      "personalities": ["gamer"],
-      "intents": ["gaming"],
-      "keywords": ["lobby", "queue", "matchmaking"],
+      "personalities": [
+        "gamer"
+      ],
+      "intents": [
+        "gaming"
+      ],
+      "keywords": [
+        "lobby",
+        "queue",
+        "matchmaking"
+      ],
       "damage": 6,
       "tone": "playful",
       "template": "You spend more time in the lobby than in the actual game. The lobby is starting to charge rent. It's sending invoices. The invoices have interest.",
@@ -215,9 +377,18 @@
     },
     {
       "id": "gam_022",
-      "personalities": ["gamer", "savage_one"],
-      "intents": ["gaming"],
-      "keywords": ["reaction", "reaction time", "reflex"],
+      "personalities": [
+        "gamer",
+        "savage_one"
+      ],
+      "intents": [
+        "gaming"
+      ],
+      "keywords": [
+        "reaction",
+        "reaction time",
+        "reflex"
+      ],
       "damage": 7,
       "tone": "cutting",
       "template": "You have the reaction time of a Windows XP shutdown. The progress bar is fake. We all know. The bar is also a lie.",
@@ -225,9 +396,18 @@
     },
     {
       "id": "gam_023",
-      "personalities": ["gamer", "savage_one"],
-      "intents": ["gaming"],
-      "keywords": ["strategy", "tactic", "plan"],
+      "personalities": [
+        "gamer",
+        "savage_one"
+      ],
+      "intents": [
+        "gaming"
+      ],
+      "keywords": [
+        "strategy",
+        "tactic",
+        "plan"
+      ],
       "damage": 7,
       "tone": "cutting",
       "template": "Your strategy is 'run in and pray.' Prayer isn't an ability in this game. Or any game. Or real life. The strategy needs work. The work is overdue.",
@@ -235,19 +415,707 @@
     },
     {
       "id": "gam_024",
-      "personalities": ["gamer"],
-      "intents": ["gaming"],
-      "keywords": ["main", "character", "pick"],
+      "personalities": [
+        "gamer"
+      ],
+      "intents": [
+        "gaming"
+      ],
+      "keywords": [
+        "main",
+        "character",
+        "pick"
+      ],
       "damage": 5,
       "tone": "playful",
       "template": "You main {character} just because they're 'cool.' Their pick rate is down. So is your win rate. So is morale. So is the rest of the team.",
       "placeholders": {
         "character": {
           "type": "enum",
-          "values": ["Jett", "Pikachu", "Kirby", "Sombra", "a hero nobody asked for", "Yasuo"]
+          "values": [
+            "Jett",
+            "Pikachu",
+            "Kirby",
+            "Sombra",
+            "a hero nobody asked for",
+            "Yasuo"
+          ]
         }
       },
       "reaction": "🎭"
+    },
+    {
+      "id": "gam_025",
+      "personalities": [
+        "gamer",
+        "savage_one"
+      ],
+      "intents": [
+        "gaming",
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i am a gamer",
+        "i'm a gamer",
+        "i love gaming",
+        "i play games",
+        "i play bgmi",
+        "i play pubg",
+        "i play valorant",
+        "i play fortnite",
+        "i play cod",
+        "i play apex",
+        "i play cs2",
+        "i play csgo",
+        "i play free fire",
+        "i play gta",
+        "i play minecraft",
+        "i main",
+        "i one-trick"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "{username} 'plays {game}.' {roaster_title}, you have {hours} hours in {game} and the {rank} badge to show for it. The {rank} is a {rank_state}. The {rank_state} is also {roaster_pronoun_poss} LinkedIn. The LinkedIn is on {state}. The {state} has a {noun}. The {noun} charges hourly. The hour is approaching.",
+      "placeholders": {
+        "username": {
+          "type": "username"
+        },
+        "game": {
+          "type": "enum",
+          "values": [
+            "BGMI",
+            "PUBG",
+            "Free Fire",
+            "Valorant",
+            "CS2",
+            "COD Mobile",
+            "Apex Legends",
+            "Fortnite",
+            "Minecraft",
+            "GTA Online",
+            "League of Legends",
+            "Dota 2",
+            "Genshin",
+            "Roblox"
+          ]
+        },
+        "hours": {
+          "type": "enum",
+          "values": [
+            "47",
+            "120",
+            "412",
+            "891",
+            "1.2k",
+            "2.3k"
+          ]
+        },
+        "rank": {
+          "type": "enum",
+          "values": [
+            "Bronze",
+            "Silver",
+            "Gold",
+            "Platinum",
+            "Diamond",
+            "Master",
+            "Immortal",
+            "Radiant",
+            "Conqueror",
+            "Ace",
+            "Tier-1"
+          ]
+        },
+        "rank_state": {
+          "type": "enum",
+          "values": [
+            "participation trophy",
+            "mercy badge",
+            "pity rank",
+            "ranked floor",
+            "loading screen of a rank",
+            "404 rank"
+          ]
+        },
+        "state": {
+          "type": "enum",
+          "values": [
+            "life support",
+            "FMLA",
+            "PTO",
+            "Cobra",
+            "stage 4",
+            "the back-burner"
+          ]
+        },
+        "noun": {
+          "type": "enum",
+          "values": [
+            "DMV ticket",
+            "ransom note",
+            "404 page",
+            "loading screen",
+            "Spotify Wrapped",
+            "DMV queue number"
+          ]
+        },
+        "roaster_pronoun_poss": {
+          "type": "roaster",
+          "values": [
+            "male:his",
+            "female:her",
+            "neutral:their"
+          ]
+        },
+        "roaster_title": {
+          "type": "roaster",
+          "values": [
+            "male:sir",
+            "female:ma'am",
+            "neutral:friend"
+          ],
+          "default": "friend"
+        }
+      },
+      "reaction": "🎮"
+    },
+    {
+      "id": "gam_026",
+      "personalities": [
+        "gamer",
+        "savage_one"
+      ],
+      "intents": [
+        "gaming"
+      ],
+      "trigger_phrases": [
+        "bgmi",
+        "pubg",
+        "free fire",
+        "i play bgmi",
+        "i play pubg",
+        "i play free fire",
+        "i play codm",
+        "i play cod mobile",
+        "battle royale",
+        "battle royale game",
+        "i main m4",
+        "i play m416",
+        "i play akm"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "{username} plays {game} on a {phone} with {internet} internet. {roaster_title}, your K/D is {kd}. The {kd} is also your {analogue}. The {analogue} charges by the hour. The hour is {time}. The {time} is also when {roaster_pronoun} should uninstall. {roaster_pronoun} won't. The uninstall button is also lagging.",
+      "placeholders": {
+        "username": {
+          "type": "username"
+        },
+        "game": {
+          "type": "enum",
+          "values": [
+            "BGMI",
+            "PUBG Mobile",
+            "Free Fire",
+            "COD Mobile",
+            "Fortnite Mobile",
+            "Apex Mobile"
+          ]
+        },
+        "phone": {
+          "type": "enum",
+          "values": [
+            "3-year-old mid-range",
+            "Mom's hand-me-down",
+            "phone that runs hot in summer",
+            "family tablet",
+            "budget phone with broken speakers"
+          ]
+        },
+        "internet": {
+          "type": "enum",
+          "values": [
+            "5G that lies",
+            "WiFi in a basement",
+            "the neighbor's hotspot",
+            "data that throttles at 6PM",
+            "Airtel's 4G with a prayer"
+          ]
+        },
+        "kd": {
+          "type": "enum",
+          "values": [
+            "0.4",
+            "0.6",
+            "0.8",
+            "1.1",
+            "1.3",
+            "0.2",
+            "0.1"
+          ]
+        },
+        "analogue": {
+          "type": "enum",
+          "values": [
+            "GPA",
+            "dating life",
+            "salary",
+            "credit score",
+            "sleep schedule",
+            "screen time report"
+          ]
+        },
+        "time": {
+          "type": "enum",
+          "values": [
+            "2AM",
+            "3AM",
+            "4AM",
+            "right now",
+            "approaching",
+            "long overdue"
+          ]
+        },
+        "roaster_pronoun": {
+          "type": "roaster",
+          "values": [
+            "male:he",
+            "female:she",
+            "neutral:they"
+          ]
+        },
+        "roaster_title": {
+          "type": "roaster",
+          "values": [
+            "male:sir",
+            "female:ma'am",
+            "neutral:friend"
+          ],
+          "default": "friend"
+        }
+      },
+      "reaction": "🪖"
+    },
+    {
+      "id": "gam_027",
+      "personalities": [
+        "gamer",
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "gaming"
+      ],
+      "trigger_phrases": [
+        "i have no friends",
+        "i have no teammates",
+        "no one plays with me",
+        "i play solo",
+        "solo queue",
+        "solo carry",
+        "i have no duo",
+        "no one duos with me",
+        "duo?",
+        "anyone want to duo",
+        "anyone want to play",
+        "lfg",
+        "looking for group",
+        "looking for duo"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "{username} has {team_size} teammates on the friends list. {team_size} of them are {member}. The other {remaining} are {second_member}. {roaster_title}, you solo queue because the squad {action}. The {action} is also {roaster_pronoun_poss} {analogue}. The {analogue} is on life support. The doctor is {doctor}.",
+      "placeholders": {
+        "username": {
+          "type": "username"
+        },
+        "team_size": {
+          "type": "enum",
+          "values": [
+            "0",
+            "1",
+            "2",
+            "3",
+            "4",
+            "9",
+            "12"
+          ]
+        },
+        "remaining": {
+          "type": "enum",
+          "values": [
+            "0",
+            "1",
+            "2",
+            "3"
+          ]
+        },
+        "member": {
+          "type": "enum",
+          "values": [
+            "your alt account",
+            "your mom",
+            "an AI you trained",
+            "a bot you coded in 3 hours",
+            "a fish",
+            "a screenshot in a group chat"
+          ]
+        },
+        "second_member": {
+          "type": "enum",
+          "values": [
+            "alt accounts you forgot the password to",
+            "people who left you on read",
+            "people you ghosted in 2021",
+            "a Discord mod who muted you",
+            "a sleeping cat",
+            "a couch pillow with a name"
+          ]
+        },
+        "action": {
+          "type": "enum",
+          "values": [
+            "unadded",
+            "uninstalled",
+            "blocked you",
+            "moved to a different time zone",
+            "is in the same room and won't invite you",
+            "left the country"
+          ]
+        },
+        "analogue": {
+          "type": "enum",
+          "values": [
+            "dating life",
+            "group chat",
+            "GPA",
+            "credit score",
+            "LinkedIn",
+            "Spotify Wrapped",
+            "screen time"
+          ]
+        },
+        "doctor": {
+          "type": "enum",
+          "values": [
+            "a $5 therapy app",
+            "a community college advisor",
+            "a horoscope newsletter",
+            "a YouTube comment section",
+            "an AI you vibe-coded"
+          ]
+        },
+        "roaster_pronoun_poss": {
+          "type": "roaster",
+          "values": [
+            "male:his",
+            "female:her",
+            "neutral:their"
+          ]
+        },
+        "roaster_title": {
+          "type": "roaster",
+          "values": [
+            "male:sir",
+            "female:ma'am",
+            "neutral:friend"
+          ],
+          "default": "friend"
+        }
+      },
+      "reaction": "🫥"
+    },
+    {
+      "id": "gam_028",
+      "personalities": [
+        "gamer",
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "gaming",
+        "identity_claim",
+        "influence"
+      ],
+      "trigger_phrases": [
+        "i have 100 followers",
+        "i have 100 subs",
+        "i have 1000 followers",
+        "i have 1000 subs",
+        "i have 10k followers",
+        "i'm a streamer",
+        "i'm a youtuber",
+        "i am a streamer",
+        "i am a youtuber",
+        "i stream",
+        "i content create",
+        "i make content",
+        "i'm a content creator",
+        "i am a content creator"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "{username} has {count} {metric} on {platform}. {roaster_title}, the {count} {metric} are {member}. {member_count} of them are {second_member}. The {second_member} charges by the hour. The hour is {time}. The {time} is also when {roaster_pronoun_poss} {analogue} hits zero. The zero is on life support. The doctor is {doctor}.",
+      "placeholders": {
+        "username": {
+          "type": "username"
+        },
+        "count": {
+          "type": "enum",
+          "values": [
+            "47",
+            "120",
+            "412",
+            "891",
+            "1.2k",
+            "10k"
+          ]
+        },
+        "metric": {
+          "type": "enum",
+          "values": [
+            "followers",
+            "subscribers",
+            "subs",
+            "Twitch followers",
+            "Twitter followers",
+            "Instagram followers"
+          ]
+        },
+        "platform": {
+          "type": "enum",
+          "values": [
+            "Twitch",
+            "YouTube",
+            "TikTok",
+            "Kick",
+            "Twitter",
+            "Instagram",
+            "Threads"
+          ]
+        },
+        "member": {
+          "type": "enum",
+          "values": [
+            "bots",
+            "alt accounts",
+            "your mom",
+            "a group project",
+            "the family group chat",
+            "an AI you trained",
+            "your subscribers-only notifications you snoozed"
+          ]
+        },
+        "member_count": {
+          "type": "enum",
+          "values": [
+            "40",
+            "100",
+            "400",
+            "800",
+            "9.5k",
+            "all of them"
+          ]
+        },
+        "second_member": {
+          "type": "enum",
+          "values": [
+            "your mom",
+            "an AI you trained",
+            "your alt account",
+            "a screenshot in a group chat",
+            "a cousin who felt bad",
+            "a friend you paid $5"
+          ]
+        },
+        "time": {
+          "type": "enum",
+          "values": [
+            "2AM",
+            "3AM",
+            "right now",
+            "approaching",
+            "long overdue",
+            "this Friday"
+          ]
+        },
+        "analogue": {
+          "type": "enum",
+          "values": [
+            "dating life",
+            "GPA",
+            "salary",
+            "credit score",
+            "screen time",
+            "LinkedIn"
+          ]
+        },
+        "doctor": {
+          "type": "enum",
+          "values": [
+            "a $5 therapy app",
+            "a community college advisor",
+            "a horoscope newsletter",
+            "a YouTube comment section",
+            "an AI you vibe-coded"
+          ]
+        },
+        "roaster_pronoun_poss": {
+          "type": "roaster",
+          "values": [
+            "male:his",
+            "female:her",
+            "neutral:their"
+          ]
+        },
+        "roaster_title": {
+          "type": "roaster",
+          "values": [
+            "male:sir",
+            "female:ma'am",
+            "neutral:friend"
+          ],
+          "default": "friend"
+        }
+      },
+      "reaction": "📸"
+    },
+    {
+      "id": "gam_029",
+      "personalities": [
+        "gamer",
+        "savage_one"
+      ],
+      "intents": [
+        "gaming"
+      ],
+      "trigger_phrases": [
+        "i want to be a pro",
+        "i will go pro",
+        "i'm going pro",
+        "i'm going to go pro",
+        "i want to be a pro gamer",
+        "i want to compete",
+        "i'm going to compete",
+        "i will be a pro",
+        "i'll go pro",
+        "i will be on esports",
+        "i want to be on esports"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "{username} 'wants to go pro.' {roaster_title}, the {hours}-hour grind in {game} has produced an {rank} badge. The {rank} is the {rank_state}. The {rank_state} is also {roaster_pronoun_poss} LinkedIn. The LinkedIn is on life support. The doctor is {doctor}. {roaster_pronoun} should pivot to {pivot}. The {pivot} is also {pivot_state}. The {pivot_state} charges by the hour.",
+      "placeholders": {
+        "username": {
+          "type": "username"
+        },
+        "hours": {
+          "type": "enum",
+          "values": [
+            "412",
+            "891",
+            "1.2k",
+            "2.3k",
+            "4.7k",
+            "8.9k"
+          ]
+        },
+        "game": {
+          "type": "enum",
+          "values": [
+            "Valorant",
+            "CS2",
+            "BGMI",
+            "PUBG",
+            "Apex",
+            "COD",
+            "Fortnite",
+            "League",
+            "Dota 2",
+            "Rocket League"
+          ]
+        },
+        "rank": {
+          "type": "enum",
+          "values": [
+            "Bronze",
+            "Silver",
+            "Gold",
+            "Platinum",
+            "Diamond",
+            "Master",
+            "Immortal"
+          ]
+        },
+        "rank_state": {
+          "type": "enum",
+          "values": [
+            "participation trophy",
+            "mercy badge",
+            "pity rank",
+            "ranked floor",
+            "loading screen of a rank",
+            "404 rank"
+          ]
+        },
+        "pivot": {
+          "type": "enum",
+          "values": [
+            "content creation",
+            "coaching",
+            "casting",
+            "merch",
+            "a coaching YouTube channel",
+            "Twitch streaming"
+          ]
+        },
+        "pivot_state": {
+          "type": "enum",
+          "values": [
+            "stream with 0 viewers",
+            "coaching rate of $0/hr",
+            "merch pre-order with 0 buyers",
+            "Twitch affiliate that never triggered",
+            "a YouTube with 0 subs",
+            "a podcast nobody asked for"
+          ]
+        },
+        "doctor": {
+          "type": "enum",
+          "values": [
+            "a $5 therapy app",
+            "a community college advisor",
+            "a horoscope newsletter",
+            "a YouTube comment section",
+            "an AI you vibe-coded"
+          ]
+        },
+        "roaster_pronoun_poss": {
+          "type": "roaster",
+          "values": [
+            "male:his",
+            "female:her",
+            "neutral:their"
+          ]
+        },
+        "roaster_pronoun": {
+          "type": "roaster",
+          "values": [
+            "male:he",
+            "female:she",
+            "neutral:they"
+          ]
+        },
+        "roaster_title": {
+          "type": "roaster",
+          "values": [
+            "male:sir",
+            "female:ma'am",
+            "neutral:friend"
+          ],
+          "default": "friend"
+        }
+      },
+      "reaction": "🏆"
     }
   ]
 }
