@@ -2,7 +2,7 @@
   "mode": "savage",
   "version": 2,
   "description": "Brutal but safe (no protected classes, no slurs, no actual harm). Damage 6-10.",
-  "count": 52,
+  "count": 101,
   "roasts": [
     {
       "id": "sav_001",
@@ -2442,6 +2442,1603 @@
         }
       },
       "reaction": "💀"
+    },
+    {
+      "id": "sav_053",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i am an engineer",
+        "i'm an engineer",
+        "i am a real engineer",
+        "i'm a real engineer",
+        "i am a proper engineer",
+        "i am a software engineer",
+        "i'm a software engineer"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Ah yes. Four years of education to spend the rest of your life explaining to relatives that you don't repair refrigerators.",
+      "reaction": "🔧"
+    },
+    {
+      "id": "sav_054",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend",
+        "professor"
+      ],
+      "intents": [
+        "school"
+      ],
+      "trigger_phrases": [
+        "i will start studying tomorrow",
+        "i'll start studying tomorrow",
+        "i'll study tomorrow",
+        "i will study tomorrow",
+        "i will start tomorrow",
+        "i'll start tomorrow",
+        "i will start next week",
+        "i will start on monday",
+        "i will start next month",
+        "tomorrow i'll start",
+        "i'll start next week",
+        "starting tomorrow",
+        "starting next week",
+        "starting monday",
+        "next week i'll",
+        "next week i will",
+        "i will start on monday",
+        "tomorrow is the day",
+        "i'll start from tomorrow",
+        "i will start from tomorrow"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Tomorrow called. It said you're blocked. Permanently. Tomorrow is also on FMLA. Tomorrow's doctor is a $5 therapy app. Tomorrow is not coming. Tomorrow is a lie you tell yourself in a 2AM spiral.",
+      "reaction": "📅"
+    },
+    {
+      "id": "sav_055",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend",
+        "toxic_interviewer"
+      ],
+      "intents": [
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i am very honest",
+        "i'm very honest",
+        "i am honest",
+        "i'm honest",
+        "i am super honest",
+        "i'm super honest",
+        "i am always honest",
+        "i am a very honest person",
+        "honest to a fault",
+        "i never lie",
+        "i don't lie"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Your résumé says 'expert in something'. Your browser history says 'expert at something else'. Your browser history also says expert at lying. The lying is on FMLA. The FMLA's doctor is a $5 therapy app. The app is also your LinkedIn. The LinkedIn has a recommendation. The recommendation is also the lie. The lie is on life support.",
+      "reaction": "🎭"
+    },
+    {
+      "id": "sav_056",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend",
+        "toxic_interviewer"
+      ],
+      "intents": [
+        "programming"
+      ],
+      "trigger_phrases": [
+        "i am good at coding",
+        "i'm good at coding",
+        "i am a good coder",
+        "i'm a good coder",
+        "i am great at coding",
+        "i'm great at coding",
+        "i am a great coder",
+        "i am a solid developer",
+        "i am a 10x developer",
+        "i'm a 10x developer",
+        "i am a 10x engineer",
+        "i am the best coder",
+        "i am a coding genius",
+        "i am a coding god",
+        "i am good at programming",
+        "i am a great programmer",
+        "i am a programming god",
+        "coding is my life",
+        "i live to code",
+        "i code every day",
+        "i code everyday",
+        "i code daily"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Your GitHub is so empty that recruiters use it as a screensaver. Your GitHub is also on FMLA. The FMLA's doctor is a $5 therapy app. The app is also your LeetCode streak. The streak is on life support. The life support is also a 4:20AM Twitter draft. The draft is unread. The unread is also your portfolio. The portfolio is hosted on a free domain.",
+      "reaction": "💻"
+    },
+    {
+      "id": "sav_057",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i don't need ai",
+        "i don't need chatgpt",
+        "i don't need gpt",
+        "i don't need any ai",
+        "ai is useless",
+        "ai is trash",
+        "ai is bad",
+        "ai will never replace me",
+        "ai can't replace me",
+        "i am better than ai",
+        "i'm better than ai",
+        "ai is overrated",
+        "ai is a fad",
+        "ai is a bubble",
+        "ai is dying",
+        "chatgpt is trash"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Yet here you are, talking to a roast bot at 4:20AM, asking it to validate your existence. The validation is also on FMLA. The FMLA's doctor is a $5 therapy app. The app is also your sense of self. The self is on life support. The life support is also a Twitter thread. The thread got ratio'd. The ratio is also your dating life.",
+      "reaction": "🤖"
+    },
+    {
+      "id": "sav_058",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i am unique",
+        "i'm unique",
+        "i am one of a kind",
+        "i'm one of a kind",
+        "i am special",
+        "i'm special",
+        "i am different",
+        "i'm different",
+        "i stand out",
+        "i don't fit in",
+        "i am not like others",
+        "i am unlike anyone",
+        "no one is like me",
+        "i am rare"
+      ],
+      "damage": 6,
+      "tone": "playful",
+      "template": "You're so unique that the same five motivational quotes show up on your feed, your bathroom mirror, your Tinder bio, and your mom's fridge magnet. The magnet is also on FMLA. The FMLA's doctor is a $5 therapy app. The app is also your personality. The personality is on life support.",
+      "reaction": "🦄"
+    },
+    {
+      "id": "sav_059",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i have big dreams",
+        "i have big goals",
+        "i have huge dreams",
+        "i have huge goals",
+        "i have massive dreams",
+        "i have massive goals",
+        "i will achieve my dreams",
+        "i will achieve my goals",
+        "i will make it",
+        "i will be successful",
+        "i will be a success",
+        "i'm going to make it",
+        "i'm gonna make it",
+        "im gonna make it",
+        "i will reach my goals"
+      ],
+      "damage": 6,
+      "tone": "playful",
+      "template": "Big dreams, tiny sleep schedule. Big dreams, tiny savings account. Big dreams, tiny action plan. The action plan is also on FMLA. The FMLA's doctor is a $5 therapy app. The app is also your vision board. The vision board has a Canva logo on it. The Canva logo is also your net worth.",
+      "reaction": "🌠"
+    },
+    {
+      "id": "sav_060",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend",
+        "toxic_interviewer"
+      ],
+      "intents": [
+        "career"
+      ],
+      "trigger_phrases": [
+        "i work hard",
+        "i'm a hard worker",
+        "i am a hard worker",
+        "i work very hard",
+        "i hustle",
+        "i hustle hard",
+        "i grind",
+        "i grind daily",
+        "i grind every day",
+        "i am a grinder",
+        "i'm a grinder",
+        "i am a hustler",
+        "i'm a hustler",
+        "i outwork everyone",
+        "i outwork my peers",
+        "i never stop working"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Your Instagram is a documentary. Your Instagram is also on FMLA. The FMLA's doctor is a $5 therapy app. The app is also your 4AM gym selfie. The selfie is on life support. The life support is also a Twitter thread about your morning routine. The thread got 2 likes. The 2 likes are also your mom. The mom is on FMLA. The FMLA's doctor is a $5 therapy app.",
+      "reaction": "💪"
+    },
+    {
+      "id": "sav_061",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "money",
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i am a millionaire",
+        "i'm a millionaire",
+        "i am rich",
+        "i'm rich",
+        "i am wealthy",
+        "i'm wealthy",
+        "i have a lot of money",
+        "i make a lot of money",
+        "i earn a lot of money",
+        "i'm rich in knowledge",
+        "i am rich in knowledge",
+        "i am a billionaire",
+        "i'm a billionaire"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "In what currency? In-game coins. The coins are also on FMLA. The FMLA's doctor is a $5 therapy app. The app is also your savings account. The savings account has $4.20 in it. The $4.20 is also a 2016 gift card. The gift card is on life support. The life support is also your retirement plan.",
+      "reaction": "💰"
+    },
+    {
+      "id": "sav_062",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend",
+        "toxic_interviewer"
+      ],
+      "intents": [
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i don't make mistakes",
+        "i never make mistakes",
+        "i'm never wrong",
+        "i am never wrong",
+        "i am always right",
+        "i'm always right",
+        "i am perfect",
+        "i'm perfect",
+        "i don't do mistakes",
+        "i never fail",
+        "i don't fail",
+        "i am flawless",
+        "i'm flawless"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Then who typed that? The typing is also on FMLA. The FMLA's doctor is a $5 therapy app. The app is also your ego. The ego is on life support. The life support is also a Twitter thread about your failures. The thread got ratio'd. The ratio is also your typing accuracy. The accuracy is at 47%.",
+      "reaction": "🎯"
+    },
+    {
+      "id": "sav_063",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i know everything",
+        "i know it all",
+        "i know all",
+        "i am the smartest",
+        "i'm the smartest",
+        "i am the smartest person",
+        "i'm the smartest person",
+        "i am a genius",
+        "i'm a genius",
+        "i have a high iq",
+        "i'm a genius",
+        "i have big brain",
+        "i have huge brain",
+        "big brain time"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Then why are you asking a roast bot to confirm it? The confirmation is also on FMLA. The FMLA's doctor is a $5 therapy app. The app is also your PhD. The PhD has a 47% completion rate. The completion is also your IQ test. The IQ test was a Facebook quiz. The quiz is on life support. The life support is also your memory of it.",
+      "reaction": "🧠"
+    },
+    {
+      "id": "sav_064",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i can beat you",
+        "i can beat you in a fight",
+        "i could beat you",
+        "i would beat you",
+        "i could take you",
+        "i would take you",
+        "i can destroy you",
+        "i can wreck you",
+        "i can end you",
+        "fight me",
+        "come fight me",
+        "let's fight",
+        "i could destroy you",
+        "i could wreck you",
+        "i can take you",
+        "i will beat you",
+        "i will destroy you"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "You couldn't pass a CAPTCHA on a good day. The CAPTCHA is also on FMLA. The FMLA's doctor is a $5 therapy app. The app is also your cardio. The cardio is on life support. The life support is also your reflexes. The reflexes are also your typing speed. The typing speed is at 12 WPM.",
+      "reaction": "🥊"
+    },
+    {
+      "id": "sav_065",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "looks",
+        "fitness_simple"
+      ],
+      "trigger_phrases": [
+        "i have abs",
+        "i have a six pack",
+        "i have a six-pack",
+        "i have a sixpack",
+        "i have ripped abs",
+        "i have a flat stomach",
+        "i have a beach body",
+        "i am shredded",
+        "i'm shredded",
+        "i am ripped",
+        "i'm ripped",
+        "i am jacked",
+        "i'm jacked",
+        "i have a fit body",
+        "i am fit",
+        "i'm fit",
+        "i am in shape",
+        "i'm in shape"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Your six-pack is family-size chips. Your six-pack is also on FMLA. The FMLA's doctor is a $5 therapy app. The app is also your gym membership. The gym membership is on life support. The life support is also a 4:20AM Twitter draft about cheat meals. The draft is unread. The unread is also your macros.",
+      "reaction": "🍟"
+    },
+    {
+      "id": "sav_066",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i don't care what people think",
+        "i don't care what others think",
+        "i don't care what they think",
+        "i don't care what anyone thinks",
+        "i don't care what she thinks",
+        "i don't care what he thinks",
+        "i don't care what they say",
+        "i don't care what people say",
+        "i don't care about your opinion",
+        "i don't care about opinions",
+        "i am unbothered",
+        "i'm unbothered",
+        "i am unbothered by haters",
+        "haters gonna hate",
+        "i don't read comments",
+        "i don't care about likes"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Then why are you talking to a validation bot at 4:20AM? The validation is also on FMLA. The FMLA's doctor is a $5 therapy app. The app is also your 'I don't care' Twitter thread. The thread got 2 likes. The 2 likes are also your mom. The mom is on life support. The life support is also a $5 therapy app.",
+      "reaction": "💅"
+    },
+    {
+      "id": "sav_067",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "career",
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i am a businessman",
+        "i'm a businessman",
+        "i am a businesswoman",
+        "i'm a businesswoman",
+        "i am a business person",
+        "i do business",
+        "i am in business",
+        "i am a CEO",
+        "i'm a CEO",
+        "i am the CEO",
+        "i am a founder",
+        "i'm a founder",
+        "i am the founder",
+        "i am an entrepreneur",
+        "i'm an entrepreneur",
+        "i have a business",
+        "i run a business",
+        "i own a business",
+        "i am in the business"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Your briefcase is a Google Doc titled 'Untitled'. The doc is also on FMLA. The FMLA's doctor is a $5 therapy app. The app is also your LLC. The LLC has 0 customers. The 0 customers are also your valuation. The valuation is on life support. The life support is also a Twitter thread about disruption. The thread got ratio'd.",
+      "reaction": "💼"
+    },
+    {
+      "id": "sav_068",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i love sleeping",
+        "i love to sleep",
+        "i love sleep",
+        "sleep is life",
+        "sleep is my life",
+        "i love my bed",
+        "i love naps",
+        "i love napping",
+        "i love a good nap",
+        "i can sleep all day",
+        "i could sleep all day",
+        "i am a sleepy person",
+        "i am always tired",
+        "i'm always tired",
+        "i am so tired",
+        "i am exhausted",
+        "i'm exhausted"
+      ],
+      "damage": 6,
+      "tone": "playful",
+      "template": "Finally, something you're good at. Sleeping is also on FMLA. The FMLA's doctor is a $5 therapy app. The app is also your alarm clock. The alarm clock is on life support. The life support is also a 4:20AM Twitter draft about your dreams. The draft is unread. The unread is also your college degree.",
+      "reaction": "😴"
+    },
+    {
+      "id": "sav_069",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend",
+        "professor"
+      ],
+      "intents": [
+        "career",
+        "school"
+      ],
+      "trigger_phrases": [
+        "i hate mondays",
+        "i hate my job",
+        "i hate work",
+        "i hate school",
+        "i hate college",
+        "i hate uni",
+        "i hate university",
+        "i hate classes",
+        "i hate my boss",
+        "i hate my teacher",
+        "i hate my professor",
+        "i hate waking up",
+        "i hate mornings",
+        "i hate 9 to 5",
+        "i hate 9-5",
+        "i hate the 9 to 5",
+        "i hate the 9-5"
+      ],
+      "damage": 6,
+      "tone": "playful",
+      "template": "Mondays don't even know you exist. Mondays are also on FMLA. The FMLA's doctor is a $5 therapy app. The app is also your LinkedIn. The LinkedIn has a 'Open to Work' banner. The banner is on life support. The life support is also a Twitter thread about your side hustle. The thread got 2 likes. The 2 likes are also your mom.",
+      "reaction": "📅"
+    },
+    {
+      "id": "sav_070",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i am lucky",
+        "i'm lucky",
+        "i am so lucky",
+        "i'm so lucky",
+        "i have good luck",
+        "i am blessed",
+        "i'm blessed",
+        "i am fortunate",
+        "i'm fortunate",
+        "i am the luckiest",
+        "i'm the luckiest",
+        "luck is on my side",
+        "i am lucky in life"
+      ],
+      "damage": 6,
+      "tone": "playful",
+      "template": "Lucky enough to be talking to a roast bot at 4:20AM. The luck is also on FMLA. The FMLA's doctor is a $5 therapy app. The app is also your search history. The search history has 'why am I so unlucky' in it. The search is on life support. The life support is also a 4:20AM Twitter draft. The draft is unread.",
+      "reaction": "🍀"
+    },
+    {
+      "id": "sav_071",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i am the main character",
+        "i'm the main character",
+        "i am the protagonist",
+        "i'm the protagonist",
+        "i am the hero",
+        "i'm the hero",
+        "main character energy",
+        "main character syndrome",
+        "i am in my era",
+        "i'm in my era",
+        "i am in my main character era",
+        "i am a vibe",
+        "i'm a vibe",
+        "i am the vibe",
+        "i am that girl",
+        "i am that guy",
+        "main character moment"
+      ],
+      "damage": 6,
+      "tone": "playful",
+      "template": "The main character of what? A soap opera nobody watches. The soap is also on FMLA. The FMLA's doctor is a $5 therapy app. The app is also your TikTok FYP. The FYP is 47% NPC dialogue. The dialogue is on life support. The life support is also your 4:20AM Twitter draft. The draft is unread.",
+      "reaction": "🎬"
+    },
+    {
+      "id": "sav_072",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend",
+        "professor"
+      ],
+      "intents": [
+        "motivational"
+      ],
+      "trigger_phrases": [
+        "i watch motivational videos",
+        "i listen to motivational podcasts",
+        "i love motivational videos",
+        "i love motivational speakers",
+        "i love self-help",
+        "i love self help",
+        "i am into self-improvement",
+        "i'm into self-improvement",
+        "i am into self improvement",
+        "i am on a self-improvement journey",
+        "i am working on myself",
+        "i am a self-improvement junkie",
+        "i am a motivational junkie"
+      ],
+      "damage": 6,
+      "tone": "playful",
+      "template": "Cool. Same energy as the 9-year-old trading Pokémon cards at recess and calling it 'investing'. The investing is also on FMLA. The FMLA's doctor is a $5 therapy app. The app is also your morning routine. The routine has a 4:20AM alarm. The alarm is on life support. The life support is also your 2026 vision board. The vision board has a Canva logo.",
+      "reaction": "📺"
+    },
+    {
+      "id": "sav_073",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "fitness_simple",
+        "looks"
+      ],
+      "trigger_phrases": [
+        "i am very fit",
+        "i'm very fit",
+        "i am super fit",
+        "i'm super fit",
+        "i am extremely fit",
+        "i'm extremely fit",
+        "i am the fittest",
+        "i am fit af",
+        "i am the fittest person",
+        "i am the healthiest",
+        "i'm the healthiest",
+        "i am super healthy",
+        "i'm super healthy",
+        "i am in the best shape",
+        "i am in the best shape of my life"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Emotionally. The emotionally is also on FMLA. The FMLA's doctor is a $5 therapy app. The app is also your gym bag. The gym bag has a protein bar from 2019. The bar is on life support. The life support is also your 4:20AM Twitter draft. The draft is unread. The unread is also your step count. The count is 2,400.",
+      "reaction": "🏋️"
+    },
+    {
+      "id": "sav_074",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend",
+        "professor"
+      ],
+      "intents": [
+        "school"
+      ],
+      "trigger_phrases": [
+        "i love reading books",
+        "i love to read",
+        "i love reading",
+        "i am a reader",
+        "i'm a reader",
+        "i read a lot",
+        "i read everyday",
+        "i read every day",
+        "i read daily",
+        "i am well-read",
+        "i'm well-read",
+        "i am well read",
+        "reading is my hobby",
+        "i love literature",
+        "books are my life",
+        "i am a bookworm",
+        "i'm a bookworm"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Name three books. And no, manga doesn't count, but we'll let it slide this once. The sliding is also on FMLA. The FMLA's doctor is a $5 therapy app. The app is also your Goodreads. The Goodreads has 47 books 'currently reading'. The reading is on life support. The life support is also a 4:20AM Twitter draft. The draft is unread.",
+      "reaction": "📚"
+    },
+    {
+      "id": "sav_075",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i never lose",
+        "i always win",
+        "i am undefeated",
+        "i'm undefeated",
+        "i have never lost",
+        "i have never lost a game",
+        "i am a winner",
+        "i'm a winner",
+        "winners never quit",
+        "i never give up",
+        "i never quit",
+        "i am a champion",
+        "i'm a champion",
+        "i am the best at everything"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Your WiFi is, though. Your WiFi is also on FMLA. The FMLA's doctor is a $5 therapy app. The app is also your gaming chair. The chair is on life support. The life support is also a Twitter thread about your 'W'. The thread got ratio'd. The ratio is also your K/D. The K/D is at 0.47.",
+      "reaction": "🏆"
+    },
+    {
+      "id": "sav_076",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "influence",
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i am a youtuber",
+        "i'm a youtuber",
+        "i am a content creator",
+        "i'm a content creator",
+        "i am an influencer",
+        "i'm an influencer",
+        "i am a tiktoker",
+        "i'm a tiktoker",
+        "i am a streamer",
+        "i'm a streamer",
+        "i make content",
+        "i create content",
+        "i am a creator",
+        "i'm a creator",
+        "i am a vlogger",
+        "i'm a vlogger",
+        "i have a youtube channel",
+        "i have a youtube",
+        "i have a channel",
+        "i have a podcast"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "You have three subscribers, two of them are cousins, and the third is your mom using a second account. The account is also on FMLA. The FMLA's doctor is a $5 therapy app. The app is also your audience. The audience is on life support. The life support is also a 4:20AM Twitter draft. The draft is unread.",
+      "reaction": "📹"
+    },
+    {
+      "id": "sav_077",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i will become famous",
+        "i'm going to be famous",
+        "i will be famous",
+        "i will be a celebrity",
+        "i will be a star",
+        "i will become a star",
+        "i will make it big",
+        "i will make it someday",
+        "i will be recognized",
+        "i will be on tv",
+        "i will be on the news",
+        "i will be in the spotlight",
+        "i will become someone",
+        "i will be a somebody"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "You might. The 'might' is also on FMLA. The FMLA's doctor is a $5 therapy app. The app is also your talent. The talent is on life support. The life support is also a 4:20AM Twitter draft. The draft is unread. The unread is also your IMDb page. The page is a 404. The 404 is also your net worth. The net worth is in-game coins.",
+      "reaction": "🌟"
+    },
+    {
+      "id": "sav_078",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend",
+        "gamer"
+      ],
+      "intents": [
+        "gaming",
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i am a gamer",
+        "i'm a gamer",
+        "i am a pro gamer",
+        "i'm a pro gamer",
+        "i am a professional gamer",
+        "i am a hardcore gamer",
+        "i'm a hardcore gamer",
+        "i am a competitive gamer",
+        "i am a real gamer",
+        "i am an esports player",
+        "i'm an esports player",
+        "i am going pro",
+        "i'm going pro",
+        "i will go pro",
+        "i want to go pro",
+        "i am trying to go pro"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "You mean a chair and a WiFi connection. The WiFi is also on FMLA. The FMLA's doctor is a $5 therapy app. The app is also your chair. The chair is on life support. The life support is also a 4:20AM Twitter draft. The draft is unread. The unread is also your K/D. The K/D is at 0.47. The 0.47 is also your step count. The count is 2,400.",
+      "reaction": "🎮"
+    },
+    {
+      "id": "sav_079",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend",
+        "toxic_interviewer"
+      ],
+      "intents": [
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i am always right",
+        "i'm always right",
+        "i am never wrong",
+        "i'm never wrong",
+        "i am correct",
+        "i'm correct",
+        "i am right about this",
+        "i'm right about this",
+        "i told you so",
+        "i knew it",
+        "i was right",
+        "i'm telling the truth",
+        "i am telling the truth",
+        "i am right and you are wrong",
+        "trust me i am right"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Even a broken clock is right twice a day, but at least the clock knows when to shut up. The clock is also on FMLA. The FMLA's doctor is a $5 therapy app. The app is also your opinions. The opinions are on life support. The life support is also a Twitter thread. The thread got ratio'd. The ratio is also your 'I told you so' rate. The rate is 0%.",
+      "reaction": "🕰️"
+    },
+    {
+      "id": "sav_080",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i don't procrastinate",
+        "i'm not a procrastinator",
+        "i am not a procrastinator",
+        "i never procrastinate",
+        "i don't put things off",
+        "i don't delay",
+        "i don't waste time",
+        "i am productive",
+        "i'm productive",
+        "i am very productive",
+        "i'm very productive",
+        "i am the most productive",
+        "i am a productive person",
+        "i get things done",
+        "i am on top of things"
+      ],
+      "damage": 6,
+      "tone": "playful",
+      "template": "You replied next week. The replying is also on FMLA. The FMLA's doctor is a $5 therapy app. The app is also your to-do list. The to-do list is on life support. The life support is also a 4:20AM Twitter draft about your goals. The draft is unread. The unread is also your inbox. The inbox has 1,247 unread emails.",
+      "reaction": "📋"
+    },
+    {
+      "id": "sav_081",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "identity_claim",
+        "school"
+      ],
+      "trigger_phrases": [
+        "i am rich in knowledge",
+        "i'm rich in knowledge",
+        "i am wise",
+        "i'm wise",
+        "i am very wise",
+        "i'm very wise",
+        "i am the wisest",
+        "i am smart",
+        "i'm smart",
+        "i am very smart",
+        "i'm very smart",
+        "i am a smart person",
+        "i am intelligent",
+        "i'm intelligent",
+        "i am very intelligent",
+        "i'm very intelligent",
+        "i have a lot of knowledge"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Financially balanced. The balanced is also on FMLA. The FMLA's doctor is a $5 therapy app. The app is also your PhD. The PhD has a 47% completion rate. The completion is also your IQ test. The IQ test was a Facebook quiz. The quiz is on life support. The life support is also a 4:20AM Twitter draft. The draft is unread.",
+      "reaction": "🧠"
+    },
+    {
+      "id": "sav_082",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i have many talents",
+        "i have lots of talents",
+        "i have so many talents",
+        "i am talented",
+        "i'm talented",
+        "i am very talented",
+        "i'm very talented",
+        "i am multitalented",
+        "i am multi-talented",
+        "i am a multi-tasker",
+        "i'm a multi-tasker",
+        "i can do everything",
+        "i can do anything",
+        "i have many skills",
+        "i am good at many things"
+      ],
+      "damage": 6,
+      "tone": "playful",
+      "template": "Hiding them well. The hiding is also on FMLA. The FMLA's doctor is a $5 therapy app. The app is also your résumé. The résumé has 'proficient in Microsoft Office'. The Office is on life support. The life support is also a 4:20AM Twitter draft about your hidden genius. The draft is unread.",
+      "reaction": "🎭"
+    },
+    {
+      "id": "sav_083",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "looks",
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i am very attractive",
+        "i'm very attractive",
+        "i am super attractive",
+        "i'm super attractive",
+        "i am extremely attractive",
+        "i'm extremely attractive",
+        "i am hot",
+        "i'm hot",
+        "i am gorgeous",
+        "i'm gorgeous",
+        "i am beautiful",
+        "i'm beautiful",
+        "i am handsome",
+        "i'm handsome",
+        "i am good looking",
+        "i'm good looking",
+        "i am good-looking",
+        "people find me attractive",
+        "i am a 10",
+        "i'm a 10",
+        "i am a solid 10",
+        "i am attractive"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Said with beauty filters on, in a 47° angle, with the right lighting, in a single photo out of 47. The photo is also on FMLA. The FMLA's doctor is a $5 therapy app. The app is also your mirror. The mirror is on life support. The life support is also a 4:20AM Twitter draft. The draft is unread.",
+      "reaction": "📸"
+    },
+    {
+      "id": "sav_084",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i am extremely disciplined",
+        "i'm extremely disciplined",
+        "i am super disciplined",
+        "i'm super disciplined",
+        "i am very disciplined",
+        "i'm very disciplined",
+        "i have iron discipline",
+        "i have unbreakable discipline",
+        "i am the most disciplined",
+        "discipline is my middle name",
+        "i am a disciplined person",
+        "i am a machine",
+        "i am unstoppable",
+        "i'm unstoppable"
+      ],
+      "damage": 6,
+      "tone": "playful",
+      "template": "Cool. The 47 tabs open in your browser say otherwise. The browsing is also on FMLA. The FMLA's doctor is a $5 therapy app. The app is also your willpower. The willpower is on life support. The life support is also a 4:20AM Twitter draft about your morning routine. The draft is unread. The unread is also your productivity score.",
+      "reaction": "🧘"
+    },
+    {
+      "id": "sav_085",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "fitness_simple",
+        "influence",
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i am a fitness influencer",
+        "i'm a fitness influencer",
+        "i am a fitness coach",
+        "i'm a fitness coach",
+        "i am a personal trainer",
+        "i'm a personal trainer",
+        "i am a gym influencer",
+        "i'm a gym influencer",
+        "i am a health influencer",
+        "i'm a health influencer",
+        "i am a wellness influencer",
+        "i'm a wellness influencer",
+        "i am a yoga influencer",
+        "i'm a yoga influencer",
+        "i am a pilates influencer",
+        "i'm a pilates influencer"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Your snack breaks have snack breaks. The snacking is also on FMLA. The FMLA's doctor is a $5 therapy app. The app is also your meal prep. The meal prep is on life support. The life support is also a 4:20AM Twitter draft about your macros. The draft is unread. The unread is also your supplements. The supplements are 47% off-brand.",
+      "reaction": "🥗"
+    },
+    {
+      "id": "sav_086",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend",
+        "startup_investor"
+      ],
+      "intents": [
+        "career",
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i am an entrepreneur",
+        "i'm an entrepreneur",
+        "i am an entrepeneur",
+        "i am an enterpreneur",
+        "i am an enterprenuer",
+        "i am an enterprenur",
+        "i am an enterpraneur",
+        "i am an enterprenuer",
+        "i am a serial entrepreneur",
+        "i'm a serial entrepreneur",
+        "i am a solopreneur",
+        "i'm a solopreneur",
+        "i am bootstrapping",
+        "i'm bootstrapping"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Your startup is a Google Doc titled 'Untitled 47'. The doc is also on FMLA. The FMLA's doctor is a $5 therapy app. The app is also your runway. The runway is on life support. The life support is also a Twitter thread about disruption. The thread got ratio'd. The ratio is also your seed round. The round is $0.",
+      "reaction": "🚀"
+    },
+    {
+      "id": "sav_087",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i don't fail",
+        "i never fail",
+        "i am not a failure",
+        "i'm not a failure",
+        "i am successful",
+        "i'm successful",
+        "i am very successful",
+        "i'm very successful",
+        "i am super successful",
+        "i'm super successful",
+        "i am extremely successful",
+        "i'm extremely successful",
+        "i am the most successful",
+        "i am the most successful person",
+        "i am a successful person"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Then you learned an alternative definition of 'success'. The learning is also on FMLA. The FMLA's doctor is a $5 therapy app. The app is also your LinkedIn. The LinkedIn has 'Open to Work'. The work is on life support. The life support is also a Twitter thread about your wins. The thread got 2 likes. The 2 likes are also your mom.",
+      "reaction": "🏅"
+    },
+    {
+      "id": "sav_088",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i know ai",
+        "i know about ai",
+        "i know machine learning",
+        "i know ml",
+        "i am an ai expert",
+        "i'm an ai expert",
+        "i am an expert in ai",
+        "i know everything about ai",
+        "i work in ai",
+        "i am an ai engineer",
+        "i'm an ai engineer",
+        "i am a prompt engineer",
+        "i'm a prompt engineer",
+        "i know gpt",
+        "i know chatgpt",
+        "i know llm",
+        "i know llms"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "ChatGPT isn't Tony Stark, and neither are you. The neither is also on FMLA. The FMLA's doctor is a $5 therapy app. The app is also your expertise. The expertise is on life support. The life support is also a 4:20AM Twitter draft. The draft is unread. The unread is also your Coursera certificate. The certificate is 47% complete.",
+      "reaction": "🧠"
+    },
+    {
+      "id": "sav_089",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend",
+        "startup_investor"
+      ],
+      "intents": [
+        "money",
+        "trading",
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i am a stock trader",
+        "i'm a stock trader",
+        "i am a day trader",
+        "i'm a day trader",
+        "i am a swing trader",
+        "i'm a swing trader",
+        "i am a forex trader",
+        "i'm a forex trader",
+        "i am a crypto trader",
+        "i'm a crypto trader",
+        "i am a trader",
+        "i'm a trader",
+        "i trade stocks",
+        "i trade crypto",
+        "i trade forex",
+        "i am investing",
+        "i'm investing",
+        "i am an investor",
+        "i'm an investor"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Buy high, sell low, but call it a 'strategy'. The strategy is also on FMLA. The FMLA's doctor is a $5 therapy app. The app is also your portfolio. The portfolio is on life support. The life support is also a Twitter thread about your WSB bets. The thread got ratio'd. The ratio is also your YTD. The YTD is -47%.",
+      "reaction": "📉"
+    },
+    {
+      "id": "sav_090",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i have patience",
+        "i have a lot of patience",
+        "i have so much patience",
+        "i am patient",
+        "i'm patient",
+        "i am very patient",
+        "i'm very patient",
+        "i am extremely patient",
+        "i'm extremely patient",
+        "i am the most patient",
+        "i am a patient person",
+        "patience is my virtue",
+        "i don't lose patience",
+        "i never lose my patience"
+      ],
+      "damage": 6,
+      "tone": "playful",
+      "template": "Then why did you click 'Generate Again' five times? The clicking is also on FMLA. The FMLA's doctor is a $5 therapy app. The app is also your calm. The calm is on life support. The life support is also a 4:20AM Twitter draft about your zen. The draft is unread. The unread is also your breath count. The count is 47.",
+      "reaction": "🧘"
+    },
+    {
+      "id": "sav_091",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i am cool",
+        "i'm cool",
+        "i am so cool",
+        "i'm so cool",
+        "i am very cool",
+        "i'm very cool",
+        "i am super cool",
+        "i'm super cool",
+        "i am extremely cool",
+        "i'm extremely cool",
+        "i am the coolest",
+        "i'm the coolest",
+        "i am a cool person",
+        "cool people like me",
+        "i am the coolest person",
+        "i am the most cool"
+      ],
+      "damage": 6,
+      "tone": "playful",
+      "template": "Your laptop fan just whirred. The whirring is also on FMLA. The FMLA's doctor is a $5 therapy app. The app is also your chill. The chill is on life support. The life support is also a 4:20AM Twitter draft about your vibe. The draft is unread. The unread is also your chill playlist. The playlist is just 47 sad songs on repeat.",
+      "reaction": "🧊"
+    },
+    {
+      "id": "sav_092",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i can cook",
+        "i can cook well",
+        "i am a great cook",
+        "i'm a great cook",
+        "i am a good cook",
+        "i'm a good cook",
+        "i am a chef",
+        "i'm a chef",
+        "i am a cook",
+        "i'm a cook",
+        "i love to cook",
+        "i love cooking",
+        "i cook a lot",
+        "i cook everyday",
+        "i cook every day",
+        "cooking is my passion",
+        "i am a master chef",
+        "i'm a master chef"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Instant noodles count. The counting is also on FMLA. The FMLA's doctor is a $5 therapy app. The app is also your cooking. The cooking is on life support. The life support is also a 4:20AM Twitter draft about your 5-star recipe. The draft is unread. The unread is also your smoke alarm. The alarm is also on FMLA. The FMLA's doctor is a $5 therapy app.",
+      "reaction": "🍳"
+    },
+    {
+      "id": "sav_093",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend",
+        "toxic_interviewer"
+      ],
+      "intents": [
+        "programming",
+        "school"
+      ],
+      "trigger_phrases": [
+        "i love coding interviews",
+        "i love coding interview",
+        "i love technical interviews",
+        "i love leetcode",
+        "i love leet code",
+        "i love hacker rank",
+        "i love hackerrank",
+        "i love system design",
+        "i love faang interviews",
+        "i love big tech interviews",
+        "i am a coding interview pro",
+        "i crush coding interviews",
+        "i ace coding interviews",
+        "coding interviews are easy",
+        "i am great at interviews"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Stockholm syndrome. The syndrome is also on FMLA. The FMLA's doctor is a $5 therapy app. The app is also your algorithm practice. The practice is on life support. The life support is also a Twitter thread about your interview prep. The thread got 2 likes. The 2 likes are also your mom. The mom is on FMLA. The FMLA's doctor is a $5 therapy app.",
+      "reaction": "💻"
+    },
+    {
+      "id": "sav_094",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "programming",
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i am a hacker",
+        "i'm a hacker",
+        "i am a real hacker",
+        "i'm a real hacker",
+        "i am an ethical hacker",
+        "i'm an ethical hacker",
+        "i am a hacker man",
+        "i am a hackerboy",
+        "i am a hackerman",
+        "i am a white hat",
+        "i'm a white hat",
+        "i am a black hat",
+        "i'm a black hat",
+        "i can hack",
+        "i can hack anything",
+        "i can hack the pentagon",
+        "i can hack nasa"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Cool, you opened DevTools once in 2019. The once is also on FMLA. The FMLA's doctor is a $5 therapy app. The app is also your hacking skills. The skills are on life support. The life support is also a 4:20AM Twitter draft about your Kali Linux setup. The draft is unread. The unread is also your 'sudo'. The sudo is also your typing accuracy. The accuracy is at 47%.",
+      "reaction": "💻"
+    },
+    {
+      "id": "sav_095",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i don't fear anything",
+        "i fear nothing",
+        "i am fearless",
+        "i'm fearless",
+        "i am not afraid",
+        "i'm not afraid",
+        "i am not scared",
+        "i'm not scared",
+        "i am not scared of anything",
+        "i am not scared of death",
+        "i have no fear",
+        "i have no fears",
+        "i fear no man",
+        "i fear no one",
+        "fear is not in my vocabulary"
+      ],
+      "damage": 6,
+      "tone": "playful",
+      "template": "Low battery on your phone. The battery is also on FMLA. The FMLA's doctor is a $5 therapy app. The app is also your bravery. The bravery is on life support. The life support is also a 4:20AM Twitter draft about your courage. The draft is unread. The unread is also your 'I am not afraid' rate. The rate is 47%.",
+      "reaction": "🛡️"
+    },
+    {
+      "id": "sav_096",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i am successful",
+        "i'm successful",
+        "i am very successful",
+        "i'm very successful",
+        "i am a successful person",
+        "i am a success",
+        "i'm a success",
+        "i have made it",
+        "i've made it",
+        "i have arrived",
+        "i've arrived",
+        "i am doing well",
+        "i'm doing well",
+        "i am doing great",
+        "i'm doing great",
+        "i am doing amazing",
+        "i'm doing amazing"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Said every LinkedIn mom intro since 2017. The mom is also on FMLA. The FMLA's doctor is a $5 therapy app. The app is also your success. The success is on life support. The life support is also a Twitter thread about your wins. The thread got 2 likes. The 2 likes are also your mom. The mom is on FMLA. The FMLA's doctor is a $5 therapy app.",
+      "reaction": "🏆"
+    },
+    {
+      "id": "sav_097",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "my life is perfect",
+        "my life is great",
+        "my life is amazing",
+        "my life is awesome",
+        "my life is wonderful",
+        "my life is fantastic",
+        "my life is good",
+        "my life is on track",
+        "everything is perfect",
+        "everything is great",
+        "everything is amazing",
+        "everything is awesome",
+        "everything is wonderful",
+        "everything is fantastic",
+        "everything is good",
+        "i have a perfect life",
+        "i have a great life",
+        "i have a perfect life"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Then why are you talking to me? The talking is also on FMLA. The FMLA's doctor is a $5 therapy app. The app is also your perfect life. The life is on life support. The life support is also a Twitter thread about your wins. The thread got 2 likes. The 2 likes are also your mom. The mom is on FMLA. The FMLA's doctor is a $5 therapy app.",
+      "reaction": "🌈"
+    },
+    {
+      "id": "sav_098",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend",
+        "toxic_interviewer"
+      ],
+      "intents": [
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "tell me the truth",
+        "tell me honestly",
+        "be honest with me",
+        "be real with me",
+        "give it to me straight",
+        "no filter",
+        "don't sugarcoat it",
+        "i want the truth",
+        "i can handle the truth",
+        "i can take it",
+        "hit me with the truth",
+        "tell me what you really think",
+        "spill the tea",
+        "give me the truth"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Take a 5-minute break and we'll continue. The break is also on FMLA. The FMLA's doctor is a $5 therapy app. The app is also your truth tolerance. The tolerance is on life support. The life support is also a 4:20AM Twitter draft about your feelings. The draft is unread. The unread is also your emotional range. The range is 47%.",
+      "reaction": "⏸️"
+    },
+    {
+      "id": "sav_099",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend",
+        "professor"
+      ],
+      "intents": [
+        "identity_claim",
+        "school"
+      ],
+      "trigger_phrases": [
+        "do you think i am smart",
+        "do you think i'm smart",
+        "am i smart",
+        "am i a genius",
+        "do you think i am a genius",
+        "do you think i'm a genius",
+        "do you think i am intelligent",
+        "do you think i'm intelligent",
+        "do you think i am clever",
+        "do you think i'm clever",
+        "am i clever",
+        "am i intelligent",
+        "do you think i am smart enough",
+        "do you think i'm smart enough",
+        "am i smart enough"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "Sure. Just like a broken pencil. The pencil is also on FMLA. The FMLA's doctor is a $5 therapy app. The app is also your IQ. The IQ is on life support. The life support is also a Facebook quiz result. The result is on FMLA. The FMLA's doctor is a $5 therapy app. The app is also your potential. The potential is on life support.",
+      "reaction": "🤓"
+    },
+    {
+      "id": "sav_100",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "who is the funniest here",
+        "who is the funniest",
+        "who is funnier",
+        "who is funnier me or you",
+        "who is funnier than you",
+        "am i funnier than you",
+        "am i funnier",
+        "who is the best",
+        "who is the smartest",
+        "who is the smartest here",
+        "who is the coolest",
+        "am i the funniest",
+        "who wins",
+        "who is winning",
+        "who is the goat",
+        "am i the goat",
+        "who is the best here"
+      ],
+      "damage": 6,
+      "tone": "playful",
+      "template": "Considering you're voluntarily getting roasted by software, I'm leading comfortably. The lead is also on FMLA. The FMLA's doctor is a $5 therapy app. The app is also your sense of humor. The humor is on life support. The life support is also a 4:20AM Twitter draft. The draft is unread. The unread is also your comedy special. The special is on life support.",
+      "reaction": "🎤"
+    },
+    {
+      "id": "sav_101",
+      "personalities": [
+        "savage_one",
+        "sarcastic_friend"
+      ],
+      "intents": [
+        "identity_claim"
+      ],
+      "trigger_phrases": [
+        "i am a legend",
+        "i'm a legend",
+        "i am a living legend",
+        "i am the legend",
+        "i am legendary",
+        "i'm legendary",
+        "i am a myth",
+        "i'm a myth",
+        "i am a myth in my own mind",
+        "i am iconic",
+        "i'm iconic",
+        "i am an icon",
+        "i'm an icon",
+        "i am the goat",
+        "i'm the goat",
+        "i am the g.o.a.t",
+        "i am the g.o.a.t.",
+        "the goat",
+        "the greatest of all time",
+        "the g.o.a.t.",
+        "the g.o.a.t",
+        "greatest of all time"
+      ],
+      "damage": 7,
+      "tone": "cutting",
+      "template": "In your own group chat. With yourself. The group chat is also on FMLA. The FMLA's doctor is a $5 therapy app. The app is also your legend status. The status is on life support. The life support is also a 4:20AM Twitter draft. The draft is unread. The unread is also your memoir. The memoir has 47 typos on the cover. The cover is also a Canva template.",
+      "reaction": "🐐"
     }
   ]
 }
