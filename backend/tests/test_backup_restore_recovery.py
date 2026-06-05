@@ -276,6 +276,66 @@ def test_recover_session_for_other_users_session_returns_404(client, db_session)
     assert r.status_code == 404  # must NOT leak existence
 
 
+def test_recover_session_in_memory_other_user_returns_404(client, db_session):
+    """A user must not be able to recover another user's session that
+    is currently held in the in-memory store. (The in-memory branch
+    must perform the same ownership check as the DB branch; otherwise
+    a leaked session id of an authed user could be peeked at by a
+    different authed user.)"""
+    from app.session import SESSIONS
+    from app.models import Session as AppSession
+
+    # Create a session in memory that belongs to "user 9999" (a
+    # non-existent user id — the in-memory branch checks the value on
+    # the Session object, not against the users table).
+    sess = AppSession(
+        session_id="mem-other-user",
+        username="NotMe",
+        mode="savage",
+        personality="savage_one",
+        created_at=1.0,
+        user_id=9999,
+    )
+    SESSIONS._sessions[sess.session_id] = sess
+
+    a = _register_and_login(client, "alice-in-mem@example.com")
+    r = client.post(
+        "/api/session/mem-other-user/recover",
+        headers=_auth_headers(a["access_token"]),
+    )
+    assert r.status_code == 404
+    # The session must NOT have been re-added to the store (would leak
+    # via /api/session/{id}).
+    assert "mem-other-user" in SESSIONS._sessions  # we put it there; never removed
+
+
+def test_recover_session_in_memory_anonymous_returns_404(client, db_session):
+    """An anonymous session (user_id is None) must not be recoverable
+    by any authed user — the live path never persists anon sessions,
+    so seeing one is suspicious. Returning 404 instead of 200 hides
+    the existence of transient anon transcripts from unrelated
+    authed callers."""
+    from app.session import SESSIONS
+    from app.models import Session as AppSession
+
+    sess = AppSession(
+        session_id="anon-in-mem",
+        username="Anon",
+        mode="savage",
+        personality="savage_one",
+        created_at=1.0,
+        user_id=None,
+    )
+    SESSIONS._sessions[sess.session_id] = sess
+
+    a = _register_and_login(client, "alice-anon-mem@example.com")
+    r = client.post(
+        "/api/session/anon-in-mem/recover",
+        headers=_auth_headers(a["access_token"]),
+    )
+    assert r.status_code == 404
+
+
 def test_recover_session_restores_state_after_cold_start(client, db_session):
     """The full recovery flow: authenticated user starts a chat,
     server-side in-memory store is wiped (simulating a host cold

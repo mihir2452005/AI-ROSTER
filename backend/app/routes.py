@@ -621,6 +621,15 @@ def recover_session(
     """
     in_mem = SESSIONS.get(session_id)
     if in_mem is not None:
+        # Authorization: an in-memory session may be an anonymous one
+        # (no user_id), or it may belong to a different user. The
+        # recovery endpoint must refuse to leak either. We treat
+        # anonymous sessions as 404 here for the same reason as the
+        # DB branch: the live path never persisted them, and we don't
+        # want to expose a transient anon transcript to an unrelated
+        # authed caller.
+        if in_mem.user_id is None or in_mem.user_id != user.id:
+            raise HTTPException(404, "session not found")
         return SessionStateResponse(
             session_id=in_mem.session_id,
             mode=in_mem.mode,
