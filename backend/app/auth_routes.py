@@ -117,7 +117,17 @@ def refresh_token(
     req: auth_schemas.RefreshRequest,
     db: Annotated[Session, Depends(get_db)],
 ) -> auth_schemas.TokenResponse:
-    """Exchange a valid refresh token for a new access + refresh token pair."""
+    """Exchange a valid refresh token for a new access + refresh token pair.
+
+    ROTATES the refresh token: every successful /refresh bumps
+    `token_version`, which invalidates the old refresh token (and any
+    access tokens that referenced the prior version). The next call
+    with the old refresh token returns 401, which triggers a forced
+    re-login on the client. This is the standard mitigation against
+    stolen refresh tokens — without rotation, a token leaked via XSS,
+    a malicious extension, or a proxy log stays valid for the full
+    7-day window even after the user logs out.
+    """
     try:
         payload = auth.decode_token(req.refresh_token)
         if payload.get("type") != "refresh":
@@ -134,6 +144,13 @@ def refresh_token(
         raise HTTPException(status_code=401, detail="User not found or disabled")
     if int(payload.get("ver", 0)) != int(user.token_version):
         raise HTTPException(status_code=401, detail="Token has been revoked")
+
+    # Bump token_version. The OLD refresh token is now invalid
+    # (ver mismatch on the next call), as is every access token
+    # issued at the old version. A new pair is returned below.
+    user.token_version = (user.token_version or 0) + 1
+    db.commit()
+    db.refresh(user)
 
     return auth_schemas.TokenResponse(
         access_token=auth.create_access_token(user.id, user.email, user.token_version),
@@ -230,6 +247,14 @@ def change_password(
     """Change the authenticated user's password and invalidate other sessions."""
     if not auth.verify_password(req.current_password, user.hashed_password):
         raise HTTPException(status_code=400, detail="Current password is incorrect")
+    # Reject "new == current" — a real phishing/UX trap. The
+    # frontend also rejects this, but the backend is the only
+    # trustworthy gate.
+    if req.new_password == req.current_password:
+        raise HTTPException(
+            status_code=400,
+            detail="New password must be different from current password",
+        )
     user.hashed_password = auth.hash_password(req.new_password)
     # Bump token_version so a leaked token can't keep working. The caller
     # already used the new password to authenticate this call, so they

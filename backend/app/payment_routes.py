@@ -28,6 +28,25 @@ from .database import get_db
 log = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/payments", tags=["payments"])
+
+
+def _verify_payment_after_integrity_error(
+    *, user_id: int, razorpay_payment_id: str, db: Session,
+) -> "db_models.Payment | None":
+    """Re-query for a Payment after an IntegrityError on /verify.
+
+    The lookup MUST be scoped to user_id — see M-VERIFY-LEAK in the
+    audit. Razorpay's test mode recycles short payment_ids, so a
+    different authenticated user who guesses a real one would
+    otherwise see another user's subscription_id and
+    current_period_end.
+
+    Exposed as a module-level helper for unit testing.
+    """
+    return db.query(db_models.Payment).filter(
+        db_models.Payment.razorpay_payment_id == razorpay_payment_id,
+        db_models.Payment.user_id == user_id,
+    ).first()
 sub_router = APIRouter(prefix="/api/subscriptions", tags=["subscriptions"])
 
 
@@ -423,10 +442,17 @@ def verify_payment(
         db.commit()
     except IntegrityError:
         # Another request beat us to it; fall back to read-only response.
+        # The lookup MUST be scoped to user.id — otherwise a different
+        # user guessing a real razorpay_payment_id (test mode recycles
+        # ids, leaks happen) would get back another user's
+        # subscription_id and current_period_end. That was a real info-
+        # disclosure bug; see M-VERIFY-LEAK in the audit.
         db.rollback()
-        existing_payment = db.query(db_models.Payment).filter(
-            db_models.Payment.razorpay_payment_id == req.razorpay_payment_id,
-        ).first()
+        existing_payment = _verify_payment_after_integrity_error(
+            user_id=user.id,
+            razorpay_payment_id=req.razorpay_payment_id,
+            db=db,
+        )
         existing_sub = existing_payment.subscription if existing_payment else None
         return {
             "message": "Payment already verified",

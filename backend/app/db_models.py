@@ -77,7 +77,7 @@ class User(Base):
         back_populates="user", cascade="all, delete-orphan"
     )
     roast_sessions: Mapped[List["RoastSession"]] = relationship(
-        cascade="all, delete-orphan"
+        back_populates="user", cascade="all, delete-orphan"
     )
 
 
@@ -235,13 +235,19 @@ class RoastSession(Base):
     # messages, scores are ints + 2 strings), so a single JSON column
     # is fine.
     state_json: Mapped[dict] = mapped_column(JSON, nullable=False)
-    ended_at: Mapped[Optional[float]] = mapped_column()  # unix seconds
+    # ended_at is stored as a unix-epoch float (seconds). Without an
+    # explicit type, SQLAlchemy 2.0 falls back to the type from the
+    # annotation, which on some dialects (notably SQLite) defaults to
+    # Integer and silently truncates the fractional part of time.time().
+    # Float is correct for both PG (double precision) and SQLite
+    # (REAL).
+    ended_at: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
     last_accessed_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=utcnow, onupdate=utcnow
     )
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
-    user: Mapped[Optional["User"]] = relationship(overlaps="roast_sessions")
+    user: Mapped[Optional["User"]] = relationship(back_populates="roast_sessions")
 
     __table_args__ = (
         # Used by the cleanup task: "ended sessions older than N days".

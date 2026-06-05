@@ -104,6 +104,10 @@ def start_session(
         roaster_gender=req.roaster_gender,
         user_id=user.id if user is not None else None,
     )
+    if session is None:
+        # Cap reached by live sessions. The store refused to evict a
+        # live conversation. Tell the client to retry.
+        raise HTTPException(503, "Server is at session capacity. Try again in a moment.")
 
     # If returning user, prefer a callback; otherwise use a regular opener.
     opener_text: Optional[str] = None
@@ -700,8 +704,38 @@ def cleanup(request: Request) -> dict:
     if not hmac.compare_digest(admin_key, expected_key):
         raise HTTPException(status_code=403, detail="Invalid admin key")
 
-    removed = SESSIONS.cleanup_expired(SHARED_SESSION_TTL_SECONDS)
-    return {"removed": removed, "ttl_seconds": SHARED_SESSION_TTL_SECONDS}
+    in_mem_removed = SESSIONS.cleanup_expired(SHARED_SESSION_TTL_SECONDS)
+
+    # Also clean up the persisted `roast_sessions` table. The previous
+    # behaviour only cleaned the in-memory store, so on a long-lived
+    # host the DB table grew unboundedly. The TTL here matches the
+    # share-window TTL so a session's recovery URL is also pruned.
+    db_removed = 0
+    try:
+        from datetime import datetime, timezone
+        cutoff = datetime.fromtimestamp(time.time() - SHARED_SESSION_TTL_SECONDS, tz=timezone.utc)
+        # Only delete ended sessions past the TTL. Live sessions
+        # (ended_at is NULL) are NEVER deleted by the cleanup task.
+        from . import db_models
+        result = db.query(db_models.RoastSession).filter(
+            db_models.RoastSession.ended_at.isnot(None),
+            db_models.RoastSession.ended_at < cutoff,
+        ).delete(synchronize_session=False)
+        db.commit()
+        db_removed = int(result or 0)
+    except Exception as e:  # pragma: no cover - DB error path
+        log.warning("cleanup: DB purge failed: %s", e)
+        try:
+            db.rollback()
+        except Exception:
+            pass
+
+    return {
+        "removed": in_mem_removed + db_removed,
+        "in_memory_removed": in_mem_removed,
+        "db_removed": db_removed,
+        "ttl_seconds": SHARED_SESSION_TTL_SECONDS,
+    }
 
 
 # ----- Helpers -----

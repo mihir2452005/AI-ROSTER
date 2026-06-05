@@ -98,36 +98,70 @@ def session_from_persisted(data: dict) -> Session:
 
 def _persist_session(db: Session, session: Session, user_id: int) -> None:
     """Upsert a session row. Best-effort: any error is logged and
-    swallowed so a transient DB problem can't break the live request."""
+    swallowed so a transient DB problem can't break the live request.
+
+    Uses the request's DB session inside a SAVEPOINT (nested
+    transaction). A failure here only rolls back the savepoint, not
+    the request handler's own transaction. Two concurrent /roast or
+    /end calls for the same session are serialised by `with_for_update`
+    on SQLite, or by the unique constraint + `ON CONFLICT DO UPDATE`
+    on PostgreSQL.
+    """
+    # Lazy imports: avoid a circular import at module load.
+    from . import db_models
+
     try:
-        # Lazy import: avoids a circular import at module load.
-        from . import db_models
-        row = db.query(db_models.RoastSession).filter(
-            db_models.RoastSession.session_id == session.session_id
-        ).first()
         state = session_to_persisted(session, user_id=user_id)
-        if row is None:
-            row = db_models.RoastSession(
-                session_id=session.session_id,
-                user_id=user_id,
-                mode=state["mode"],
-                personality=state["personality"],
-                username=state.get("username"),
-                roaster_gender=state.get("roaster_gender"),
-                state_json=state,
-                ended_at=session.ended_at,
-            )
-            db.add(row)
-        else:
-            row.state_json = state
-            row.ended_at = session.ended_at
-        db.commit()
+        values = dict(
+            session_id=session.session_id,
+            user_id=user_id,
+            mode=state["mode"],
+            personality=state["personality"],
+            username=state.get("username"),
+            roaster_gender=state.get("roaster_gender"),
+            state_json=state,
+            ended_at=session.ended_at,
+        )
+
+        bind = db.get_bind()
+        # Use a savepoint so a DB error here only rolls back the
+        # persist, not the request handler's own in-flight writes.
+        # SQLAlchemy exposes this as `db.begin_nested()`.
+        with db.begin_nested():
+            if bind.dialect.name == "postgresql":
+                # Native upsert: atomic INSERT-or-UPDATE in one round
+                # trip. Two concurrent /roast calls for the same
+                # session don't race because the unique constraint
+                # serialises the conflict resolution.
+                from sqlalchemy.dialects.postgresql import insert as pg_insert
+                stmt = pg_insert(db_models.RoastSession).values(**values)
+                update_cols = {
+                    c.name: stmt.excluded[c.name]
+                    for c in db_models.RoastSession.__table__.columns
+                    if c.name not in ("id", "created_at")
+                }
+                stmt = stmt.on_conflict_do_update(
+                    index_elements=[db_models.RoastSession.session_id],
+                    set_=update_cols,
+                )
+                db.execute(stmt)
+            else:
+                # SQLite (tests + dev fallback). Lock the existing row
+                # for the duration of the transaction so a parallel
+                # writer waits. If no row exists, insert.
+                row = db.query(db_models.RoastSession).filter(
+                    db_models.RoastSession.session_id == session.session_id
+                ).with_for_update(read=False).first()
+                if row is None:
+                    db.add(db_models.RoastSession(**values))
+                else:
+                    for k, v in values.items():
+                        setattr(row, k, v)
+                db.flush()
     except Exception as e:  # pragma: no cover - DB error path
         log.warning("failed to persist session %s: %s", session.session_id, e)
-        try:
-            db.rollback()
-        except Exception:
-            pass
+        # The savepoint has already been rolled back by the
+        # `with` block. Don't re-raise: this is best-effort.
 
 
 def load_session_from_db(db: Session, session_id: str) -> Optional[Session]:
@@ -175,24 +209,35 @@ class SessionStore:
             scores=fresh_scores(),
         )
         with self._lock:
-            # If we're at the cap, evict the oldest ended session. Live
-            # sessions are never evicted here; if the cap is reached by
-            # active sessions only, refuse to create a new one.
+            # If we're at the cap, try to evict ended sessions first.
+            # Live sessions are NEVER evicted — losing a live
+            # conversation mid-flight (the previous behaviour) was a
+            # real data-loss bug. If we can't make room by evicting
+            # ended sessions, refuse the new one with a 503 to the
+            # caller (handled at the route level).
             if len(self._sessions) >= MAX_SESSIONS:
                 self._evict_oldest_ended()
             if len(self._sessions) >= MAX_SESSIONS:
-                # Still at cap — too many live sessions. Drop a non-ended
-                # session to keep the service responsive. We pick the
-                # oldest live session.
-                oldest_sid = min(
-                    (s.session_id for s in self._sessions.values() if s.ended_at is None),
-                    default=None,
-                    key=lambda k: self._sessions[k].created_at,
-                )
-                if oldest_sid is not None:
-                    self._sessions.pop(oldest_sid, None)
+                # Still at cap — every existing session is live. The
+                # service is at capacity. We could either:
+                #   (a) refuse the new session (return None; the route
+                #       should map this to 503)
+                #   (b) silently evict the oldest live session (loses
+                #       user state — DO NOT DO THIS)
+                # We pick (a). Set a session-overflow flag the route
+                # can check.
+                self._overflow = True
+                return None  # type: ignore[return-value]
+            self._overflow = False
             self._sessions[sid] = s
         return s
+
+    @property
+    def overflow(self) -> bool:
+        """True if the most recent `create()` was refused due to the
+        cap being reached by live sessions. The route maps this to 503.
+        """
+        return getattr(self, "_overflow", False)
 
     def _evict_oldest_ended(self) -> None:
         """Evict the single oldest ended session. Caller holds the lock."""

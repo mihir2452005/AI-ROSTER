@@ -45,7 +45,17 @@ except ImportError:
 
 # CORS — configurable via env var. In dev, allow localhost:3000.
 # In production, set ALLOWED_ORIGINS to your frontend domain(s).
-ALLOWED_ORIGINS = os.environ.get("ALLOWED_ORIGINS", "http://localhost:3000").split(",")
+#
+# We parse the env var carefully: a stray space (`"a.com, b.com"`)
+# used to produce origins with leading spaces, which never matched
+# CORS preflights — silently disabling CORS in dev. An empty string
+# produced `[""]` which matched nothing. The list comprehension
+# below strips whitespace and drops empties.
+ALLOWED_ORIGINS = [
+    o.strip()
+    for o in os.environ.get("ALLOWED_ORIGINS", "http://localhost:3000").split(",")
+    if o.strip()
+]
 
 logging.basicConfig(
     level=logging.INFO,
@@ -95,28 +105,52 @@ app = FastAPI(
 )
 
 # CORS — open in dev; lock down in production to your frontend domain.
+# We restrict methods and headers to a known allow-list rather than
+# `["*"]` to reduce the CORS attack surface (a future
+# `ALLOWED_ORIGINS=*` config would otherwise pair a wildcard origin
+# with credentials, which is the canonical CORS misconfiguration).
 app.add_middleware(
     CORSMiddleware,
     allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type", "X-Admin-Key", "X-Request-ID"],
+    expose_headers=["X-Request-ID"],
+    max_age=600,
 )
 
 # Body size cap: reject any request over MAX_BODY_BYTES (default 5MB) with
 # 413 Payload Too Large. Starlette/Uvicorn will buffer the entire body
 # before passing it to the route, so without this an attacker can DoS the
-# server with a single large upload.
-MAX_BODY_BYTES = int(os.environ.get("MAX_BODY_BYTES", str(5 * 1024 * 1024)))
+# server with a single large upload. Capped server-side at 50 MB so a
+# misconfigured MAX_BODY_BYTES env var can't disable the cap entirely.
+MAX_BODY_BYTES = min(int(os.environ.get("MAX_BODY_BYTES", str(5 * 1024 * 1024))), 50 * 1024 * 1024)
 
 
 @app.middleware("http")
 async def body_size_limit(request: Request, call_next):
+    """Reject oversized request bodies.
+
+    Two checks:
+    1. `Content-Length` header — easy to spoof, but cheap to check.
+    2. `Transfer-Encoding: chunked` — a client can stream an
+       arbitrarily-large body with no Content-Length. We refuse the
+       request up-front rather than buffering the body and then
+       rejecting it (which would still allocate the memory). For our
+       API, no legitimate client should be using chunked transfer
+       encoding.
+    """
+    from fastapi.responses import JSONResponse
     cl = request.headers.get("content-length")
+    te = request.headers.get("transfer-encoding", "").lower()
+    if "chunked" in te and cl is None:
+        return JSONResponse(
+            status_code=411,
+            content={"detail": "Chunked transfer encoding is not allowed; send Content-Length."},
+        )
     if cl is not None:
         try:
             if int(cl) > MAX_BODY_BYTES:
-                from fastapi.responses import JSONResponse
                 return JSONResponse(
                     status_code=413,
                     content={"detail": f"Request body too large (>{MAX_BODY_BYTES} bytes)"},
@@ -125,15 +159,30 @@ async def body_size_limit(request: Request, call_next):
             pass  # malformed Content-Length — let downstream handle it
     return await call_next(request)
 
-# Security headers middleware
+# Security headers middleware. Applied to ALL responses, including
+# ones built by other middleware (413/429) and the JSONResponse that
+# FastAPI builds for uncaught exceptions. (Previously the
+# `await call_next(...)` would propagate the error, and a 500 would
+# reach the client without these headers — clickjacking surface.)
 @app.middleware("http")
 async def add_security_headers(request: Request, call_next):
-    response = await call_next(request)
+    try:
+        response = await call_next(request)
+    except Exception:
+        # The global exception handler (or Starlette's default) will
+        # produce the final response. Re-raise to let the normal
+        # flow build it; security headers are applied to whatever
+        # the next middleware in the chain emits.
+        raise
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-Frame-Options"] = "DENY"
-    response.headers["X-XSS-Protection"] = "1; mode=block"
+    # NOTE: X-XSS-Protection was removed. Modern browsers ignore it;
+    # old browsers used it as a signal to disable their (vulnerable)
+    # XSS auditor. Sending it is a net negative.
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
-    response.headers["Server"] = "RoastGPT"  # Hide actual server
+    # HSTS — only useful behind TLS termination. Uncomment in
+    # production where HTTPS is enforced at the edge.
+    # response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
     return response
 
 # Rate limiting: requests per minute per IP
@@ -158,6 +207,19 @@ RATE_LIMIT_OVERRIDES: Dict[str, tuple] = {
     # it's not covered by the auth-* overrides. Cap it tightly because
     # the only legitimate caller is a cron job.
     "/api/admin/cleanup": (int(os.environ.get("RATE_LIMIT_ADMIN_CLEANUP", "5")), 60),
+    # Webhooks get their own bucket so a Razorpay delivery storm
+    # doesn't trip our per-IP rate limit and cause Razorpay to
+    # retry-with-backoff (which would amplify the storm).
+    "/api/payments/webhook": (int(os.environ.get("RATE_LIMIT_WEBHOOK", "120")), 60),
+    # /api/auth/change-password is per-user (JWT) but a stolen token
+    # can still attempt many old-password guesses. Cap to slow down
+    # dictionary attacks on the current_password field.
+    "/api/auth/change-password": (int(os.environ.get("RATE_LIMIT_CHANGE_PW", "5")), 60),
+    # /api/admin/grant-subscription and update_user are admin-only
+    # but a compromised admin should be slowed down. Cap to 30/min
+    # (one action every 2s) — enough for legitimate bulk operations.
+    "/api/admin/grant-subscription": (30, 60),
+    "/api/admin/users": (60, 60),
 }
 # Trusted reverse proxies (CIDR list, comma-separated). When a request
 # arrives from one of these, we honour the X-Forwarded-For header; for
@@ -277,10 +339,21 @@ async def rate_limit_middleware(request: Request, call_next):
 
         # Check limit
         if len(request_history) >= limit:
-            raise HTTPException(
+            # Return a JSONResponse directly rather than raising
+            # HTTPException. The exception would be re-raised by
+            # Starlette's middleware handler and the response would
+            # not include the security headers from
+            # `add_security_headers` (which is registered LATER and
+            # therefore outer in the ASGI chain). Building the
+            # response here means we control every header.
+            from fastapi.responses import JSONResponse
+            return JSONResponse(
                 status_code=429,
-                detail=f"Rate limit exceeded. Max {limit} requests per {window}s. "
-                       f"Try again later."
+                content={
+                    "detail": f"Rate limit exceeded. Max {limit} requests per {window}s. "
+                              f"Try again later."
+                },
+                headers={"Retry-After": str(window)},
             )
 
         # Add current request
