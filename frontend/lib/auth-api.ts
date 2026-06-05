@@ -93,8 +93,50 @@ export function emitAuthRefresh(): void {
   window.dispatchEvent(new Event("roastgpt:auth-refresh"));
 }
 
-async function request<T>(path: string, init?: RequestInit & { timeoutMs?: number }): Promise<T> {
-  const { timeoutMs = DEFAULT_TIMEOUT_MS, ...rest } = init ?? {};
+// Single in-flight refresh so a burst of 401s triggers ONE refresh, not N.
+let _refreshInFlight: Promise<boolean> | null = null;
+async function _tryRefresh(): Promise<boolean> {
+  if (_refreshInFlight) return _refreshInFlight;
+  const refresh = getRefreshToken();
+  if (!refresh) {
+    clearTokens();
+    return false;
+  }
+  _refreshInFlight = (async () => {
+    try {
+      const res = await fetch(`${API_BASE}/api/auth/refresh`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ refresh_token: refresh }),
+      });
+      if (!res.ok) {
+        clearTokens();
+        return false;
+      }
+      const j = await res.json();
+      if (!j?.access_token || !j?.refresh_token) {
+        clearTokens();
+        return false;
+      }
+      setTokens(j.access_token, j.refresh_token);
+      return true;
+    } catch {
+      clearTokens();
+      return false;
+    } finally {
+      _refreshInFlight = null;
+    }
+  })();
+  return _refreshInFlight;
+}
+
+interface RequestOptions extends RequestInit {
+  timeoutMs?: number;
+  __retried?: boolean;
+}
+
+async function request<T>(path: string, init?: RequestOptions): Promise<T> {
+  const { timeoutMs = DEFAULT_TIMEOUT_MS, __retried, ...rest } = init ?? {};
   const controller = new AbortController();
   let timeoutId: ReturnType<typeof setTimeout> | null = null;
   if (timeoutMs > 0) {
@@ -106,9 +148,9 @@ async function request<T>(path: string, init?: RequestInit & { timeoutMs?: numbe
     "Content-Type": "application/json",
     ...(rest.headers as Record<string, string> || {}),
   };
-  const access = getAccessToken();
-  if (access && !headers["Authorization"]) {
-    headers["Authorization"] = `Bearer ${access}`;
+  if (!headers["Authorization"]) {
+    const access = getAccessToken();
+    if (access) headers["Authorization"] = `Bearer ${access}`;
   }
 
   let res: Response;
@@ -133,6 +175,17 @@ async function request<T>(path: string, init?: RequestInit & { timeoutMs?: numbe
       const j = JSON.parse(body);
       if (typeof j?.detail === "string") detail = j.detail;
     } catch { /* not JSON */ }
+    // 401 with a refresh token: try to refresh once and replay. This
+    // covers access-token expiry without bouncing the user to /login.
+    if (res.status === 401 && !__retried && getRefreshToken()) {
+      const ok = await _tryRefresh();
+      if (ok) {
+        // Drop the cached Authorization header so the new bearer is
+        // picked up on the retry.
+        const { Authorization: _, ...restHeaders } = headers as Record<string, string>;
+        return request<T>(path, { ...(init ?? {}), __retried: true, headers: restHeaders });
+      }
+    }
     throw new ApiError(res.status, detail);
   }
   return (await res.json()) as T;

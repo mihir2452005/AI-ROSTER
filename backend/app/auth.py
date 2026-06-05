@@ -44,15 +44,38 @@ REFRESH_TOKEN_EXPIRE_DAYS = int(os.environ.get("JWT_REFRESH_TOKEN_EXPIRE_DAYS", 
 
 
 # ---- Password hashing ----
+#
+# bcrypt silently truncates passwords longer than 72 bytes. To avoid
+# surprising users (and to keep our verify path consistent), we
+# pre-hash long passwords with SHA-256 (hex-encoded, 64 chars) and
+# pass that to bcrypt. The result is a deterministic 60-char bcrypt
+# hash of a 64-char hex string — no silent truncation.
+#
+# For passwords up to 72 bytes we pass them through unchanged so the
+# hash format is familiar to anyone inspecting the DB.
+import hashlib
+
+_BCRYPT_MAX_BYTES = 72
+
+
+def _bcrypt_safe(password: str) -> str:
+    """Return a form of `password` that bcrypt can consume without
+    silently truncating it. See module docstring above for rationale."""
+    encoded = password.encode("utf-8")
+    if len(encoded) <= _BCRYPT_MAX_BYTES:
+        return password
+    return hashlib.sha256(encoded).hexdigest()
+
+
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 def hash_password(plain: str) -> str:
-    return pwd_context.hash(plain)
+    return pwd_context.hash(_bcrypt_safe(plain))
 
 
 def verify_password(plain: str, hashed: str) -> bool:
-    return pwd_context.verify(plain, hashed)
+    return pwd_context.verify(_bcrypt_safe(plain), hashed)
 
 
 # ---- JWT ----

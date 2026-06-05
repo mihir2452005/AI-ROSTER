@@ -31,6 +31,33 @@ router = APIRouter(prefix="/api/payments", tags=["payments"])
 sub_router = APIRouter(prefix="/api/subscriptions", tags=["subscriptions"])
 
 
+def _is_sub_live(sub: db_models.Subscription) -> bool:
+    """Return True iff the subscription should grant access right now.
+
+    A subscription is "live" if:
+      - status is active or past_due
+      - current_period_end is set and in the future
+    `pending` and `cancelled` subs do NOT grant access. Subs with
+    current_period_end=None are treated as expired (defensive: schema
+    allows it; the value should always be set on a real sub).
+    """
+    if sub.status not in (db_models.SubStatus.active, db_models.SubStatus.past_due):
+        return False
+    if sub.current_period_end is None:
+        return False
+    # Normalise to UTC-naive so we can compare across SQLite (drops
+    # tzinfo) and PostgreSQL (preserves it). The values are always
+    # UTC-stored.
+    from datetime import datetime, timezone
+    now = datetime.now(timezone.utc)
+    end = sub.current_period_end
+    if end.tzinfo is None:
+        end = end.replace(tzinfo=timezone.utc)
+    if now.tzinfo is None:
+        now = now.replace(tzinfo=timezone.utc)
+    return end > now
+
+
 # ---- Razorpay client ----
 RAZORPAY_KEY_ID = os.environ.get("RAZORPAY_KEY_ID", "")
 RAZORPAY_KEY_SECRET = os.environ.get("RAZORPAY_KEY_SECRET", "")
@@ -187,6 +214,13 @@ def create_order(
     """
     from datetime import datetime, timezone
     now = datetime.now(timezone.utc)
+    # Refuse to create a new order if the user has a LIVE subscription
+    # (active/pending/past_due with future period end). Expired
+    # subscriptions and cancelled ones are fine — the user is allowed
+    # to re-subscribe. (Prior bug: an expired sub would block
+    # re-purchase until admin manually marked it completed. The
+    # periodic cleanup task now marks expired subs as completed, but
+    # we also defend here so the user is never permanently locked out.)
     existing = db.query(db_models.Subscription).filter(
         db_models.Subscription.user_id == user.id,
         db_models.Subscription.status.in_([
@@ -194,6 +228,7 @@ def create_order(
             db_models.SubStatus.past_due,
             db_models.SubStatus.pending,
         ]),
+        db_models.Subscription.current_period_end > now,
     ).first()
     if existing is not None:
         raise HTTPException(
@@ -235,7 +270,11 @@ def create_order(
         db.commit()
     except IntegrityError:
         # Concurrent create-order by the same user beat us to it. Roll
-        # back and return a clean 409.
+        # back and return a clean 409. NB: the Razorpay order we just
+        # created is now orphaned on Razorpay's side. We can't refund
+        # it automatically (no payment was made yet), but Razorpay
+        # auto-expires unpaid orders in ~24h, so this is a soft leak
+        # at worst. See BUG-PAY-005.
         db.rollback()
         raise HTTPException(
             status_code=409,
@@ -314,12 +353,38 @@ def verify_payment(
     plan = sub.plan
     now = datetime.now(timezone.utc)
 
-    # Only set to active if it isn't already. This prevents an inadvertent
-    # status downgrade (e.g. admin cancelled, then user retries verify).
-    if sub.status != db_models.SubStatus.active:
+    # Activate the subscription, but don't reset the billing period if
+    # it's already active. Re-activating on every verify call would
+    # extend a user's access on every page reload, which is a billing
+    # bug. We also refuse to re-activate a subscription the user (or
+    # admin) has explicitly cancelled — see BUG-PAY-012 below; the
+    # webhook handler shares the same rule.
+    if sub.status == db_models.SubStatus.active and sub.current_period_end and sub.current_period_end > now:
+        # Already active and not expired. Leave period as-is.
+        pass
+    elif sub.status == db_models.SubStatus.cancelled and sub.cancel_at_period_end:
+        # User cancelled. Don't silently re-activate. The admin can
+        # grant a new sub via /api/admin/grant-subscription if needed.
+        raise HTTPException(
+            status_code=409,
+            detail="Subscription was cancelled. Contact support to reactivate.",
+        )
+    else:
         sub.status = db_models.SubStatus.active
         sub.current_period_start = now
         sub.current_period_end = now + timedelta(days=plan.duration_days)
+        # Reset the cancellation flag if the sub was previously
+        # scheduled to cancel at period end (a fresh payment means the
+        # user changed their mind). This is the only case where we DO
+        # override the cancelled state.
+        sub.cancel_at_period_end = False
+        # Reset the free-tier counter: a paying user shouldn't be
+        # locked out of the free tier later when their subscription
+        # expires. (Prior bug: a user with free_messages_used=5 who
+        # then subscribed was permanently locked out of the free tier
+        # after the sub expired. See BUG-PAY-035.)
+        if user.free_messages_used and user.free_messages_used > 0:
+            user.free_messages_used = 0
     # NOTE: do NOT write req.razorpay_payment_id into sub.razorpay_subscription_id.
     # That column is reserved for Razorpay subscription IDs (used by the
     # `subscription.cancelled` webhook lookup) — see H4 in the audit.
@@ -413,12 +478,25 @@ async def razorpay_webhook(
                     order_id, note_user_id, sub.user_id,
                 )
                 sub = None
-            if sub and sub.status != db_models.SubStatus.active:
+            # Idempotency: only act if the subscription is NOT already
+            # active with a future period end. Re-activating on every
+            # webhook delivery would re-extend the billing window.
+            # Mirrors the verify_payment rules.
+            now = datetime.now(timezone.utc)
+            if sub and not (
+                sub.status == db_models.SubStatus.active
+                and sub.current_period_end
+                and sub.current_period_end > now
+            ) and sub.status != db_models.SubStatus.cancelled:
                 plan = sub.plan
-                now = datetime.now(timezone.utc)
                 sub.status = db_models.SubStatus.active
                 sub.current_period_start = now
                 sub.current_period_end = now + timedelta(days=plan.duration_days)
+                sub.cancel_at_period_end = False
+                # Reset free-tier counter on fresh activation.
+                user = sub.user
+                if user and user.free_messages_used and user.free_messages_used > 0:
+                    user.free_messages_used = 0
             # Record the payment if the verify endpoint hasn't already.
             # Idempotent: payment_id has a unique constraint, so a duplicate
             # webhook just becomes a no-op.
@@ -450,8 +528,15 @@ async def razorpay_webhook(
             sub = db.query(db_models.Subscription).filter(
                 db_models.Subscription.razorpay_subscription_id == sub_id
             ).first()
+            # Mark cancelled AND set cancel_at_period_end so the user
+            # keeps access until the period end. Mirrors the
+            # /api/subscriptions/cancel flow. (Prior bug: status was
+            # set to cancelled but cancel_at_period_end stayed False,
+            # making the UI show the user as "active" while the system
+            # treated them as cancelled.)
             if sub and sub.status != db_models.SubStatus.cancelled:
                 sub.status = db_models.SubStatus.cancelled
+                sub.cancel_at_period_end = True
                 db.commit()
 
     elif event_type == "payment.failed":
@@ -461,16 +546,19 @@ async def razorpay_webhook(
             sub = db.query(db_models.Subscription).filter(
                 db_models.Subscription.razorpay_order_id == order_id
             ).first()
-            if sub and sub.status not in (
-                db_models.SubStatus.cancelled,
-                db_models.SubStatus.completed,
-            ):
-                sub.status = db_models.SubStatus.cancelled
+            # A failed payment should leave the user in `past_due` so
+            # they can retry — NOT `cancelled`, which would lock them
+            # out of re-subscribing until the admin intervened.
+            # (Prior bug: failed payment marked sub as cancelled.)
+            if sub and sub.status == db_models.SubStatus.pending:
+                sub.status = db_models.SubStatus.past_due
                 db.commit()
 
     elif event_type == "refund.processed":
         # A refund was issued. Mark the payment as refunded and cancel
-        # the subscription at the end of the current period. See audit #16.
+        # the subscription. The access-grace is governed by
+        # `cancel_at_period_end`; since the user got their money back
+        # there's no grace — they lose access immediately.
         payload = event.get("payload", {}).get("refund", {}).get("entity", {})
         payment_id = payload.get("payment_id")
         if payment_id:
@@ -482,7 +570,7 @@ async def razorpay_webhook(
                 sub = payment.subscription
                 if sub and sub.status != db_models.SubStatus.cancelled:
                     sub.status = db_models.SubStatus.cancelled
-                    sub.cancel_at_period_end = True
+                    sub.cancel_at_period_end = False
                 try:
                     db.commit()
                 except IntegrityError:

@@ -33,6 +33,13 @@ from .session import MEMORY, SESSIONS
 log = logging.getLogger(__name__)
 router = APIRouter(prefix="/api")
 
+# Free-tier message limit (per account, lifetime). The same constant is
+# used by the /api/auth/register router and the /api/session/{id}/roast
+# gate. Keep them in lockstep — change one, change both. The
+# subscription gate is bypassed entirely when the user has an active
+# subscription, so a paying user never hits this number.
+FREE_MESSAGES_LIMIT = 5
+
 # Sessions ended more than this long ago are eligible for cleanup. The session
 # is kept around for this long so a shared link can still load the transcript.
 SHARED_SESSION_TTL_SECONDS = float(
@@ -92,7 +99,11 @@ def start_session(
     # Check for returning user
     prior = MEMORY.get(req.username) if req.username else None
 
-    session = SESSIONS.create(req.mode, req.personality, req.username, roaster_gender=req.roaster_gender)
+    session = SESSIONS.create(
+        req.mode, req.personality, req.username,
+        roaster_gender=req.roaster_gender,
+        user_id=user.id if user is not None else None,
+    )
 
     # If returning user, prefer a callback; otherwise use a regular opener.
     opener_text: Optional[str] = None
@@ -277,13 +288,22 @@ def roast(
         # On any DB error we 503 instead of silently bypassing the gate;
         # the previous behaviour let an attacker use a transient DB
         # hiccup to roast unlimited free messages. See audit #5.
+        #
+        # We commit the increment here so a parallel request can't both
+        # observe 4 → both pass the gate. If the roast itself fails
+        # later in this handler, the user's free_messages_used stays
+        # incremented — the user lost a free credit, not the system
+        # gave away an extra one. (Prior bug: the increment was
+        # committed before any roast logic ran, so a downstream
+        # exception still charged the user; rollback would have been
+        # possible but opens a TOCTOU window.)
         from sqlalchemy.exc import SQLAlchemyError
         try:
             res = db.execute(
                 update(db_models.User)
                 .where(
                     db_models.User.id == user.id,
-                    db_models.User.free_messages_used < 5,
+                    db_models.User.free_messages_used < FREE_MESSAGES_LIMIT,
                 )
                 .values(free_messages_used=db_models.User.free_messages_used + 1)
             )
@@ -300,10 +320,10 @@ def roast(
             cur = db.query(db_models.User.free_messages_used).filter(
                 db_models.User.id == user.id
             ).scalar() or 0
-            if cur >= 5:
+            if cur >= FREE_MESSAGES_LIMIT:
                 raise HTTPException(
                     status_code=402,
-                    detail="Free tier limit reached (5 messages total). Subscribe to keep roasting.",
+                    detail=f"Free tier limit reached ({FREE_MESSAGES_LIMIT} messages total). Subscribe to keep roasting.",
                 )
     # Note: anonymous (no JWT) users are protected by the per-session
     # MAX_SESSION_MESSAGES cap above (default 50). We don't try to gate
@@ -456,6 +476,15 @@ def end_session(
     if not session:
         raise HTTPException(404, "session not found")
 
+    # Ownership check: if the session is owned by an authed user, only
+    # that user (or an anonymous caller for an anonymous session) may
+    # end it. An anonymous caller cannot end another user's session —
+    # they could just trigger the closer for free, and worse, a
+    # subsequent persistence write would clobber user_id on the row.
+    if session.user_id is not None:
+        if user is None or user.id != session.user_id:
+            raise HTTPException(404, "session not found")
+
     # Idempotent: if already ended, just return the stored closer + scores.
     if session.ended_at is not None:
         return EndSessionResponse(
@@ -546,9 +575,17 @@ def end_session(
 
 
 @router.get("/session/{session_id}", response_model=SessionStateResponse)
-def get_session(session_id: str) -> SessionStateResponse:
+def get_session(
+    session_id: str,
+    user: Annotated[Optional[db_models.User], Depends(auth.get_optional_user)] = None,
+) -> SessionStateResponse:
     session = SESSIONS.get(session_id)
     if not session:
+        raise HTTPException(404, "session not found")
+    # Same ownership check as /end: an authed session is only readable
+    # by its owner. Anonymous sessions remain public (the share URL is
+    # meant to be shareable with anyone who has the link).
+    if session.user_id is not None and (user is None or user.id != session.user_id):
         raise HTTPException(404, "session not found")
     return SessionStateResponse(
         session_id=session.session_id,

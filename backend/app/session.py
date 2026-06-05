@@ -76,6 +76,7 @@ def session_from_persisted(data: dict) -> Session:
     return Session(
         session_id=data["session_id"],
         username=data.get("username"),
+        user_id=data.get("user_id"),
         roaster_gender=data.get("roaster_gender"),
         mode=RoastMode(data["mode"]),
         personality=Personality(data["personality"]),
@@ -160,11 +161,13 @@ class SessionStore:
         personality: Personality,
         username: Optional[str],
         roaster_gender: Optional[str] = None,
+        user_id: Optional[int] = None,
     ) -> Session:
         sid = uuid.uuid4().hex  # 128 bits; was uuid4().hex[:12] (48 bits)
         s = Session(
             session_id=sid,
             username=username,
+            user_id=user_id,
             roaster_gender=roaster_gender,
             mode=mode,
             personality=personality,

@@ -183,20 +183,35 @@ def _is_trusted_proxy(ip: str) -> bool:
 def _extract_client_ip(request: Request) -> str:
     """Return the most likely real client IP.
 
-    If the direct connection is from a trusted proxy and X-Forwarded-For
-    is present, we honour the leftmost entry. Otherwise we fall back to
-    request.client.host, which is the immediate peer. This is the same
-    rule nginx / cloudflare use, and it prevents the X-Forwarded-For
-    bypass class of attacks.
+    If the direct connection is from a trusted proxy, walk the
+    X-Forwarded-For chain RIGHT-to-LEFT and return the first entry
+    that is NOT a trusted proxy. This handles the common
+    "client → untrusted-proxy → trusted-proxy → app" case correctly:
+    the leftmost entry is the spoofable client-supplied value, the
+    rightmost is appended by the trusted proxy and is the real
+    client. (The previous implementation read the leftmost, which is
+    the standard rule ONLY when the trusted proxy replaces — not
+    appends to — the X-Forwarded-For header. See C4 / BUG-MAIN-006.)
+
+    If the direct connection is NOT from a trusted proxy, we use
+    request.client.host directly and ignore X-Forwarded-For. Without
+    this, an attacker could rotate X-Forwarded-For to give themselves
+    a fresh rate-limit bucket on every request.
     """
     direct = request.client.host if request.client else ""
     if not _is_trusted_proxy(direct):
         return direct or "unknown"
     fwd = request.headers.get("X-Forwarded-For")
     if fwd:
-        return fwd.split(",")[0].strip() or direct or "unknown"
+        # Walk right-to-left, return the first IP that is not in
+        # TRUSTED_PROXY_CIDRS. The leftmost entry is the spoofable
+        # client-supplied value, so we don't trust it directly.
+        for entry in reversed([e.strip() for e in fwd.split(",")]):
+            if entry and not _is_trusted_proxy(entry):
+                return entry
+        # All entries were trusted proxies (unusual). Fall through.
     real = request.headers.get("X-Real-IP")
-    if real:
+    if real and not _is_trusted_proxy(real.strip()):
         return real.strip()
     return direct or "unknown"
 # Cap on the number of distinct IPs we track. After this we evict the

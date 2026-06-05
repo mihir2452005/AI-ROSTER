@@ -8,9 +8,51 @@ import type {
   StartSessionRequest,
   StartSessionResponse,
 } from "./types";
-import { getAccessToken } from "./auth-api";
+import { getAccessToken, getRefreshToken, setTokens, clearTokens } from "./auth-api";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "";
+
+// Single in-flight refresh promise so a burst of 401s triggers ONE
+// refresh, not N. Without this, an expired-token storm would generate
+// N concurrent refresh requests, race each other, and (worst case) the
+// winning refresh would bump the token_version via /logout-all path
+// before the others get their turn.
+let _refreshInFlight: Promise<boolean> | null = null;
+
+async function _tryRefresh(): Promise<boolean> {
+  if (_refreshInFlight) return _refreshInFlight;
+  const refresh = getRefreshToken();
+  if (!refresh) {
+    clearTokens();
+    return false;
+  }
+  _refreshInFlight = (async () => {
+    try {
+      const res = await fetch(`${API_BASE}/api/auth/refresh`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ refresh_token: refresh }),
+      });
+      if (!res.ok) {
+        clearTokens();
+        return false;
+      }
+      const j = await res.json();
+      if (!j?.access_token || !j?.refresh_token) {
+        clearTokens();
+        return false;
+      }
+      setTokens(j.access_token, j.refresh_token);
+      return true;
+    } catch {
+      clearTokens();
+      return false;
+    } finally {
+      _refreshInFlight = null;
+    }
+  })();
+  return _refreshInFlight;
+}
 
 /** Default per-request timeout. Long enough for a slow backend, short enough
  * that a hung connection doesn't leave the user staring at "Loading…". */
@@ -76,6 +118,10 @@ interface RequestOptions extends RequestInit {
   /** Per-request timeout in ms. Defaults to DEFAULT_TIMEOUT_MS. Pass 0 to
    * disable (use sparingly — hung requests leave the user stuck). */
   timeoutMs?: number;
+  /** Internal: marks a request as a retry-after-refresh so we don't
+   * loop forever on a perpetually-401 endpoint. Never set this in
+   * application code. */
+  __retried?: boolean;
 }
 
 async function request<T>(path: string, init?: RequestOptions): Promise<T> {
@@ -123,6 +169,27 @@ async function request<T>(path: string, init?: RequestOptions): Promise<T> {
       if (typeof j?.detail === "string") detail = j.detail;
       else if (Array.isArray(j?.detail) && j.detail[0]?.msg) detail = j.detail[0].msg;
     } catch { /* not JSON; keep raw */ }
+    // 401 with a refresh token: try to refresh once and replay. Don't
+    // recurse infinitely — only one retry, only if we actually HAD a
+    // refresh token to begin with. This handles the "access token
+    // expired mid-session" case without bouncing the user to /login.
+    if (res.status === 401 && init?.__retried !== true && getRefreshToken()) {
+      const ok = await _tryRefresh();
+      if (ok) {
+        // Re-issue the same request with a fresh bearer token. We
+        // mark the retry so a still-401 response surfaces to the
+        // caller as-is.
+        const newInit: RequestOptions = {
+          ...(init ?? {}),
+          __retried: true,
+        };
+        // Drop any cached Authorization header from the original
+        // request so we pick up the freshly-stored token.
+        const { Authorization: _, ...restHeaders } = headers as Record<string, string>;
+        newInit.headers = restHeaders;
+        return request<T>(path, newInit);
+      }
+    }
     throw new ApiError(res.status, detail);
   }
   return (await res.json()) as T;

@@ -180,6 +180,12 @@ class ChatMessage(BaseModel):
 class Session(BaseModel):
     session_id: str
     username: Optional[str] = None
+    # Owning user id (set on start if the caller is authenticated). Used
+    # by /session/{id}/end and /session/{id} to refuse cross-user access:
+    # an anonymous caller can't take over an authed user's session, and
+    # an authed user can't end or read another user's session. None for
+    # anonymous sessions, which are intentionally public.
+    user_id: Optional[int] = None
     # Which gender of roaster the user picked (male/female/neutral). Drives
     # roaster selection and pronoun usage in personalized roast generation.
     roaster_gender: Optional[str] = Field(default=None, pattern="^(male|female|neutral)$")

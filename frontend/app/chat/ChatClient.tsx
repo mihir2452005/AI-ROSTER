@@ -358,11 +358,21 @@ export default function ChatClient({ sessionId }: Props) {
                   setInput(e.target.value);
                   if (error) setError(null);
                 }}
-                placeholder="Say something to be roasted…"
+                onKeyDown={(e) => {
+                  // Ctrl+Enter / Cmd+Enter sends without the user
+                  // having to click. Plain Enter still submits via the
+                  // form's implicit submit, so single-line keystrokes
+                  // work the same.
+                  if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+                    e.preventDefault();
+                    send();
+                  }
+                }}
+                placeholder="Say something to be roasted… (Enter to send, Shift+Enter for newline)"
                 className="input"
-                disabled={busy}
                 maxLength={2000}
                 autoFocus
+                aria-label="Your message"
               />
               <button
                 type="submit"
@@ -373,8 +383,15 @@ export default function ChatClient({ sessionId }: Props) {
                 Send 🔥
               </button>
             </form>
-            <div className="mt-2 text-right text-[10px] text-muted/70">
-              {input.length} / 2000
+            <div className="mt-2 flex items-center justify-between text-[10px] text-muted/70">
+              <span>
+                {input.length > 0 && input.length < 10
+                  ? "Tip: longer messages get sharper roasts."
+                  : ""}
+              </span>
+              <span>
+                {input.length} / 2000
+              </span>
             </div>
           </div>
         )}

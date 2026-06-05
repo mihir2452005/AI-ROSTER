@@ -15,7 +15,8 @@ from .database import get_db
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 
 
-# Free tier message limit before prompting to subscribe
+# Free tier message limit before prompting to subscribe. Kept in sync
+# with `routes.FREE_MESSAGES_LIMIT` — change one, change both.
 FREE_MESSAGES_LIMIT = 5
 
 
@@ -73,6 +74,9 @@ def login(
     """
     # Always run a bcrypt verify, even when the user is missing, to keep
     # response time constant. The dummy hash is for "no-such-user".
+    # We also run a bcrypt verify for disabled users (same dummy hash)
+    # so the time-to-response can't be used to enumerate which
+    # accounts are active vs disabled. See BUG-AUTHR-018.
     _DUMMY_HASH = "$2b$12$CwTycUXWue0Thq9StjUM0uJ8Vd1IX0Q8dL1.Jjh1hYpQ3P4lp7mZi"
     user = db.query(db_models.User).filter(
         db_models.User.email == req.email.lower()
@@ -83,15 +87,20 @@ def login(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid email or password",
         )
-    if not auth.verify_password(req.password, user.hashed_password):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid email or password",
-        )
+    # Always run the verify against the real hash, regardless of the
+    # outcome of the is_active check below, so timing can't reveal
+    # whether the account is active.
+    password_ok = auth.verify_password(req.password, user.hashed_password)
     if not user.is_active:
+        auth.verify_password(req.password, _DUMMY_HASH)  # pad to ~constant time
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Account is disabled. Contact support.",
+        )
+    if not password_ok:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid email or password",
         )
 
     access = auth.create_access_token(user.id, user.email, user.token_version)
