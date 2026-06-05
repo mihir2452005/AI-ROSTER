@@ -44,6 +44,12 @@ export default function ChatClient({ sessionId }: Props) {
 
   const scrollerRef = useRef<HTMLDivElement>(null);
   const copyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Per-send AbortController so we can cancel in-flight requests on
+  // unmount or when a new send is triggered. Without this, a user
+  // who navigates away mid-request would have `setMessages`/
+  // `setScores` called on the unmounted component (React warns, the
+  // calls are dropped, the response is wasted bandwidth).
+  const sendControllerRef = useRef<AbortController | null>(null);
 
   // Bootstrap: load session + opener. If the in-memory store lost it
   // (free-tier host cold start) and the user is logged in, try the
@@ -109,29 +115,48 @@ export default function ChatClient({ sessionId }: Props) {
   // Cleanup the copy-feedback timer on unmount
   useEffect(() => () => {
     if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
+    sendControllerRef.current?.abort();
   }, []);
 
   async function send() {
     const text = input.trim();
-    if (!text || busy) return;
-    if (endedRemote || finalScores) {
-      setError("This session has ended. Start a new one to keep roasting.");
+    // canSend is the gate the button uses; the form's onSubmit also
+    // calls send() on Enter, so we re-check here.
+    if (!text || busy || endedRemote || !!finalScores) {
+      if (endedRemote || finalScores) {
+        setError("This session has ended. Start a new one to keep roasting.");
+      }
       return;
     }
     setInput("");
     setError(null);
     setHitFreeTier(false);
     setBusy(true);
-    // Optimistic: show the user message immediately.
-    setMessages((m) => [...m, { role: "user", content: text }]);
+    // Optimistic: show the user message immediately. The user message
+    // is keyed by an in-place id so the rollback below can remove
+    // THIS bubble (not the last item in the list) even if a 404 +
+    // recovery path has just replaced the whole list.
+    const optimisticId = `optimistic-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    setMessages((m) => [...m, { role: "user", content: text, _id: optimisticId } as ChatMessage]);
+
+    // Cancel any in-flight send (defensive — busy guard already
+    // prevents re-entry, but a stale promise from before unmount
+    // could still resolve).
+    sendControllerRef.current?.abort();
+    const controller = new AbortController();
+    sendControllerRef.current = controller;
+
     try {
-      const r: RoastResponse = await api.roast(sessionId, { message: text });
+      const r: RoastResponse = await api.roast(sessionId, { message: text }, { signal: controller.signal });
       setMessages((m) => [...m, { role: "assistant", content: r.roast, intents: r.intents_detected }]);
       setScores(r.scores);
     } catch (e) {
       // 404 mid-session usually means the server restarted and lost
-      // the in-memory store. Authenticated users can recover from the
-      // persisted `roast_sessions` row, then re-send automatically.
+      // the in-memory store. Authenticated users can recover from
+      // the persisted `roast_sessions` row, then re-send
+      // automatically. The recovery path REPLACES the message list
+      // (with the optimistic bubble removed) so the regular rollback
+      // below is skipped.
       if (e instanceof ApiError && e.code === "not_found" && getAccessToken()) {
         try {
           const recovered = await api.recoverSession(sessionId);
@@ -139,13 +164,11 @@ export default function ChatClient({ sessionId }: Props) {
           setPersonality(recovered.personality);
           setScores(recovered.scores);
           setRecoveredFromDb(true);
-          // Re-send the message now that the session is back in
-          // memory. setMessages is a REPLACEMENT, not a delta, so the
-          // optimistic user bubble from line 121 is dropped — the
-          // recovered history doesn't include this turn (it was
-          // persisted before the new attempt was sent) and the new
-          // user/assistant pair is appended.
-          const r2: RoastResponse = await api.roast(sessionId, { message: text });
+          const r2: RoastResponse = await api.roast(sessionId, { message: text }, { signal: controller.signal });
+          // REPLACEMENT (not append): the recovered history is the
+          // pre-cold-start view; we then append the new user +
+          // assistant pair so the optimistic user message (which is
+          // NOT in `recovered.history`) is the one shown in context.
           setMessages((recovered.history || []).concat([
             { role: "user", content: text },
             { role: "assistant", content: r2.roast, intents: r2.intents_detected },
@@ -156,22 +179,21 @@ export default function ChatClient({ sessionId }: Props) {
           // Fall through to the regular error UI.
         }
       }
-      // Remove the optimistic user message and restore the input so the
-      // user can retry without retyping.
-      setMessages((m) => m.slice(0, -1));
+      // Roll back ONLY the optimistic bubble we added (by id), not
+      // the last item in the list. This prevents corrupting the chat
+      // if a 404-recovery path had just replaced the list and then
+      // the re-send also failed.
+      setMessages((m) => m.filter((msg) => (msg as ChatMessage)._id !== optimisticId));
       setInput(text);
       if (e instanceof ApiError && e.code === "session_ended") {
         setEndedRemote(true);
       }
-      if (e instanceof ApiError && e.code === "free_tier") {
-        setHitFreeTier(true);
-      } else {
-        setHitFreeTier(false);
-      }
-      // friendlyError() already returns the right text for free_tier,
-      // session_ended, etc. — no need to duplicate the strings here.
+      setHitFreeTier(e instanceof ApiError && e.code === "free_tier");
       setError(friendlyError(e));
     } finally {
+      if (sendControllerRef.current === controller) {
+        sendControllerRef.current = null;
+      }
       setBusy(false);
     }
   }
@@ -185,14 +207,21 @@ export default function ChatClient({ sessionId }: Props) {
 
   async function endSession() {
     if (ending || finalScores) return;
+    // If the session is already ended remotely (e.g., server-side
+    // timeout or admin action), short-circuit. The user can still
+    // see the closer from the recovered history.
+    if (endedRemote) {
+      return;
+    }
     setEnding(true);
     setError(null);
     try {
       const r = await api.endSession(sessionId);
       setFinalScores(r.final_scores);
-      setCloser(r.closer);
-      if (r.closer) {
-        setMessages((m) => [...m, { role: "assistant", content: r.closer as string }]);
+      const closerText = r.closer;
+      setCloser(closerText);
+      if (closerText) {
+        setMessages((m) => [...m, { role: "assistant", content: closerText }]);
       }
     } catch (e) {
       setError(friendlyError(e));
@@ -203,6 +232,14 @@ export default function ChatClient({ sessionId }: Props) {
 
   function copyShareLink() {
     const url = `${window.location.origin}/share/${sessionId}`;
+    // navigator.clipboard requires a secure context (HTTPS or
+    // localhost). On plain HTTP deploys or older browsers, the
+    // property is undefined and calling writeText throws
+    // synchronously — which used to crash the whole component.
+    if (typeof navigator === "undefined" || !navigator.clipboard) {
+      setError("Your browser doesn't support one-click copy. Long-press the link instead.");
+      return;
+    }
     navigator.clipboard.writeText(url).then(
       () => {
         setCopied(true);

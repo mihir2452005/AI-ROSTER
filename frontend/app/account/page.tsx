@@ -55,8 +55,16 @@ export default function AccountPage() {
 
   async function saveProfile() {
     setMessage("");
+    // Trim the name; reject whitespace-only as a "no name" (we treat
+    // empty name as "clear it" which is allowed, but spaces-only is
+    // not).
+    const trimmed = name.trim();
+    if (name.length > 0 && trimmed.length === 0) {
+      setMessage("Name can't be only whitespace.");
+      return;
+    }
     try {
-      const u = await authApi.updateMe({ full_name: name, gender_preference: gender });
+      const u = await authApi.updateMe({ full_name: trimmed, gender_preference: gender });
       setUser(u);
       setEditing(false);
       setMessage("Profile updated ✅");
@@ -68,6 +76,14 @@ export default function AccountPage() {
   async function changePassword() {
     if (newPw.length < 8) {
       setMessage("New password must be at least 8 characters");
+      return;
+    }
+    if (!currentPw) {
+      setMessage("Enter your current password.");
+      return;
+    }
+    if (newPw === currentPw) {
+      setMessage("New password must be different from the current one.");
       return;
     }
     setMessage("");
@@ -88,15 +104,21 @@ export default function AccountPage() {
     try {
       const r = await subscriptionsApi.cancel();
       setMessage("Cancelled ✅ Access until " + new Date(r.current_period_end).toLocaleDateString());
-      const s = await subscriptionsApi.my();
-      setSubs(s.subscriptions);
+      // The second fetch (refresh subscription list) is best-effort.
+      // If it fails, the user still sees the success message — the
+      // header was already updated via emitAuthRefresh inside
+      // subscriptionsApi.cancel.
+      try {
+        const s = await subscriptionsApi.my();
+        setSubs(s.subscriptions);
+      } catch { /* best-effort */ }
     } catch (e: any) {
       setMessage(e?.detail || "Cancel failed");
     }
   }
 
-  function logout() {
-    authApi.logout();
+  async function logout() {
+    await authApi.logout();
   }
 
   if (loading) {

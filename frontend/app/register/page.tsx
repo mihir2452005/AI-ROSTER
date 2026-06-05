@@ -4,6 +4,7 @@ import { Suspense, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { authApi } from "../../lib/auth-api";
+import { safeReturnPath } from "../../lib/security";
 
 type Gender = "male" | "female" | "neutral";
 
@@ -20,7 +21,8 @@ export default function RegisterPage() {
 function RegisterPageInner() {
   const router = useRouter();
   const params = useSearchParams();
-  const returnTo = params?.get("return") || "/";
+  // Validate the return path to prevent open-redirect phishing.
+  const returnTo = safeReturnPath(params?.get("return") || "/", "/");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
@@ -35,6 +37,12 @@ function RegisterPageInner() {
       setError("Password must be at least 8 characters.");
       return;
     }
+    // Trim the full name; reject if it's whitespace-only.
+    const trimmedName = fullName.trim();
+    if (fullName.length > 0 && trimmedName.length === 0) {
+      setError("Name can't be only whitespace.");
+      return;
+    }
     setLoading(true);
     try {
       // authApi.register already stores the tokens in sessionStorage
@@ -42,7 +50,7 @@ function RegisterPageInner() {
       await authApi.register({
         email,
         password,
-        full_name: fullName || undefined,
+        full_name: trimmedName || undefined,
         gender_preference: gender,
       });
       router.push(returnTo);

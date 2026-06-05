@@ -32,6 +32,11 @@ export interface ChatMessage {
   role: "user" | "assistant";
   content: string;
   intents?: string[];
+  // Optional client-side id used by ChatClient to identify
+  // optimistic messages and roll them back on failure without
+  // affecting the rest of the list (e.g., after a 404-recovery path
+  // has replaced the whole list).
+  _id?: string;
 }
 
 export interface StartSessionRequest {

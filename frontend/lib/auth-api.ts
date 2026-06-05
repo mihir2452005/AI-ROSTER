@@ -1,18 +1,15 @@
-/* RoastGPT — Auth/Payment API client for the FastAPI backend. */
+/* RoastGPT — Auth/Payment API client for the FastAPI backend.
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "";
+Uses the shared `request` / `ApiError` / `tryRefresh` from `lib/api.ts`
+so a 401 burst from any combination of api.* and authApi.* calls
+triggers exactly ONE refresh, and so all thrown errors carry a typed
+`.code` that the UI can branch on.
+*/
 
-const DEFAULT_TIMEOUT_MS = 15_000;
+import { ApiError, codeFor, friendlyError, request, tryRefresh } from "./api";
 
-export class ApiError extends Error {
-  status: number;
-  detail: string;
-  constructor(status: number, detail: string) {
-    super(detail);
-    this.status = status;
-    this.detail = detail;
-  }
-}
+export { ApiError, codeFor, friendlyError };
+export type { ApiErrorCode } from "./api";
 
 // ---- Auth token storage ----
 // Uses sessionStorage (NOT localStorage) so tokens don't survive a tab
@@ -44,8 +41,17 @@ export function getRefreshToken(): string | null {
 export function setTokens(access: string, refresh: string) {
   const s = _store();
   if (!s) return;
-  s.setItem(TOKEN_KEY, access);
-  s.setItem(REFRESH_KEY, refresh);
+  // Wrap in try/catch so a full sessionStorage (rare but possible on
+  // shared kiosk browsers) doesn't break login. A friendly error
+  // surfaces via the next request rather than a thrown exception
+  // from the storage layer.
+  try {
+    s.setItem(TOKEN_KEY, access);
+    s.setItem(REFRESH_KEY, refresh);
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.warn("[RoastGPT] Failed to store auth tokens:", e);
+  }
 }
 
 export function clearTokens() {
@@ -63,132 +69,53 @@ export function getCachedUser(): User | null {
   const raw = s.getItem(USER_KEY);
   if (!raw) return null;
   try {
-    return JSON.parse(raw) as User;
+    const parsed = JSON.parse(raw);
+    // Defensive: only return a shape that looks like a User. A
+    // hand-edited sessionStorage entry with bogus data shouldn't
+    // crash the header.
+    if (parsed && typeof parsed === "object" && "id" in parsed && "email" in parsed) {
+      return parsed as User;
+    }
   } catch {
-    return null;
+    /* fall through */
   }
+  return null;
 }
 
 export function cacheUser(user: User) {
   const s = _store();
   if (!s) return;
-  s.setItem(USER_KEY, JSON.stringify(user));
-  s.setItem(TOKEN_VERSION_KEY, String(user.token_version ?? 0));
+  try {
+    s.setItem(USER_KEY, JSON.stringify(user));
+    s.setItem(TOKEN_VERSION_KEY, String(user.token_version ?? 0));
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.warn("[RoastGPT] Failed to cache user:", e);
+  }
 }
 
 export function getStoredTokenVersion(): number {
   const s = _store();
   if (!s) return 0;
-  return Number(s.getItem(TOKEN_VERSION_KEY) || "0");
+  const n = Number(s.getItem(TOKEN_VERSION_KEY) || "0");
+  return Number.isFinite(n) ? n : 0;
 }
 
 /**
  * Broadcast a cross-component "the auth state just changed" signal.
- * Used by the pricing page after a successful payment so the HeaderAuth
- * component (which is in the root layout and doesn't unmount on
- * navigation) can drop the "⭐ Subscribe" badge without a full reload.
+ * Used by the pricing page after a successful payment, by login /
+ * register / logout / profile updates, so the HeaderAuth component
+ * (which is in the root layout and doesn't unmount on navigation) can
+ * drop the "⭐ Subscribe" badge without a full reload.
+ *
+ * Same-tab only. Cross-tab sync would require a `storage` event
+ * listener (and sessionStorage doesn't fire `storage` for the
+ * originating tab). If we ever switch to localStorage, add the
+ * listener too.
  */
 export function emitAuthRefresh(): void {
   if (typeof window === "undefined") return;
   window.dispatchEvent(new Event("roastgpt:auth-refresh"));
-}
-
-// Single in-flight refresh so a burst of 401s triggers ONE refresh, not N.
-let _refreshInFlight: Promise<boolean> | null = null;
-async function _tryRefresh(): Promise<boolean> {
-  if (_refreshInFlight) return _refreshInFlight;
-  const refresh = getRefreshToken();
-  if (!refresh) {
-    clearTokens();
-    return false;
-  }
-  _refreshInFlight = (async () => {
-    try {
-      const res = await fetch(`${API_BASE}/api/auth/refresh`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ refresh_token: refresh }),
-      });
-      if (!res.ok) {
-        clearTokens();
-        return false;
-      }
-      const j = await res.json();
-      if (!j?.access_token || !j?.refresh_token) {
-        clearTokens();
-        return false;
-      }
-      setTokens(j.access_token, j.refresh_token);
-      return true;
-    } catch {
-      clearTokens();
-      return false;
-    } finally {
-      _refreshInFlight = null;
-    }
-  })();
-  return _refreshInFlight;
-}
-
-interface RequestOptions extends RequestInit {
-  timeoutMs?: number;
-  __retried?: boolean;
-}
-
-async function request<T>(path: string, init?: RequestOptions): Promise<T> {
-  const { timeoutMs = DEFAULT_TIMEOUT_MS, __retried, ...rest } = init ?? {};
-  const controller = new AbortController();
-  let timeoutId: ReturnType<typeof setTimeout> | null = null;
-  if (timeoutMs > 0) {
-    timeoutId = setTimeout(() => controller.abort(), timeoutMs);
-  }
-
-  // Auto-inject Authorization header if we have a token
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-    ...(rest.headers as Record<string, string> || {}),
-  };
-  if (!headers["Authorization"]) {
-    const access = getAccessToken();
-    if (access) headers["Authorization"] = `Bearer ${access}`;
-  }
-
-  let res: Response;
-  try {
-    res = await fetch(`${API_BASE}${path}`, {
-      ...rest,
-      headers,
-      cache: "no-store",
-      signal: controller.signal,
-    });
-  } catch (e: any) {
-    if (e?.name === "AbortError") throw new ApiError(0, "timeout");
-    throw new ApiError(0, `NetworkError: ${e?.message || "fetch failed"}`);
-  } finally {
-    if (timeoutId) clearTimeout(timeoutId);
-  }
-  if (!res.ok) {
-    let body = "";
-    try { body = await res.text(); } catch { /* noop */ }
-    let detail = body || res.statusText;
-    try {
-      const j = JSON.parse(body);
-      if (typeof j?.detail === "string") detail = j.detail;
-    } catch { /* not JSON */ }
-    // 401 with a refresh token: try to refresh once and replay. This
-    // covers access-token expiry without bouncing the user to /login.
-    if (res.status === 401 && !__retried && getRefreshToken()) {
-      const ok = await _tryRefresh();
-      if (ok) {
-        // Drop the cached Authorization header so the new bearer is
-        // picked up on the retry.
-        const { Authorization: _, ...restHeaders } = headers as Record<string, string>;
-        return request<T>(path, { ...(init ?? {}), __retried: true, headers: restHeaders });
-      }
-    }
-    throw new ApiError(res.status, detail);
-  }
-  return (await res.json()) as T;
 }
 
 // ---- Types ----
@@ -254,13 +181,13 @@ export const authApi = {
     );
     setTokens(r.access_token, r.refresh_token);
     // Eagerly fetch and cache the user so the header reflects the new
-    // account immediately, and so token_version invalidation works
-    // across tabs in the future.
+    // account immediately. Even if this fails, the auth-refresh
+    // signal still fires so HeaderAuth re-evaluates.
     try {
       const u = await authApi.me();
       cacheUser(u);
-      emitAuthRefresh();
     } catch { /* best-effort */ }
+    emitAuthRefresh();
     return r;
   },
 
@@ -272,8 +199,8 @@ export const authApi = {
     try {
       const u = await authApi.me();
       cacheUser(u);
-      emitAuthRefresh();
     } catch { /* best-effort */ }
+    emitAuthRefresh();
     return r;
   },
 
@@ -294,6 +221,9 @@ export const authApi = {
   updateMe: async (data: { full_name?: string; gender_preference?: string }) => {
     const u = await request<User>("/api/auth/me", { method: "PATCH", body: JSON.stringify(data) });
     cacheUser(u);
+    // Profile changes affect what the header shows (initial letter,
+    // name, gender-driven CTA copy). Notify it.
+    emitAuthRefresh();
     return u;
   },
 
@@ -313,6 +243,9 @@ export const authApi = {
     clearTokens();
     emitAuthRefresh();
     if (typeof window !== "undefined") {
+      // Full nav is fine here — the user is logging out and there's
+      // no chat state to preserve. router.push would be cleaner but
+      // this module is imported from non-React code paths in places.
       window.location.href = "/login";
     }
   },
@@ -338,9 +271,15 @@ export const paymentsApi = {
 
 export const subscriptionsApi = {
   my: () => request<{ subscriptions: Subscription[] }>("/api/subscriptions/me"),
-  cancel: () => request<{ message: string; current_period_end: string }>(
-    "/api/subscriptions/cancel", { method: "POST" }
-  ),
+  cancel: async () => {
+    const r = await request<{ message: string; current_period_end: string }>(
+      "/api/subscriptions/cancel", { method: "POST" }
+    );
+    // Cancellation flips cancel_at_period_end, which the header
+    // badge / account page both need to see.
+    emitAuthRefresh();
+    return r;
+  },
 };
 
 // ---- History API ----
@@ -429,3 +368,7 @@ export const adminApi = {
       `/api/admin/leaderboard?period=${period}&limit=${limit}`
     ),
 };
+
+// Re-export the shared refresh so non-React callers can trigger a
+// refresh explicitly if they need to (e.g., background poll loops).
+export { tryRefresh };

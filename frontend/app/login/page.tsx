@@ -4,6 +4,7 @@ import { Suspense, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { authApi } from "../../lib/auth-api";
+import { safeReturnPath } from "../../lib/security";
 
 export default function LoginPage() {
   // `useSearchParams` requires a Suspense boundary in Next.js 14
@@ -23,7 +24,11 @@ function LoginPageInner() {
   const params = useSearchParams();
   // `?return=/pricing` is set by the pricing page when an anonymous
   // visitor clicks "Get Pro". Bring them back here after login.
-  const returnTo = params?.get("return") || "/";
+  // We validate the return path is a same-origin relative URL —
+  // otherwise an attacker could craft a phishing link
+  // `?return=https://evil.com` and we'd navigate to it.
+  const rawReturn = params?.get("return") || "/";
+  const safeReturn = safeReturnPath(rawReturn, "/");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -37,7 +42,7 @@ function LoginPageInner() {
       // authApi.login already stores the tokens in sessionStorage
       // (see lib/auth-api.ts:202-212). No need to call setTokens again.
       await authApi.login({ email, password });
-      router.push(returnTo);
+      router.push(safeReturn);
     } catch (err: any) {
       setError(err?.detail || "Login failed. Check your credentials.");
     } finally {
@@ -74,7 +79,7 @@ function LoginPageInner() {
             <input
               type="password"
               required
-              minLength={1}
+              minLength={8}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
