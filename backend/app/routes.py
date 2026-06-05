@@ -675,7 +675,9 @@ def cleanup(request: Request) -> dict:
 
     Requires X-Admin-Key header for authentication.
     """
-    admin_key = request.headers.get("X-Admin-Key")
+    # Constant-time key comparison via hmac.compare_digest to avoid
+    # leaking the key length or position on mismatch. See BUG-ADM-001.
+    admin_key = request.headers.get("X-Admin-Key") or ""
     expected_key = os.environ.get("ADMIN_API_KEY", "")
     if not expected_key:
         # Admin key not configured — refuse the request rather than fall
@@ -685,9 +687,8 @@ def cleanup(request: Request) -> dict:
             status_code=503,
             detail="Admin endpoint not configured. Set ADMIN_API_KEY.",
         )
-    # Use hmac.compare_digest for constant-time comparison.
     import hmac
-    if not hmac.compare_digest(admin_key or "", expected_key):
+    if not hmac.compare_digest(admin_key, expected_key):
         raise HTTPException(status_code=403, detail="Invalid admin key")
 
     removed = SESSIONS.cleanup_expired(SHARED_SESSION_TTL_SECONDS)

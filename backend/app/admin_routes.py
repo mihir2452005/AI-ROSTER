@@ -209,6 +209,11 @@ def grant_subscription(
     duration = min(duration, 3650)
 
     # If the user already has an active subscription, extend it.
+    # Also reset the free-tier counter: an admin grant means the user
+    # is now paying/pro, so the 5-msg cap shouldn't kick back in if
+    # the grant later expires. (Mirrors the verify_payment rule.)
+    if user.free_messages_used and user.free_messages_used > 0:
+        user.free_messages_used = 0
     existing = db.query(db_models.Subscription).filter(
         db_models.Subscription.user_id == user.id,
         db_models.Subscription.status == db_models.SubStatus.active,

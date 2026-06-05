@@ -622,7 +622,7 @@ def test_bug_H1_create_order_refuses_if_already_active(client, monkeypatch):
         json={"plan_code": "starter"},
         headers={"Authorization": f"Bearer {access}"})
     assert r.status_code == 409
-    assert "active or pending" in r.json()["detail"].lower()
+    assert "already have" in r.json()["detail"].lower()
 
 
 # ----- Bug #H4: verify_payment doesn't write payment_id to subscription_id column -----

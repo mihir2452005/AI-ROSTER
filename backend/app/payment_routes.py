@@ -212,21 +212,26 @@ def create_order(
     subscription — paying twice for the same plan is a billing bug
     waiting to happen. See H1 in the audit.
     """
-    from datetime import datetime, timezone
+    from datetime import datetime, timezone, timedelta
     now = datetime.now(timezone.utc)
     # Refuse to create a new order if the user has a LIVE subscription
-    # (active/pending/past_due with future period end). Expired
-    # subscriptions and cancelled ones are fine — the user is allowed
-    # to re-subscribe. (Prior bug: an expired sub would block
+    # (active/past_due with future period end). Expired subscriptions
+    # and cancelled ones are fine — the user is allowed to
+    # re-subscribe. (Prior bug: an expired sub would block
     # re-purchase until admin manually marked it completed. The
     # periodic cleanup task now marks expired subs as completed, but
     # we also defend here so the user is never permanently locked out.)
+    #
+    # Pending subs (order created, payment not yet verified) block
+    # for 30 minutes only — after that, the order is considered
+    # abandoned and the user is allowed to try again. (Without this
+    # timeout, a failed payment that left a pending sub would lock
+    # the user out forever.)
     existing = db.query(db_models.Subscription).filter(
         db_models.Subscription.user_id == user.id,
         db_models.Subscription.status.in_([
             db_models.SubStatus.active,
             db_models.SubStatus.past_due,
-            db_models.SubStatus.pending,
         ]),
         db_models.Subscription.current_period_end > now,
     ).first()
@@ -234,8 +239,21 @@ def create_order(
         raise HTTPException(
             status_code=409,
             detail=(
-                "You already have an active or pending subscription. "
+                "You already have an active subscription. "
                 "Cancel it before starting a new one, or contact support."
+            ),
+        )
+    fresh_pending = db.query(db_models.Subscription).filter(
+        db_models.Subscription.user_id == user.id,
+        db_models.Subscription.status == db_models.SubStatus.pending,
+        db_models.Subscription.created_at > now - timedelta(minutes=30),
+    ).first()
+    if fresh_pending is not None:
+        raise HTTPException(
+            status_code=409,
+            detail=(
+                "You have a pending subscription. Complete the payment "
+                "or wait 30 minutes for it to expire before starting a new one."
             ),
         )
 

@@ -149,6 +149,15 @@ RATE_LIMIT_OVERRIDES: Dict[str, tuple] = {
     "/api/auth/login": (int(os.environ.get("RATE_LIMIT_LOGIN", "10")), 60),
     "/api/auth/refresh": (int(os.environ.get("RATE_LIMIT_REFRESH", "20")), 60),
     "/api/session/start": (int(os.environ.get("RATE_LIMIT_SESSION_START", "10")), 60),
+    # /api/auth/me and /api/auth/change-password are behind JWT auth
+    # so they're naturally rate-limited per logged-in user. A
+    # misbehaving client can still hammer them — cap at 60/min to
+    # match the global default.
+    "/api/auth/me": (60, 60),
+    # The admin cleanup endpoint uses X-Admin-Key auth (not JWT), so
+    # it's not covered by the auth-* overrides. Cap it tightly because
+    # the only legitimate caller is a cron job.
+    "/api/admin/cleanup": (int(os.environ.get("RATE_LIMIT_ADMIN_CLEANUP", "5")), 60),
 }
 # Trusted reverse proxies (CIDR list, comma-separated). When a request
 # arrives from one of these, we honour the X-Forwarded-For header; for
