@@ -59,6 +59,16 @@ class UpdateUserRequest(BaseModel):
     is_admin: Optional[bool] = None
 
 
+class BanUserRequest(BaseModel):
+    reason: str = Field(min_length=3, max_length=500)
+
+
+class FeatureFlagRequest(BaseModel):
+    key: str = Field(min_length=2, max_length=64)
+    enabled: bool
+    description: Optional[str] = Field(default=None, max_length=500)
+
+
 class LeaderboardEntry(BaseModel):
     user_id: int
     masked_email: str
@@ -153,6 +163,7 @@ def update_user(
     db: Annotated[Session, Depends(get_db)],
 ) -> dict:
     """Update a user's flags (active, verified, admin). Admin only."""
+    from . import utils
     u = db.get(db_models.User, user_id)
     if not u:
         raise HTTPException(status_code=404, detail="User not found")
@@ -175,7 +186,226 @@ def update_user(
         # Invalidate every outstanding token. The user has to log in again.
         u.token_version = (u.token_version or 0) + 1
     db.commit()
+    utils.log_action(
+        db, action="admin_update_user",
+        actor_user_id=admin.id, target_user_id=u.id,
+        details={"is_active": u.is_active, "is_verified": u.is_verified,
+                 "is_admin": u.is_admin},
+    )
     return {"message": "User updated", "user_id": user_id}
+
+
+@router.post("/users/{user_id}/ban")
+def ban_user(
+    user_id: int,
+    req: BanUserRequest,
+    admin: Annotated[db_models.User, Depends(auth.require_admin)],
+    db: Annotated[Session, Depends(get_db)],
+) -> dict:
+    """Ban a user. Distinct from `is_active=false` (which is a soft
+    disable): a ban carries a reason and timestamp, and the row is
+    visible to other admins in the audit log.
+    """
+    from . import utils
+    u = db.get(db_models.User, user_id)
+    if not u:
+        raise HTTPException(status_code=404, detail="User not found")
+    if u.id == admin.id:
+        raise HTTPException(status_code=400, detail="Cannot ban yourself")
+    u.is_banned = True
+    u.ban_reason = req.reason
+    u.banned_at = datetime.now(timezone.utc)
+    u.banned_by_id = admin.id
+    u.is_active = False
+    # Invalidate all tokens.
+    u.token_version = (u.token_version or 0) + 1
+    db.commit()
+    utils.log_action(
+        db, action="admin_ban_user",
+        actor_user_id=admin.id, target_user_id=u.id,
+        details={"reason": req.reason},
+    )
+    return {"message": f"User {u.id} banned", "reason": req.reason}
+
+
+@router.post("/users/{user_id}/unban")
+def unban_user(
+    user_id: int,
+    admin: Annotated[db_models.User, Depends(auth.require_admin)],
+    db: Annotated[Session, Depends(get_db)],
+) -> dict:
+    from . import utils
+    u = db.get(db_models.User, user_id)
+    if not u:
+        raise HTTPException(status_code=404, detail="User not found")
+    u.is_banned = False
+    u.ban_reason = None
+    u.banned_at = None
+    u.banned_by_id = None
+    u.is_active = True
+    db.commit()
+    utils.log_action(
+        db, action="admin_unban_user",
+        actor_user_id=admin.id, target_user_id=u.id,
+    )
+    return {"message": f"User {u.id} unbanned"}
+
+
+# ----- Feature flags -----
+
+
+@router.get("/feature-flags")
+def list_feature_flags(
+    admin: Annotated[db_models.User, Depends(auth.require_admin)],
+    db: Annotated[Session, Depends(get_db)],
+) -> dict:
+    from . import utils
+    return {"flags": utils.list_flags(db)}
+
+
+@router.put("/feature-flags")
+def upsert_feature_flag(
+    req: FeatureFlagRequest,
+    admin: Annotated[db_models.User, Depends(auth.require_admin)],
+    db: Annotated[Session, Depends(get_db)],
+) -> dict:
+    from . import utils
+    utils.set_flag(
+        db, key=req.key, enabled=req.enabled,
+        updated_by_id=admin.id, description=req.description,
+    )
+    utils.log_action(
+        db, action="admin_set_feature_flag",
+        actor_user_id=admin.id,
+        details={"key": req.key, "enabled": req.enabled},
+    )
+    return {"message": "Feature flag updated", "key": req.key, "enabled": req.enabled}
+
+
+# ----- Audit log -----
+
+
+@router.get("/audit-logs")
+def list_audit_logs(
+    admin: Annotated[db_models.User, Depends(auth.require_admin)],
+    db: Annotated[Session, Depends(get_db)],
+    skip: int = Query(0, ge=0),
+    limit: int = Query(50, ge=1, le=200),
+    action: Optional[str] = None,
+) -> dict:
+    q = db.query(db_models.AuditLog)
+    if action:
+        q = q.filter(db_models.AuditLog.action == action)
+    total = q.count()
+    rows = q.order_by(db_models.AuditLog.created_at.desc()).offset(skip).limit(limit).all()
+    return {
+        "logs": [
+            {
+                "id": r.id,
+                "action": r.action,
+                "actor_user_id": r.actor_user_id,
+                "actor_ip": r.actor_ip,
+                "target_user_id": r.target_user_id,
+                "details": r.details_json,
+                "created_at": r.created_at.isoformat() if r.created_at else None,
+            }
+            for r in rows
+        ],
+        "total": total,
+    }
+
+
+# ----- User achievements -----
+
+
+@router.get("/users/{user_id}/achievements")
+def get_user_achievements(
+    user_id: int,
+    admin: Annotated[db_models.User, Depends(auth.require_admin)],
+    db: Annotated[Session, Depends(get_db)],
+) -> dict:
+    """List a user's unlocked achievements (admin view)."""
+    unlocked = {
+        r.achievement_key: r.unlocked_at
+        for r in db.query(db_models.UserAchievement)
+        .filter(db_models.UserAchievement.user_id == user_id)
+        .all()
+    }
+    catalog = db.query(db_models.Achievement).order_by(db_models.Achievement.sort_order).all()
+    return {
+        "achievements": [
+            {
+                "key": a.key,
+                "name": a.name,
+                "description": a.description,
+                "emoji": a.emoji,
+                "category": a.category,
+                "rarity": a.rarity,
+                "points": a.points,
+                "unlocked": a.key in unlocked,
+                "unlocked_at": unlocked[a.key].isoformat() if a.key in unlocked else None,
+            }
+            for a in catalog
+        ]
+    }
+
+
+# ----- Charts / time-series analytics -----
+
+
+@router.get("/charts/signups")
+def chart_signups(
+    admin: Annotated[db_models.User, Depends(auth.require_admin)],
+    db: Annotated[Session, Depends(get_db)],
+    days: int = Query(30, ge=1, le=365),
+) -> dict:
+    """Daily signups over the last N days."""
+    from sqlalchemy import func as sqlfunc
+    start = datetime.now(timezone.utc) - timedelta(days=days)
+    rows = (
+        db.query(
+            sqlfunc.date(db_models.User.created_at).label("d"),
+            sqlfunc.count(db_models.User.id).label("n"),
+        )
+        .filter(db_models.User.created_at >= start)
+        .group_by(sqlfunc.date(db_models.User.created_at))
+        .order_by(sqlfunc.date(db_models.User.created_at))
+        .all()
+    )
+    return {
+        "metric": "signups",
+        "days": days,
+        "points": [{"date": str(d), "count": int(n)} for d, n in rows],
+    }
+
+
+@router.get("/charts/chats")
+def chart_chats(
+    admin: Annotated[db_models.User, Depends(auth.require_admin)],
+    db: Annotated[Session, Depends(get_db)],
+    days: int = Query(30, ge=1, le=365),
+) -> dict:
+    """Daily chat volume over the last N days (user messages only)."""
+    from sqlalchemy import func as sqlfunc
+    start = datetime.now(timezone.utc) - timedelta(days=days)
+    rows = (
+        db.query(
+            sqlfunc.date(db_models.ChatHistory.created_at).label("d"),
+            sqlfunc.count(db_models.ChatHistory.id).label("n"),
+        )
+        .filter(
+            db_models.ChatHistory.created_at >= start,
+            db_models.ChatHistory.is_user == True,  # noqa: E712
+        )
+        .group_by(sqlfunc.date(db_models.ChatHistory.created_at))
+        .order_by(sqlfunc.date(db_models.ChatHistory.created_at))
+        .all()
+    )
+    return {
+        "metric": "chats",
+        "days": days,
+        "points": [{"date": str(d), "count": int(n)} for d, n in rows],
+    }
 
 
 @router.post("/grant-subscription")
@@ -321,12 +551,64 @@ def admin_stats(
     admin: Annotated[db_models.User, Depends(auth.require_admin)],
     db: Annotated[Session, Depends(get_db)],
 ) -> dict:
-    """Quick admin dashboard summary."""
+    """Quick admin dashboard summary.
+
+    Includes:
+      - total_users, active_users, banned_users
+      - active_subscriptions, total_payments, total_revenue
+      - total_chats (count of user messages)
+      - avg_session_time_seconds (mean of `ended_at - created_at`
+        for ended sessions, with at least 1 user message)
+      - most_used_mode (mode with the most user messages)
+      - daily_active_users (last 24h, user messages)
+    """
+    from sqlalchemy import func as sqlfunc
     now = datetime.now(timezone.utc)
+    day_ago = now - timedelta(days=1)
+    # Total chats = user messages
+    total_chats = (
+        db.query(sqlfunc.count(db_models.ChatHistory.id))
+        .filter(db_models.ChatHistory.is_user == True)  # noqa: E712
+        .scalar() or 0
+    )
+    # Average session time (seconds) for ended sessions with >=1 user message
+    avg_row = (
+        db.query(
+            sqlfunc.avg(
+                db_models.RoastSession.ended_at - db_models.RoastSession.created_at
+            )
+        )
+        .filter(db_models.RoastSession.ended_at.isnot(None))
+        .scalar()
+    )
+    avg_session_time = float(avg_row) if avg_row is not None else 0.0
+    # Most used mode
+    mode_row = (
+        db.query(
+            db_models.RoastSession.mode,
+            sqlfunc.count(db_models.RoastSession.id).label("n"),
+        )
+        .group_by(db_models.RoastSession.mode)
+        .order_by(sqlfunc.count(db_models.RoastSession.id).desc())
+        .first()
+    )
+    most_used_mode = mode_row[0] if mode_row else None
+    # Daily active users (last 24h) — distinct users with at least
+    # one message.
+    dau = (
+        db.query(sqlfunc.count(sqlfunc.distinct(db_models.ChatHistory.user_id)))
+        .filter(
+            db_models.ChatHistory.created_at >= day_ago,
+            db_models.ChatHistory.is_user == True,  # noqa: E712
+        )
+        .scalar() or 0
+    )
     return {
         "total_users": db.query(func.count(db_models.User.id)).scalar() or 0,
         "active_users": db.query(func.count(db_models.User.id))
             .filter(db_models.User.is_active == True).scalar() or 0,
+        "banned_users": db.query(func.count(db_models.User.id))
+            .filter(db_models.User.is_banned == True).scalar() or 0,  # noqa: E712
         "active_subscriptions": db.query(func.count(db_models.Subscription.id))
             .filter(
                 db_models.Subscription.status == db_models.SubStatus.active,
@@ -336,4 +618,8 @@ def admin_stats(
             .filter(db_models.Payment.status == db_models.PaymentStatus.captured).scalar() or 0,
         "total_revenue_paise": db.query(func.coalesce(func.sum(db_models.Payment.amount), 0))
             .filter(db_models.Payment.status == db_models.PaymentStatus.captured).scalar() or 0,
+        "total_chats": int(total_chats),
+        "avg_session_time_seconds": avg_session_time,
+        "most_used_mode": most_used_mode,
+        "daily_active_users": int(dau),
     }

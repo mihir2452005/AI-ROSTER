@@ -148,6 +148,8 @@ def _user_from_payload(payload: dict, db: Session) -> tuple[Optional[db_models.U
       - "user_not_found": the user_id in the token doesn't exist
       - "stale_token": the token_version is stale (logout-everywhere, password change)
       - "disabled": the user is_active=False (deactivated by admin)
+      - "banned": the user is_banned=True (moderation action)
+      - "deleted": the user has soft-deleted their account
     Rejecting these distinctly lets get_current_user raise 401 vs 403
     appropriately. See audit #25.
     """
@@ -163,6 +165,10 @@ def _user_from_payload(payload: dict, db: Session) -> tuple[Optional[db_models.U
     user = db.get(db_models.User, user_id)
     if user is None:
         return None, "user_not_found"
+    if user.deleted_at is not None:
+        return None, "deleted"
+    if user.is_banned:
+        return None, "banned"
     if not user.is_active:
         return None, "disabled"
     if int(payload.get("ver", 0)) != int(getattr(user, "token_version", 0)):
@@ -185,6 +191,12 @@ async def get_current_user(
     if user is None:
         if reason == "disabled":
             raise _disabled_exception("Account is disabled")
+        if reason == "banned":
+            raise _disabled_exception(
+                "Account is banned. Contact support for details."
+            )
+        if reason == "deleted":
+            raise _disabled_exception("This account has been deleted.")
         raise _credentials_exception("Invalid or expired token")
     return user
 

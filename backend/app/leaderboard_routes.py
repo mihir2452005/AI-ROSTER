@@ -54,17 +54,55 @@ def public_leaderboard(
     - `week`: last 7 days
     - `month`: last 30 days
     - `all`: all time
+
+    Uses a pre-computed `leaderboard_snapshots` row if one is fresh
+    (<= 2 hours old) for the same (period, period_id) tuple. Otherwise
+    falls back to live aggregation. The snapshot is populated by the
+    background job in `app.jobs.snapshot_leaderboard`.
     """
+    from datetime import datetime as _dt
     now = datetime.now(timezone.utc)
     if period == "week":
-        start = now - timedelta(days=7)
         period_id = _week_id(now)
     elif period == "month":
-        start = now - timedelta(days=30)
         period_id = now.strftime("%Y-%m")
     else:
-        start = datetime(1970, 1, 1, tzinfo=timezone.utc)
         period_id = "all"
+
+    # Try snapshot first.
+    fresh = (
+        db.query(db_models.LeaderboardSnapshot)
+        .filter(
+            db_models.LeaderboardSnapshot.period == period,
+            db_models.LeaderboardSnapshot.period_id == period_id,
+            db_models.LeaderboardSnapshot.captured_at >= now - timedelta(hours=2),
+        )
+        .order_by(db_models.LeaderboardSnapshot.rank.asc())
+        .limit(limit)
+        .all()
+    )
+    if fresh:
+        return {
+            "period": period_id,
+            "source": "snapshot",
+            "entries": [
+                {
+                    "rank": r.rank,
+                    "user_id": r.user_id,
+                    "total_damage": float(r.total_damage or 0.0),
+                    "message_count": int(r.message_count or 0),
+                }
+                for r in fresh
+            ],
+        }
+
+    # Fallback: live aggregation.
+    if period == "week":
+        start = now - timedelta(days=7)
+    elif period == "month":
+        start = now - timedelta(days=30)
+    else:
+        start = datetime(1970, 1, 1, tzinfo=timezone.utc)
 
     q = (
         db.query(

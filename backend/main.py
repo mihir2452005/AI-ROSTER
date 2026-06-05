@@ -90,11 +90,23 @@ async def lifespan(app: FastAPI):
         from sqlalchemy.orm import Session
         with next(get_db()) as db:  # type: Session
             payment_routes.seed_plans(db)
+            # Seed the achievement catalog (idempotent).
+            from app import utils as app_utils
+            app_utils.seed_achievements(db)
         log.info("database ready")
     except Exception as e:
         log.error("database init failed (continuing without DB): %s", e)
 
+    # Start the in-process background jobs (leaderboard snapshot,
+    # retention sweep). On the free tier these run inside the web
+    # process; on a worker dyno, swap to APScheduler/celery.
+    from app import jobs
+    jobs.start_scheduler()
+
     yield
+
+    # Shutdown
+    jobs.stop_scheduler()
 
 
 app = FastAPI(

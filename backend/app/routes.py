@@ -10,7 +10,7 @@ from typing import Annotated, Optional
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 
-from . import auth, db_models, filler, intent, matcher, safety, scorer
+from . import auth, db_models, filler, intent, llm_fallback, matcher, safety, scorer
 from .config import MAX_SESSION_MESSAGES, MAX_HISTORY_MESSAGE_CHARS, MAX_USER_MESSAGE_CHARS, MAX_USERNAME_CHARS
 from .database import get_db
 from .sanitize import sanitize_text
@@ -392,12 +392,42 @@ def roast(
             detected_intents=detected,
         )
         if template is None:
-            final_text = "I have nothing for you. Try again. Or don't. Honestly, I'd prefer you didn't."
+            # Library had no good match. Try the LLM fallback layer
+            # before giving up on the user.
+            llm_text = llm_fallback.generate_roast(
+                message=req.message,
+                mode=session.mode.value if hasattr(session.mode, "value") else str(session.mode),
+                personality=session.personality.value if hasattr(session.personality, "value") else str(session.personality),
+                user_name=session.username,
+                roaster_gender=session.roaster_gender,
+            )
+            if llm_text:
+                final_text = llm_text
+            else:
+                final_text = "I have nothing for you. Try again. Or don't. Honestly, I'd prefer you didn't."
         else:
             final_text = filler.fill_placeholders(
                 template, LIB, session, detected
             )
             final_id = template.id
+            # Score-based LLM fallback: if the matcher's chosen template
+            # has a low score, prefer the LLM's freshly generated roast
+            # (which is more on-point for unusual inputs).
+            try:
+                template_score = float(getattr(template, "weight", 1.0) or 0.0)
+                if llm_fallback.should_fallback(template_score):
+                    llm_text = llm_fallback.generate_roast(
+                        message=req.message,
+                        mode=session.mode.value if hasattr(session.mode, "value") else str(session.mode),
+                        personality=session.personality.value if hasattr(session.personality, "value") else str(session.personality),
+                        user_name=session.username,
+                        roaster_gender=session.roaster_gender,
+                    )
+                    if llm_text:
+                        final_text = llm_text
+                        final_id = None  # generated, not from the library
+            except Exception as _e:  # pragma: no cover
+                log.debug("LLM fallback skipped: %s", _e)
 
     # Apply personality flavor
     final_text = matcher.apply_personality_flavor(final_text, session.personality, LIB)
@@ -457,6 +487,69 @@ def roast(
             db.commit()
         except Exception as _exc:  # pragma: no cover
             log.warning("failed to persist chat history: %s", _exc)
+            db.rollback()
+
+        # Update the persistent UserMemory row (per-mode counts, recent
+        # topics, score, total messages). And evaluate achievements.
+        # This is best-effort; a DB error here must NEVER break the
+        # /roast response.
+        try:
+            from . import utils
+            mem = (
+                db.query(db_models.UserMemory)
+                .filter(db_models.UserMemory.user_id == user.id)
+                .first()
+            )
+            if mem is None:
+                mem = db_models.UserMemory(user_id=user.id)
+                db.add(mem)
+            mc = dict(mem.mode_counts_json or {})
+            mc[session.mode.value if hasattr(session.mode, "value") else session.mode] = (
+                mc.get(session.mode.value if hasattr(session.mode, "value") else session.mode, 0) + 1
+            )
+            mem.mode_counts_json = mc
+            pc = dict(mem.personality_counts_json or {})
+            pkey = session.personality.value if hasattr(session.personality, "value") else session.personality
+            pc[pkey] = pc.get(pkey, 0) + 1
+            mem.personality_counts_json = pc
+            # Append the user message's first 64 chars to recent topics.
+            rt = list(mem.recent_topics_json or [])
+            topic = (req.message or "").strip()[:64]
+            if topic:
+                rt.append(topic)
+                rt = rt[-20:]
+            mem.recent_topics_json = rt
+            mem.total_messages = (mem.total_messages or 0) + 1
+            mem.total_damage = float(mem.total_damage or 0.0) + float(damage_added or 0.0)
+            mem.score_total = float(mem.score_total or 0.0) + float(damage_added or 0.0)
+            mem.comeback_attempts = int(mem.comeback_attempts or 0) + int(getattr(session, "comeback_attempts_delta", 0) or 0)
+            db.commit()
+
+            # Also keep the User.recent_topics_json in sync (powers
+            # the "remember previous chats" AI callback).
+            user.recent_topics_json = list(rt)
+            db.commit()
+
+            # Evaluate achievements.
+            has_sub = db.query(db_models.Subscription).filter(
+                db_models.Subscription.user_id == user.id,
+                db_models.Subscription.status == db_models.SubStatus.active,
+                db_models.Subscription.current_period_end > datetime.now(timezone.utc),
+            ).first() is not None
+            utils.unlock_achievements_for_user(
+                db, user.id,
+                total_messages=int(mem.total_messages or 0),
+                mode_counts=mc,
+                personality_counts=pc,
+                score_total=float(mem.score_total or 0.0),
+                has_subscription=has_sub,
+                has_shared=False,  # updated by /end
+                has_verified=bool(user.is_verified),
+                has_avatar=bool(user.avatar_url),
+                high_score=float(damage_added or 0.0),
+            )
+        except Exception as _exc:  # pragma: no cover
+            log.warning("failed to update UserMemory/achievements: %s", _exc)
             db.rollback()
 
     return RoastResponse(
@@ -569,6 +662,15 @@ def end_session(
         except Exception as _exc:  # pragma: no cover
             log.warning("failed to persist closer: %s", _exc)
             db.rollback()
+
+    # Award the "Sharing Is Caring" achievement — the user has just
+    # produced a shareable transcript. Best-effort.
+    if user is not None and db is not None:
+        try:
+            from . import utils
+            utils.unlock_achievement(db, user.id, "first_share")
+        except Exception:  # pragma: no cover
+            pass
 
     return EndSessionResponse(
         session_id=session_id,
@@ -712,7 +814,6 @@ def cleanup(request: Request) -> dict:
     # share-window TTL so a session's recovery URL is also pruned.
     db_removed = 0
     try:
-        from datetime import datetime, timezone
         cutoff = datetime.fromtimestamp(time.time() - SHARED_SESSION_TTL_SECONDS, tz=timezone.utc)
         # Only delete ended sessions past the TTL. Live sessions
         # (ended_at is NULL) are NEVER deleted by the cleanup task.

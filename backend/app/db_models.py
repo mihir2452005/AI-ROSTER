@@ -62,10 +62,41 @@ class User(Base):
     # password change, account compromise). Compared with the `ver` claim in
     # each access/refresh token. See backend/app/auth.py.
     token_version: Mapped[int] = mapped_column(Integer, default=0)
+    # Last successful login timestamp. Updated on POST /auth/login.
+    last_login_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
+    # Last successful login IP (best-effort, honouring X-Forwarded-For
+    # only when behind a trusted proxy). Helps admins spot anomalies.
+    last_login_ip: Mapped[Optional[str]] = mapped_column(String(64))
+    # Avatar URL (HTTPS) or data URI. Capped at 2 MB raw to prevent
+    # storage abuse; the upload endpoint enforces a hard size limit.
+    avatar_url: Mapped[Optional[str]] = mapped_column(Text)
+    # Ban fields. Distinct from `is_active`: a banned user can be
+    # reactivated by an admin clearing `is_banned`, but the reason
+    # and timestamp are kept for the audit log. `is_active=False` is
+    # for soft disable (e.g. password compromise); `is_banned=True`
+    # is a permanent-ish moderation action.
+    is_banned: Mapped[bool] = mapped_column(Boolean, default=False)
+    ban_reason: Mapped[Optional[str]] = mapped_column(String(500))
+    banned_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
+    banned_by_id: Mapped[Optional[int]] = mapped_column(
+        ForeignKey("users.id", ondelete="SET NULL"), index=True
+    )
+    # Cross-session AI memory. The user can clear it; the AI engine
+    # uses it to inject context into roasts.
+    favorite_mode: Mapped[Optional[str]] = mapped_column(String(32))
+    favorite_personality: Mapped[Optional[str]] = mapped_column(String(32))
+    # "Remember previous chats" — most recent N roast topics so the
+    # AI can callback to them. Truncated strings, capped at 10 entries.
+    recent_topics_json: Mapped[Optional[list]] = mapped_column(JSON, default=list)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=utcnow, onupdate=utcnow
     )
+    # Soft-delete: if non-NULL, the account has been deleted. The
+    # row is retained for 30 days to allow restoration, then
+    # hard-deleted by a background job. All user-facing endpoints
+    # MUST filter on `deleted_at.is_(None)`.
+    deleted_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
 
     subscriptions: Mapped[List["Subscription"]] = relationship(
         back_populates="user", cascade="all, delete-orphan"
@@ -78,6 +109,9 @@ class User(Base):
     )
     roast_sessions: Mapped[List["RoastSession"]] = relationship(
         back_populates="user", cascade="all, delete-orphan"
+    )
+    memory: Mapped[Optional["UserMemory"]] = relationship(
+        back_populates="user", cascade="all, delete-orphan", uselist=False
     )
 
 
@@ -103,6 +137,11 @@ class Subscription(Base):
     plan_id: Mapped[int] = mapped_column(
         ForeignKey("subscription_plans.id"), index=True
     )
+    # The plan the user will be on after the current period ends.
+    # Used by the downgrade-scheduled flow. NULL = no scheduled change.
+    scheduled_plan_id: Mapped[Optional[int]] = mapped_column(
+        ForeignKey("subscription_plans.id"), nullable=True
+    )
     status: Mapped[SubStatus] = mapped_column(Enum(SubStatus), default=SubStatus.pending)
     razorpay_subscription_id: Mapped[Optional[str]] = mapped_column(
         String(100), unique=True, nullable=True
@@ -120,7 +159,15 @@ class Subscription(Base):
     )
 
     user: Mapped["User"] = relationship(back_populates="subscriptions")
-    plan: Mapped["SubscriptionPlan"] = relationship()
+    # The plan FKs are: plan_id (current) and scheduled_plan_id (downgrade
+    # target). SQLAlchemy can't auto-detect which to follow for the
+    # `plan` relationship, so we disambiguate with `foreign_keys`.
+    plan: Mapped["SubscriptionPlan"] = relationship(
+        foreign_keys=[plan_id]
+    )
+    scheduled_plan: Mapped[Optional["SubscriptionPlan"]] = relationship(
+        foreign_keys=[scheduled_plan_id]
+    )
     payments: Mapped[List["Payment"]] = relationship(
         back_populates="subscription", cascade="all, delete-orphan"
     )
@@ -252,5 +299,184 @@ class RoastSession(Base):
     __table_args__ = (
         # Used by the cleanup task: "ended sessions older than N days".
         Index("ix_roast_sessions_user_ended", "user_id", "ended_at"),
+    )
+
+
+class UserMemory(Base):
+    """DB-persisted AI memory for a user. Replaces the in-memory
+    `app.session.UserMemory` for cross-restart persistence.
+
+    Stores:
+      - Per-mode message counts (powers the "most-used mode" stat)
+      - Last 20 chat topic strings (powers "remember previous chats")
+      - Per-mode win/loss counters (for the comeback-failure badge)
+      - A score_total running tally (for fast leaderboard reads)
+    """
+    __tablename__ = "user_memories"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), unique=True, index=True
+    )
+    # Per-mode message counts. JSON: { "savage": 42, "programmer": 12, ... }
+    mode_counts_json: Mapped[dict] = mapped_column(JSON, default=dict)
+    # Per-personality message counts.
+    personality_counts_json: Mapped[dict] = mapped_column(JSON, default=dict)
+    # The last 20 chat topics (user-extracted intent strings, capped
+    # at 64 chars each). The AI engine peeks at this when picking a
+    # callback roast.
+    recent_topics_json: Mapped[list] = mapped_column(JSON, default=list)
+    # Comeback attempts / failures (for the "best comeback" badge).
+    comeback_attempts: Mapped[int] = mapped_column(Integer, default=0)
+    comeback_failures: Mapped[int] = mapped_column(Integer, default=0)
+    # Running damage total. Mirrors `UserMemory` from `app.session`.
+    total_damage: Mapped[float] = mapped_column(Float, default=0.0)
+    total_messages: Mapped[int] = mapped_column(Integer, default=0)
+    # Cached score (sum of all per-message scores). Refreshed on every
+    # message write, not on read.
+    score_total: Mapped[float] = mapped_column(Float, default=0.0)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=utcnow, onupdate=utcnow
+    )
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+    user: Mapped["User"] = relationship(back_populates="memory")
+
+
+class EmailToken(Base):
+    """Single-use tokens for email verification and password reset.
+
+    One table, discriminated by `purpose`. Tokens are stored hashed
+    (sha256) so a DB leak doesn't let an attacker use them. Lifetime:
+    24h for verification, 1h for password reset.
+    """
+    __tablename__ = "email_tokens"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), index=True
+    )
+    purpose: Mapped[str] = mapped_column(String(32), index=True)  # "verify" | "reset"
+    token_hash: Mapped[str] = mapped_column(String(64), unique=True, index=True)
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    used_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+    __table_args__ = (
+        Index("ix_email_tokens_user_purpose", "user_id", "purpose"),
+    )
+
+
+class AuditLog(Base):
+    """Append-only log of security-relevant and admin actions.
+
+    The app does not enforce retention — operators should set up a
+    downstream job to prune rows older than their compliance window.
+    """
+    __tablename__ = "audit_logs"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    actor_user_id: Mapped[Optional[int]] = mapped_column(
+        ForeignKey("users.id", ondelete="SET NULL"), index=True
+    )
+    actor_ip: Mapped[Optional[str]] = mapped_column(String(64))
+    action: Mapped[str] = mapped_column(String(64), index=True)
+    # The affected user (for admin actions like "user X banned user Y").
+    target_user_id: Mapped[Optional[int]] = mapped_column(
+        ForeignKey("users.id", ondelete="SET NULL"), index=True
+    )
+    # Free-form details, capped at 2 KB.
+    details_json: Mapped[Optional[dict]] = mapped_column(JSON)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=utcnow, index=True
+    )
+
+
+class FeatureFlag(Base):
+    """Boolean feature flag, toggled by an admin at runtime.
+
+    Cheap DIY alternative to LaunchDarkly. Cached in-process with a
+    60s TTL so a flag flip propagates within a minute without hammering
+    the DB.
+    """
+    __tablename__ = "feature_flags"
+
+    key: Mapped[str] = mapped_column(String(64), primary_key=True)
+    enabled: Mapped[bool] = mapped_column(Boolean, default=False)
+    description: Mapped[Optional[str]] = mapped_column(String(500))
+    updated_by_id: Mapped[Optional[int]] = mapped_column(
+        ForeignKey("users.id", ondelete="SET NULL")
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=utcnow, onupdate=utcnow
+    )
+
+
+class Achievement(Base):
+    """Catalog of achievements a user can earn.
+
+    Static rows seeded at startup. `key` is the stable identifier
+    used by code (e.g. "first_roast"). `category` and `rarity` are
+    display-only metadata for the badges UI.
+    """
+    __tablename__ = "achievements"
+
+    key: Mapped[str] = mapped_column(String(64), primary_key=True)
+    name: Mapped[str] = mapped_column(String(120), nullable=False)
+    description: Mapped[str] = mapped_column(String(500), nullable=False)
+    emoji: Mapped[str] = mapped_column(String(8), default="🏅")
+    category: Mapped[str] = mapped_column(String(32), default="general")
+    rarity: Mapped[str] = mapped_column(String(16), default="common")
+    # How many points this achievement is worth (for future leaderboard
+    # tiebreakers). Not used in the UI today.
+    points: Mapped[int] = mapped_column(Integer, default=10)
+    # Sort order in the badges grid.
+    sort_order: Mapped[int] = mapped_column(Integer, default=100)
+
+
+class UserAchievement(Base):
+    """User-owned achievement unlocks. Unique on (user_id, achievement_key)."""
+    __tablename__ = "user_achievements"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), index=True
+    )
+    achievement_key: Mapped[str] = mapped_column(
+        ForeignKey("achievements.key", ondelete="CASCADE"), index=True
+    )
+    unlocked_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=utcnow
+    )
+
+    __table_args__ = (
+        UniqueConstraint("user_id", "achievement_key", name="uq_user_achievement"),
+    )
+
+
+class LeaderboardSnapshot(Base):
+    """Periodic snapshot of the leaderboard for cheap reads.
+
+    Populated by a background job (see `app/jobs.py`) every hour.
+    Lets the public leaderboard render in O(1) without re-aggregating
+    the entire chat_history table on every request.
+    """
+    __tablename__ = "leaderboard_snapshots"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    period: Mapped[str] = mapped_column(String(16), index=True)  # "week" | "month" | "all"
+    period_id: Mapped[str] = mapped_column(String(16), index=True)  # "2026-W23" | "2026-06" | "all"
+    rank: Mapped[int] = mapped_column(Integer, index=True)
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), index=True
+    )
+    total_damage: Mapped[float] = mapped_column(Float, default=0.0)
+    message_count: Mapped[int] = mapped_column(Integer, default=0)
+    captured_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=utcnow, index=True
+    )
+
+    __table_args__ = (
+        Index("ix_snapshot_period_rank", "period", "period_id", "rank"),
     )
 

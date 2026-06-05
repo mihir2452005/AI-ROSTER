@@ -1,16 +1,24 @@
-"""Authentication routes: register, login, refresh, /me."""
+"""Authentication routes: register, login, refresh, /me, change-password,
+logout, forgot-password, reset-password, verify-email, delete-account,
+avatar, last-login tracking, admin JWT login."""
 from __future__ import annotations
 
+import base64
+import binascii
+import logging
+import os
 from datetime import datetime, timezone
-from typing import Annotated
+from typing import Annotated, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from jose import JWTError
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 
-from . import auth, auth_schemas, db_models
+from . import auth, auth_schemas, db_models, utils
 from .database import get_db
+
+log = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 
@@ -64,13 +72,15 @@ def register(
 @router.post("/login", response_model=auth_schemas.TokenResponse)
 def login(
     req: auth_schemas.LoginRequest,
+    request: Request,
     db: Annotated[Session, Depends(get_db)],
 ) -> auth_schemas.TokenResponse:
     """Verify credentials and return access + refresh tokens.
 
     Constant-time response: when the user does not exist we still run a
     bcrypt verify against a dummy hash so timing cannot be used to enumerate
-    accounts.
+    accounts. Also records `last_login_at` / `last_login_ip` and writes an
+    audit row.
     """
     # Always run a bcrypt verify, even when the user is missing, to keep
     # response time constant. The dummy hash is for "no-such-user".
@@ -83,6 +93,11 @@ def login(
     ).first()
     if user is None:
         auth.verify_password(req.password, _DUMMY_HASH)
+        utils.log_action(
+            db, action="login_failed_no_user",
+            actor_ip=request.client.host if request.client else None,
+            details={"email": req.email.lower()},
+        )
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid email or password",
@@ -91,17 +106,59 @@ def login(
     # outcome of the is_active check below, so timing can't reveal
     # whether the account is active.
     password_ok = auth.verify_password(req.password, user.hashed_password)
+    if user.deleted_at is not None:
+        # Soft-deleted account: log a special audit event and refuse.
+        utils.log_action(
+            db, action="login_failed_deleted",
+            actor_user_id=user.id,
+            actor_ip=request.client.host if request.client else None,
+        )
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="This account has been deleted. Contact support to restore.",
+        )
+    if user.is_banned:
+        utils.log_action(
+            db, action="login_failed_banned",
+            actor_user_id=user.id,
+            actor_ip=request.client.host if request.client else None,
+        )
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=f"Account is banned: {user.ban_reason or 'No reason given'}",
+        )
     if not user.is_active:
         auth.verify_password(req.password, _DUMMY_HASH)  # pad to ~constant time
+        utils.log_action(
+            db, action="login_failed_disabled",
+            actor_user_id=user.id,
+            actor_ip=request.client.host if request.client else None,
+        )
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Account is disabled. Contact support.",
         )
     if not password_ok:
+        utils.log_action(
+            db, action="login_failed_wrong_password",
+            actor_user_id=user.id,
+            actor_ip=request.client.host if request.client else None,
+        )
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid email or password",
         )
+
+    # Record last-login for the admin anomaly-detection column.
+    user.last_login_at = datetime.now(timezone.utc)
+    user.last_login_ip = (request.client.host if request.client else None) or None
+    db.commit()
+
+    utils.log_action(
+        db, action="login_success",
+        actor_user_id=user.id,
+        actor_ip=user.last_login_ip,
+    )
 
     access = auth.create_access_token(user.id, user.email, user.token_version)
     refresh = auth.create_refresh_token(user.id, user.email, user.token_version)
@@ -262,3 +319,364 @@ def change_password(
     user.token_version = (user.token_version or 0) + 1
     db.commit()
     return {"message": "Password updated. Other sessions have been signed out."}
+
+
+# ----- Schemas for the new endpoints -----
+
+
+from pydantic import BaseModel, EmailStr, Field as PField  # noqa: E402
+
+
+class _ForgotReq(BaseModel):
+    email: EmailStr
+
+
+class _ResetReq(BaseModel):
+    token: str
+    new_password: str = PField(min_length=8, max_length=128)
+
+
+class _VerifyReq(BaseModel):
+    token: str
+
+
+class _AvatarReq(BaseModel):
+    # Either an HTTPS URL (e.g. Gravatar, OAuth) or a data URI.
+    # Capped at 2 MB raw to prevent storage abuse.
+    image: str = PField(min_length=10, max_length=2_500_000)
+
+
+class _FavoriteReq(BaseModel):
+    favorite_mode: Optional[str] = PField(default=None, max_length=32)
+    favorite_personality: Optional[str] = PField(default=None, max_length=32)
+
+
+# ----- Email verification -----
+
+
+@router.post("/send-verification")
+def send_verification(
+    user: Annotated[db_models.User, Depends(auth.get_current_user)],
+    request: Request,
+    db: Annotated[Session, Depends(get_db)],
+) -> dict:
+    """Issue and email a verification token. Idempotent (a fresh token
+    is issued even if a previous one is still live). Rate-limited at
+    the route level via the standard 60/min cap.
+    """
+    if user.is_verified:
+        return {"message": "Email already verified"}
+    token = utils.issue_email_token(db, user.id, "verify", ttl_seconds=24 * 60 * 60)
+    utils.send_verification_email(user.email, token)
+    utils.log_action(
+        db, action="verification_email_sent",
+        actor_user_id=user.id,
+        actor_ip=request.client.host if request.client else None,
+    )
+    return {"message": "Verification email sent"}
+
+
+@router.post("/verify-email")
+def verify_email(
+    req: _VerifyReq,
+    request: Request,
+    db: Annotated[Session, Depends(get_db)],
+) -> dict:
+    """Consume a verification token and flip `is_verified=True`."""
+    user = utils.consume_email_token(db, req.token, "verify")
+    if user is None:
+        raise HTTPException(status_code=400, detail="Invalid or expired verification token")
+    user.is_verified = True
+    db.commit()
+    utils.log_action(
+        db, action="email_verified",
+        actor_user_id=user.id,
+        actor_ip=request.client.host if request.client else None,
+    )
+    # Unlock the "Verified Human" achievement.
+    utils.unlock_achievement(db, user.id, "verified")
+    return {"message": "Email verified"}
+
+
+# ----- Forgot / reset password -----
+
+
+@router.post("/forgot-password")
+def forgot_password(
+    req: _ForgotReq,
+    request: Request,
+    db: Annotated[Session, Depends(get_db)],
+) -> dict:
+    """Always returns 200 with a generic message to prevent email
+    enumeration. If the email exists, an actual reset link is sent.
+    """
+    user = db.query(db_models.User).filter(
+        db_models.User.email == req.email.lower(),
+        db_models.User.deleted_at.is_(None),
+    ).first()
+    if user is not None and user.is_active and not user.is_banned:
+        token = utils.issue_email_token(db, user.id, "reset", ttl_seconds=60 * 60)
+        utils.send_password_reset_email(user.email, token)
+        utils.log_action(
+            db, action="password_reset_email_sent",
+            actor_user_id=user.id,
+            actor_ip=request.client.host if request.client else None,
+        )
+    else:
+        utils.log_action(
+            db, action="password_reset_email_miss",
+            actor_ip=request.client.host if request.client else None,
+            details={"email": req.email.lower()},
+        )
+    return {"message": "If an account exists for that email, a reset link has been sent."}
+
+
+@router.post("/reset-password")
+def reset_password(
+    req: _ResetReq,
+    request: Request,
+    db: Annotated[Session, Depends(get_db)],
+) -> dict:
+    """Consume a reset token and set a new password. Bumps
+    token_version so any leaked JWTs become useless."""
+    user = utils.consume_email_token(db, req.token, "reset")
+    if user is None:
+        raise HTTPException(status_code=400, detail="Invalid or expired reset token")
+    user.hashed_password = auth.hash_password(req.new_password)
+    user.token_version = (user.token_version or 0) + 1
+    db.commit()
+    utils.log_action(
+        db, action="password_reset_success",
+        actor_user_id=user.id,
+        actor_ip=request.client.host if request.client else None,
+    )
+    return {"message": "Password updated. Please log in with your new password."}
+
+
+# ----- Delete account (soft delete, GDPR/CCPA) -----
+
+
+@router.delete("/me", status_code=200)
+def delete_my_account(
+    user: Annotated[db_models.User, Depends(auth.get_current_user)],
+    request: Request,
+    db: Annotated[Session, Depends(get_db)],
+) -> dict:
+    """Soft-delete the authenticated user. The row is retained for
+    30 days for support-driven restoration, then hard-deleted by a
+    background job. Personal data (email, name, sessions, history)
+    is anonymised on hard-delete."""
+    user.deleted_at = datetime.now(timezone.utc)
+    user.is_active = False
+    user.token_version = (user.token_version or 0) + 1  # invalidate sessions
+    db.commit()
+    utils.log_action(
+        db, action="account_soft_deleted",
+        actor_user_id=user.id,
+        actor_ip=request.client.host if request.client else None,
+    )
+    return {
+        "message": "Your account has been scheduled for deletion. "
+                   "Contact support within 30 days to restore."
+    }
+
+
+# ----- Avatar upload (data URI or HTTPS URL) -----
+
+
+@router.post("/me/avatar")
+def set_avatar(
+    req: _AvatarReq,
+    user: Annotated[db_models.User, Depends(auth.get_current_user)],
+    db: Annotated[Session, Depends(get_db)],
+) -> dict:
+    """Set the user's avatar. Accepts either an HTTPS URL or a
+    `data:image/...;base64,...` URI (max ~2 MB raw).
+
+    We accept data URIs to keep the deployment stateless — no S3
+    bucket to configure on the free tier. A production deployment
+    with an S3 bucket should add a multipart upload endpoint.
+    """
+    val = req.image.strip()
+    if val.startswith("data:"):
+        # Validate base64 payload.
+        try:
+            header, b64 = val.split(",", 1)
+        except ValueError:
+            raise HTTPException(status_code=422, detail="Malformed data URI")
+        if ";base64" not in header:
+            raise HTTPException(status_code=422, detail="Only base64 data URIs are supported")
+        try:
+            decoded = base64.b64decode(b64, validate=True)
+        except (binascii.Error, ValueError) as e:
+            raise HTTPException(status_code=422, detail=f"Invalid base64: {e}")
+        if len(decoded) > 2 * 1024 * 1024:
+            raise HTTPException(status_code=413, detail="Avatar too large (max 2 MB)")
+    elif val.startswith("https://"):
+        # OK — treat as remote URL.
+        pass
+    else:
+        raise HTTPException(status_code=422, detail="image must be a data URI or https:// URL")
+    user.avatar_url = val
+    db.commit()
+    utils.unlock_achievement(db, user.id, "avatar_set")
+    return {"message": "Avatar updated", "avatar_url": val[:200] + ("…" if len(val) > 200 else "")}
+
+
+# ----- User statistics (power-user surface) -----
+
+
+@router.get("/me/stats")
+def my_stats(
+    user: Annotated[db_models.User, Depends(auth.get_current_user)],
+    db: Annotated[Session, Depends(get_db)],
+) -> dict:
+    """Per-user stats: message counts, per-mode breakdown, score, days
+    since signup, achievements earned, current streak, etc."""
+    from . import db_models
+    mem = db.query(db_models.UserMemory).filter(
+        db_models.UserMemory.user_id == user.id
+    ).first()
+    mode_counts = (mem.mode_counts_json if mem else {}) or {}
+    personality_counts = (mem.personality_counts_json if mem else {}) or {}
+    unlocked = db.query(db_models.UserAchievement).filter(
+        db_models.UserAchievement.user_id == user.id
+    ).count()
+    # Current streak: number of consecutive days with at least one message.
+    # Cheap heuristic — query the last 30 days of chat_history.
+    from sqlalchemy import func as sqlfunc
+    from datetime import timedelta
+    rows = (
+        db.query(sqlfunc.date(db_models.ChatHistory.created_at).label("d"))
+        .filter(
+            db_models.ChatHistory.user_id == user.id,
+            db_models.ChatHistory.is_user == True,  # noqa: E712
+            db_models.ChatHistory.created_at
+                >= datetime.now(timezone.utc) - timedelta(days=30),
+        )
+        .distinct()
+        .order_by(sqlfunc.date(db_models.ChatHistory.created_at).desc())
+        .all()
+    )
+    streak = 0
+    today = datetime.now(timezone.utc).date()
+    for i, (d,) in enumerate(rows):
+        expected = today - timedelta(days=i)
+        if d == expected:
+            streak += 1
+        else:
+            break
+    total_messages = int((mem.total_messages if mem else 0) or 0)
+    # SQLite drops tzinfo on read; normalise to naive UTC before diffing.
+    days = 0
+    if user.created_at:
+        created = user.created_at
+        if created.tzinfo is None:
+            created = created.replace(tzinfo=timezone.utc)
+        days = (datetime.now(timezone.utc) - created).days
+    return {
+        "total_messages": total_messages,
+        "score_total": float((mem.score_total if mem else 0) or 0.0),
+        "mode_counts": mode_counts,
+        "personality_counts": personality_counts,
+        "achievements_unlocked": unlocked,
+        "current_streak_days": streak,
+        "favorite_mode": user.favorite_mode,
+        "favorite_personality": user.favorite_personality,
+        "days_since_signup": days,
+    }
+
+
+# ----- Favorites -----
+
+
+@router.put("/me/favorites")
+def set_favorites(
+    req: _FavoriteReq,
+    user: Annotated[db_models.User, Depends(auth.get_current_user)],
+    db: Annotated[Session, Depends(get_db)],
+) -> dict:
+    """Set the user's favorite mode and/or personality. Used by the
+    chat UI to pre-select these on a new session.
+    """
+    if req.favorite_mode is not None:
+        from .models import RoastMode
+        valid = {m.value for m in RoastMode}
+        if req.favorite_mode not in valid:
+            raise HTTPException(
+                status_code=422, detail=f"Invalid mode. Must be one of: {sorted(valid)}"
+            )
+        user.favorite_mode = req.favorite_mode
+    if req.favorite_personality is not None:
+        from .models import Personality
+        valid = {p.value for p in Personality}
+        if req.favorite_personality not in valid:
+            raise HTTPException(
+                status_code=422,
+                detail=f"Invalid personality. Must be one of: {sorted(valid)}",
+            )
+        user.favorite_personality = req.favorite_personality
+    db.commit()
+    return {
+        "favorite_mode": user.favorite_mode,
+        "favorite_personality": user.favorite_personality,
+    }
+
+
+# ----- Admin JWT login (alternative to X-Admin-Key header) -----
+
+
+class _AdminLoginReq(BaseModel):
+    email: EmailStr
+    password: str
+
+
+@router.post("/admin/login", response_model=auth_schemas.TokenResponse)
+def admin_login(
+    req: _AdminLoginReq,
+    request: Request,
+    db: Annotated[Session, Depends(get_db)],
+) -> auth_schemas.TokenResponse:
+    """Authenticate as an admin user and return a regular user JWT
+    that has `is_admin=True`. This is an alternative to passing
+    `X-Admin-Key` for admin operations — the front-end can use it
+    to render the admin UI after an admin signs in.
+
+    Constant-time via the same dummy-hash dance as /login.
+    """
+    _DUMMY = "$2b$12$CwTycUXWue0Thq9StjUM0uJ8Vd1IX0Q8dL1.Jjh1hYpQ3P4lp7mZi"
+    user = db.query(db_models.User).filter(
+        db_models.User.email == req.email.lower(),
+    ).first()
+    if user is None:
+        auth.verify_password(req.password, _DUMMY)
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    if not user.is_admin:
+        auth.verify_password(req.password, _DUMMY)
+        utils.log_action(
+            db, action="admin_login_failed_not_admin",
+            actor_ip=request.client.host if request.client else None,
+        )
+        raise HTTPException(status_code=403, detail="Not an admin account")
+    if not auth.verify_password(req.password, user.hashed_password):
+        utils.log_action(
+            db, action="admin_login_failed_wrong_password",
+            actor_user_id=user.id,
+            actor_ip=request.client.host if request.client else None,
+        )
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    if not user.is_active or user.deleted_at is not None or user.is_banned:
+        raise HTTPException(status_code=403, detail="Account cannot sign in")
+    user.last_login_at = datetime.now(timezone.utc)
+    user.last_login_ip = request.client.host if request.client else None
+    db.commit()
+    utils.log_action(
+        db, action="admin_login_success",
+        actor_user_id=user.id,
+        actor_ip=user.last_login_ip,
+    )
+    return auth_schemas.TokenResponse(
+        access_token=auth.create_access_token(user.id, user.email, user.token_version),
+        refresh_token=auth.create_refresh_token(user.id, user.email, user.token_version),
+        expires_in=auth.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+    )

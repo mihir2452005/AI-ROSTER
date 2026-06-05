@@ -717,3 +717,64 @@ def cancel_subscription(
         "message": "Subscription will be cancelled at the end of the current period",
         "current_period_end": sub.current_period_end.isoformat(),
     }
+
+
+from pydantic import BaseModel  # noqa: E402
+
+class _DowngradeReq(BaseModel):
+    target_plan_code: str
+
+
+@sub_router.post("/downgrade")
+def downgrade_subscription(
+    req: _DowngradeReq,
+    user: Annotated[db_models.User, Depends(auth.get_current_user)],
+    db: Annotated[Session, Depends(get_db)],
+) -> dict:
+    """Schedule a downgrade to a CHEAPER plan. The new plan takes
+    effect at the end of the current billing period, so the user
+    keeps their current access until then. If the user is already
+    on the target plan or a cheaper one, return 400.
+    """
+    from . import utils
+    from .models import SubscriptionPlan as PlanModel
+
+    sub = db.query(db_models.Subscription).filter(
+        db_models.Subscription.user_id == user.id,
+        db_models.Subscription.status == db_models.SubStatus.active,
+    ).first()
+    if not sub:
+        raise HTTPException(status_code=404, detail="No active subscription to downgrade")
+
+    target = db.query(db_models.SubscriptionPlan).filter(
+        db_models.SubscriptionPlan.plan_code == req.target_plan_code
+    ).first()
+    if not target:
+        raise HTTPException(status_code=404, detail="Target plan not found")
+
+    current_plan = db.get(db_models.SubscriptionPlan, sub.plan_id)
+    if current_plan and target.price_paise >= current_plan.price_paise:
+        raise HTTPException(
+            status_code=400,
+            detail="Target plan is not cheaper than your current plan. "
+                   "Use /cancel + /subscribe to switch to a more expensive plan.",
+        )
+
+    # Schedule the swap at the end of the current period. The
+    # background job (see `app.jobs`) processes the swap at period end.
+    sub.scheduled_plan_id = target.id
+    sub.cancel_at_period_end = True
+    db.commit()
+    utils.log_action(
+        db, action="subscription_downgrade_scheduled",
+        actor_user_id=user.id,
+        target_user_id=user.id,
+        details={"from": current_plan.plan_code if current_plan else None,
+                 "to": target.plan_code},
+    )
+    return {
+        "message": f"Downgrade to {target.name} scheduled for "
+                   f"{sub.current_period_end.isoformat() if sub.current_period_end else 'the end of the current period'}",
+        "current_period_end": sub.current_period_end.isoformat() if sub.current_period_end else None,
+        "scheduled_plan": target.plan_code,
+    }

@@ -21,6 +21,9 @@ os.environ.setdefault("RATE_LIMIT_REGISTER", "10000")
 os.environ.setdefault("RATE_LIMIT_LOGIN", "10000")
 os.environ.setdefault("RATE_LIMIT_REFRESH", "10000")
 os.environ.setdefault("RATE_LIMIT_SESSION_START", "10000")
+# Don't spin up the background scheduler in tests — it would
+# keep the pytest process alive past the last test.
+os.environ.setdefault("DISABLE_BACKGROUND_JOBS", "1")
 os.environ.setdefault("RAZORPAY_KEY_ID", "rzp_test_xxxxxxxxxxxx")
 os.environ.setdefault("RAZORPAY_KEY_SECRET", "test_secret_xxxxxxxxxxxxxx")
 os.environ.setdefault("RAZORPAY_WEBHOOK_SECRET", "test_webhook_secret_xxxxxxxxx")
