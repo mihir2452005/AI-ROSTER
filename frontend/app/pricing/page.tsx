@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import type React from "react";
 import { useEffect, useState } from "react";
@@ -22,7 +22,7 @@ declare global {
 
 // Maps a `plan.features` dict (from the backend) into a list of <li>.
 // Supports a small DSL so plans can be customised without frontend code:
-//   { items: ["✅ Unlimited messages", "❌ Custom personality", ...] }
+//   { items: ["âœ… Unlimited messages", "âŒ Custom personality", ...] }
 //   { highlighted: "MOST POPULAR", items: [...] }
 //   { items: ["...", { text: "Build your own", cta: "Configure" }] }
 function renderPlanFeatures(plan: Plan): React.ReactNode {
@@ -42,22 +42,22 @@ function renderPlanFeatures(plan: Plan): React.ReactNode {
 
 const FALLBACK_FEATURES: Record<string, string[]> = {
   starter: [
-    "✅ Unlimited messages",
-    "✅ Male & female roaster",
-    "✅ Chat history",
-    "❌ Custom personality",
+    "âœ… Unlimited messages",
+    "âœ… Male & female roaster",
+    "âœ… Chat history",
+    "âŒ Custom personality",
   ],
   pro: [
-    "✅ Everything in Starter",
-    "✅ All 3 roaster types",
-    "✅ Priority support",
-    "✅ Weekly leaderboard rewards",
+    "âœ… Everything in Starter",
+    "âœ… All 3 roaster types",
+    "âœ… Priority support",
+    "âœ… Weekly leaderboard rewards",
   ],
   legend: [
-    "✅ Everything in Pro",
-    "✅ Custom personality (build your own)",
-    "✅ 90 days of access",
-    "✅ VIP support & early features",
+    "âœ… Everything in Pro",
+    "âœ… Custom personality (build your own)",
+    "âœ… 90 days of access",
+    "âœ… VIP support & early features",
   ],
 };
 
@@ -70,7 +70,7 @@ export default function PricingPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    // Plans are public — anyone can view pricing. We only need a
+    // Plans are public â€” anyone can view pricing. We only need a
     // logged-in user to subscribe; if the user clicks "Get Pro" while
     // not logged in, we send them to /login and bring them back here
     // after auth.
@@ -136,23 +136,23 @@ export default function PricingPage() {
         }) => {
           // The Razorpay modal has closed and the user has paid.
           // Verify on our backend. Note: clearing checkoutLoading is
-          // handled by ondismiss — we only clear it here on error so
+          // handled by ondismiss â€” we only clear it here on error so
           // the user can retry without the button being stuck.
           try {
             const r = await paymentsApi.verifyPayment(response);
-            // Surface the actual server message — "Payment verified and
+            // Surface the actual server message â€” "Payment verified and
             // subscription activated" on first run, "Payment already
             // verified" on idempotent retry. Both are fine.
             const alreadyVerified = /already/i.test(r.message);
             alert(
               alreadyVerified
-                ? "You've already activated " + plan.name + " — no action needed."
-                : "🎉 " + r.message + "! Welcome to " + plan.name + "."
+                ? "You've already activated " + plan.name + " â€” no action needed."
+                : "ðŸŽ‰ " + r.message + "! Welcome to " + plan.name + "."
             );
             const u = await authApi.me();
             setUser(u);
             // Tell the HeaderAuth in the root layout to refetch so the
-            // "⭐ Subscribe" badge disappears without a full reload.
+            // "â­ Subscribe" badge disappears without a full reload.
             emitAuthRefresh();
             router.push("/account");
           } catch (e: any) {
@@ -180,7 +180,7 @@ export default function PricingPage() {
   if (loading) {
     return (
       <main className="min-h-screen flex items-center justify-center">
-        <p className="text-slate-500">Loading plans…</p>
+        <p className="text-slate-500">Loading plansâ€¦</p>
       </main>
     );
   }
@@ -195,7 +195,7 @@ export default function PricingPage() {
           </p>
           {user?.has_active_subscription && (
             <p className="mt-3 text-emerald-300 text-sm">
-              ✅ You have an active subscription. Manage it in <a href="/account" className="underline">Account</a>.
+              âœ… You have an active subscription. Manage it in <a href="/account" className="underline">Account</a>.
             </p>
           )}
         </div>
@@ -246,7 +246,7 @@ export default function PricingPage() {
                   } disabled:opacity-50`}
                 >
                   {checkoutLoading === plan.plan_code
-                    ? "Opening checkout…"
+                    ? "Opening checkoutâ€¦"
                     : user?.has_active_subscription
                     ? "Already subscribed"
                     : `Get ${plan.name}`}

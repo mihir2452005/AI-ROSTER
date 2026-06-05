@@ -708,6 +708,33 @@ def test_audit6_unlock_achievement_roundtrip(db_session):
     assert second is False
 
 
+# ---- API versioning ----
+
+
+def test_audit6_v1_alias_routes_to_unversioned(client):
+    """The /api/v1/* alias must serve the same response as /api/*."""
+    r1 = client.get("/api/health")
+    r2 = client.get("/api/v1/health")
+    assert r1.status_code == 200
+    assert r2.status_code == 200
+    assert r1.json() == r2.json()
+
+
+def test_audit6_v1_alias_login(client):
+    _register(client, "audit6-v1@example.com", "superpassword")
+    r1 = client.post(
+        "/api/auth/login",
+        json={"email": "audit6-v1@example.com", "password": "superpassword"},
+    )
+    r2 = client.post(
+        "/api/v1/auth/login",
+        json={"email": "audit6-v1@example.com", "password": "superpassword"},
+    )
+    assert r1.status_code == 200, r1.text
+    assert r2.status_code == 200, r2.text
+    assert "access_token" in r2.json()
+
+
 # ---- Helpers ----
 
 

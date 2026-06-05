@@ -389,6 +389,38 @@ app.include_router(admin_users_router)             # /api/admin/* (admin user mg
 # We intentionally split: admin_users_router is the new user/admin management UI.
 
 
+# ----- API versioning (/api/v1/* aliases) -----
+# Every route is ALSO exposed at /api/v1/* for explicit versioning.
+# The legacy /api/* paths still work for backward compatibility with
+# old clients (e.g. the previous frontend build). When v2 lands, v1
+# can be deprecated cleanly via the Deprecation response header
+# without breaking the unversioned route. Clients should prefer
+# /api/v1/* going forward.
+@app.middleware("http")
+async def api_v1_alias(request: Request, call_next):
+    """Route /api/v1/* to the same handler as /api/*.
+
+    Strips the /v1 prefix and forwards, then re-adds it on the
+    response Location header if present. This is the cheapest
+    possible versioning — zero new routes to maintain.
+    """
+    if request.url.path.startswith("/api/v1/"):
+        # Rewrite the scope so Starlette routes the request to the
+        # existing /api/* handler. The match-and-forward pattern is
+        # the standard way to alias paths in pure ASGI middleware.
+        new_path = "/api/" + request.url.path[len("/api/v1/"):]
+        request.scope["path"] = new_path
+        request.scope["raw_path"] = new_path.encode("latin-1")
+    response = await call_next(request)
+    # If the response sets a Location header with /api/, mirror it
+    # to /api/v1/ so the redirect chain stays consistent.
+    if response.status_code in (301, 302, 307, 308):
+        loc = response.headers.get("location")
+        if loc and loc.startswith("/api/"):
+            response.headers["location"] = "/api/v1" + loc[len("/api"):]
+    return response
+
+
 @app.get("/")
 def root() -> dict:
     return {

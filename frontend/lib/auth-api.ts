@@ -1,4 +1,4 @@
-/* RoastGPT — Auth/Payment API client for the FastAPI backend.
+﻿/* RoastGPT â€” Auth/Payment API client for the FastAPI backend.
 
 Uses the shared `request` / `ApiError` / `tryRefresh` from `lib/api.ts`
 so a 401 burst from any combination of api.* and authApi.* calls
@@ -106,7 +106,7 @@ export function getStoredTokenVersion(): number {
  * Used by the pricing page after a successful payment, by login /
  * register / logout / profile updates, so the HeaderAuth component
  * (which is in the root layout and doesn't unmount on navigation) can
- * drop the "⭐ Subscribe" badge without a full reload.
+ * drop the "â­ Subscribe" badge without a full reload.
  *
  * Same-tab only. Cross-tab sync would require a `storage` event
  * listener (and sessionStorage doesn't fire `storage` for the
@@ -177,7 +177,7 @@ export interface OrderResponse {
 export const authApi = {
   register: async (data: { email: string; password: string; full_name?: string; gender_preference?: string }) => {
     const r = await request<{ access_token: string; refresh_token: string; token_type: string; expires_in: number }>(
-      "/api/auth/register", { method: "POST", body: JSON.stringify(data) }
+      "/api/v1/auth/register", { method: "POST", body: JSON.stringify(data) }
     );
     setTokens(r.access_token, r.refresh_token);
     // Eagerly fetch and cache the user so the header reflects the new
@@ -193,7 +193,7 @@ export const authApi = {
 
   login: async (data: { email: string; password: string }) => {
     const r = await request<{ access_token: string; refresh_token: string; token_type: string; expires_in: number }>(
-      "/api/auth/login", { method: "POST", body: JSON.stringify(data) }
+      "/api/v1/auth/login", { method: "POST", body: JSON.stringify(data) }
     );
     setTokens(r.access_token, r.refresh_token);
     try {
@@ -206,20 +206,20 @@ export const authApi = {
 
   refresh: async (refreshToken: string) => {
     const r = await request<{ access_token: string; refresh_token: string; token_type: string; expires_in: number }>(
-      "/api/auth/refresh", { method: "POST", body: JSON.stringify({ refresh_token: refreshToken }) }
+      "/api/v1/auth/refresh", { method: "POST", body: JSON.stringify({ refresh_token: refreshToken }) }
     );
     setTokens(r.access_token, r.refresh_token);
     return r;
   },
 
   me: async () => {
-    const u = await request<User>("/api/auth/me");
+    const u = await request<User>("/api/v1/auth/me");
     cacheUser(u);
     return u;
   },
 
   updateMe: async (data: { full_name?: string; gender_preference?: string }) => {
-    const u = await request<User>("/api/auth/me", { method: "PATCH", body: JSON.stringify(data) });
+    const u = await request<User>("/api/v1/auth/me", { method: "PATCH", body: JSON.stringify(data) });
     cacheUser(u);
     // Profile changes affect what the header shows (initial letter,
     // name, gender-driven CTA copy). Notify it.
@@ -228,7 +228,7 @@ export const authApi = {
   },
 
   changePassword: (data: { current_password: string; new_password: string }) =>
-    request<{ message: string }>("/api/auth/change-password", { method: "POST", body: JSON.stringify(data) }),
+    request<{ message: string }>("/api/v1/auth/change-password", { method: "POST", body: JSON.stringify(data) }),
 
   // Server-side logout: bumps token_version so the current token is
   // immediately invalid, and clears local state. Falls back to local
@@ -236,14 +236,14 @@ export const authApi = {
   // error to leave the user "logged in" with a dead token).
   logout: async () => {
     try {
-      await request<{ message: string }>("/api/auth/logout", { method: "POST" });
+      await request<{ message: string }>("/api/v1/auth/logout", { method: "POST" });
     } catch {
       // best-effort: still clear local state
     }
     clearTokens();
     emitAuthRefresh();
     if (typeof window !== "undefined") {
-      // Full nav is fine here — the user is logging out and there's
+      // Full nav is fine here â€” the user is logging out and there's
       // no chat state to preserve. router.push would be cleaner but
       // this module is imported from non-React code paths in places.
       window.location.href = "/login";
@@ -253,27 +253,27 @@ export const authApi = {
 
 // ---- Payment API ----
 export const paymentsApi = {
-  listPlans: () => request<{ plans: Plan[] }>("/api/payments/plans"),
+  listPlans: () => request<{ plans: Plan[] }>("/api/v1/payments/plans"),
 
   createOrder: (planCode: string) =>
-    request<OrderResponse>("/api/payments/create-order", {
+    request<OrderResponse>("/api/v1/payments/create-order", {
       method: "POST",
       body: JSON.stringify({ plan_code: planCode }),
     }),
 
   verifyPayment: (data: { razorpay_order_id: string; razorpay_payment_id: string; razorpay_signature: string }) =>
     request<{ message: string; subscription_id: number; current_period_end: string }>(
-      "/api/payments/verify", { method: "POST", body: JSON.stringify(data) }
+      "/api/v1/payments/verify", { method: "POST", body: JSON.stringify(data) }
     ),
 
-  history: () => request<Payment[]>("/api/payments/history"),
+  history: () => request<Payment[]>("/api/v1/payments/history"),
 };
 
 export const subscriptionsApi = {
-  my: () => request<{ subscriptions: Subscription[] }>("/api/subscriptions/me"),
+  my: () => request<{ subscriptions: Subscription[] }>("/api/v1/subscriptions/me"),
   cancel: async () => {
     const r = await request<{ message: string; current_period_end: string }>(
-      "/api/subscriptions/cancel", { method: "POST" }
+      "/api/v1/subscriptions/cancel", { method: "POST" }
     );
     // Cancellation flips cancel_at_period_end, which the header
     // badge / account page both need to see.
@@ -302,7 +302,7 @@ export const historyApi = {
       `/api/history${q ? `?${q}` : ""}`
     );
   },
-  clear: () => request<{ message: string; deleted: number }>("/api/history", { method: "DELETE" }),
+  clear: () => request<{ message: string; deleted: number }>("/api/v1/history", { method: "DELETE" }),
 };
 
 // ---- Admin API ----
@@ -339,7 +339,7 @@ export interface AdminStats {
 }
 
 export const adminApi = {
-  stats: () => request<AdminStats>("/api/admin/stats"),
+  stats: () => request<AdminStats>("/api/v1/admin/stats"),
 
   listUsers: (params?: { skip?: number; limit?: number; search?: string }) => {
     const qs = new URLSearchParams();
@@ -360,7 +360,7 @@ export const adminApi = {
 
   grantSubscription: (data: { user_id: number; plan_code: string; duration_days?: number }) =>
     request<{ message: string; subscription_id: number; current_period_end: string }>(
-      "/api/admin/grant-subscription", { method: "POST", body: JSON.stringify(data) }
+      "/api/v1/admin/grant-subscription", { method: "POST", body: JSON.stringify(data) }
     ),
 
   leaderboard: (period: "week" | "month" = "week", limit = 10) =>

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -67,7 +67,7 @@ export default function AccountPage() {
       const u = await authApi.updateMe({ full_name: trimmed, gender_preference: gender });
       setUser(u);
       setEditing(false);
-      setMessage("Profile updated ✅");
+      setMessage("Profile updated âœ…");
     } catch (e: any) {
       setMessage(e?.detail || "Update failed");
     }
@@ -89,7 +89,7 @@ export default function AccountPage() {
     setMessage("");
     try {
       await authApi.changePassword({ current_password: currentPw, new_password: newPw });
-      setMessage("Password updated ✅ Other sessions signed out.");
+      setMessage("Password updated âœ… Other sessions signed out.");
       setCurrentPw("");
       setNewPw("");
       setShowChangePw(false);
@@ -103,9 +103,9 @@ export default function AccountPage() {
     setMessage("");
     try {
       const r = await subscriptionsApi.cancel();
-      setMessage("Cancelled ✅ Access until " + new Date(r.current_period_end).toLocaleDateString());
+      setMessage("Cancelled âœ… Access until " + new Date(r.current_period_end).toLocaleDateString());
       // The second fetch (refresh subscription list) is best-effort.
-      // If it fails, the user still sees the success message — the
+      // If it fails, the user still sees the success message â€” the
       // header was already updated via emitAuthRefresh inside
       // subscriptionsApi.cancel.
       try {
@@ -125,8 +125,8 @@ export default function AccountPage() {
     return (
       <div className="grid min-h-[60vh] place-items-center text-muted">
         <div className="text-center">
-          <div className="text-4xl animate-pulse">🔥</div>
-          <p className="mt-3 text-sm">Loading account…</p>
+          <div className="text-4xl animate-pulse">ðŸ”¥</div>
+          <p className="mt-3 text-sm">Loading accountâ€¦</p>
         </div>
       </div>
     );
@@ -142,7 +142,7 @@ export default function AccountPage() {
     (s) => s.status === "active" && s.current_period_end && new Date(s.current_period_end).getTime() > now
   );
   // Sub being cancelled this period (status still "active" but
-  // cancel_at_period_end is set) — show "Cancellation pending" badge
+  // cancel_at_period_end is set) â€” show "Cancellation pending" badge
   // and hide the cancel button.
   const cancellationPending = subs.find(
     (s) => s.status === "active" && s.cancel_at_period_end
@@ -220,7 +220,7 @@ export default function AccountPage() {
             <dt className="text-muted">Email</dt>
             <dd>{user.email}</dd>
             <dt className="text-muted">Name</dt>
-            <dd>{user.full_name || "—"}</dd>
+            <dd>{user.full_name || "â€”"}</dd>
             <dt className="text-muted">Roaster</dt>
             <dd className="capitalize">{user.gender_preference}</dd>
             <dt className="text-muted">Free messages used</dt>
@@ -305,11 +305,11 @@ export default function AccountPage() {
             <p className="text-muted">
               {inEffect.current_period_end
                 ? `${cancellationPending ? "Access until" : "Active until"} ${new Date(inEffect.current_period_end).toLocaleDateString()}`
-                : "—"}
+                : "â€”"}
             </p>
             {inEffect.admin_granted && (
               <p className="text-xs text-amber-300">
-                🎁 This subscription was granted to you (free).
+                ðŸŽ This subscription was granted to you (free).
               </p>
             )}
             {!cancellationPending && (
@@ -365,8 +365,8 @@ export default function AccountPage() {
               {history.map((p) => (
                 <tr key={p.id} className="border-b last:border-0">
                   <td className="py-2">{new Date(p.created_at).toLocaleDateString()}</td>
-                  <td className="py-2">{p.description || "—"}</td>
-                  <td className="py-2 text-right">₹{(p.amount / 100).toFixed(2)}</td>
+                  <td className="py-2">{p.description || "â€”"}</td>
+                  <td className="py-2 text-right">â‚¹{(p.amount / 100).toFixed(2)}</td>
                   <td className="py-2">
                     <span
                       className={`rounded px-2 py-0.5 text-xs ${

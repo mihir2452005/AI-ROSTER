@@ -1,4 +1,4 @@
-/* RoastGPT — API client for the FastAPI backend. */
+﻿/* RoastGPT â€” API client for the FastAPI backend. */
 
 import type {
   EndSessionResponse,
@@ -20,25 +20,31 @@ export { ApiError, codeFor, friendlyError };
 export type { ApiErrorCode } from "./errors";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "";
+// API versioning: every request is sent under /api/v1/*. The backend's
+// `api_v1_alias` middleware strips the /v1 prefix and forwards to the
+// unversioned handler, so legacy clients on /api/* keep working while
+// the frontend pins to v1. If/when v2 lands, switch the constant and
+// the backend's v2 middleware takes over â€” no client code changes.
+const API_PREFIX = "/api/v1/v1";
 if (!API_BASE && typeof window !== "undefined" && process.env.NODE_ENV === "production") {
   // Loud, once-per-load warning if the env var is missing in production.
   // Without this, every API call silently hits the Next.js origin and
-  // 404s on every route — confusing to debug.
+  // 404s on every route â€” confusing to debug.
   // eslint-disable-next-line no-console
   console.warn(
-    "[RoastGPT] NEXT_PUBLIC_API_URL is not set — API calls will fail in production."
+    "[RoastGPT] NEXT_PUBLIC_API_URL is not set â€” API calls will fail in production."
   );
 }
 
 interface RequestOptions extends RequestInit {
   /** Per-request timeout in ms. Defaults to DEFAULT_TIMEOUT_MS. Pass 0 to
-   * disable (use sparingly — hung requests leave the user stuck). */
+   * disable (use sparingly â€” hung requests leave the user stuck). */
   timeoutMs?: number;
   /** Internal: marks a request as a retry-after-refresh so we don't
    * loop forever on a perpetually-401 endpoint. Never set this in
    * application code. */
   __retried?: boolean;
-  /** Optional AbortSignal — wired to the internal timeout controller. */
+  /** Optional AbortSignal â€” wired to the internal timeout controller. */
   signal?: AbortSignal;
 }
 
@@ -97,7 +103,7 @@ export async function request<T>(path: string, init?: RequestOptions): Promise<T
   if (!res.ok) {
     let body = "";
     try { body = await res.text(); } catch { /* noop */ }
-    // FastAPI 422 returns JSON like {"detail":[{...}]} — extract a
+    // FastAPI 422 returns JSON like {"detail":[{...}]} â€” extract a
     // short message so we don't show the user the full validation
     // dump.
     let detail = body || res.statusText;
@@ -108,7 +114,7 @@ export async function request<T>(path: string, init?: RequestOptions): Promise<T
     } catch { /* not JSON; keep raw */ }
 
     // 401 with a refresh token: try to refresh once and replay. Don't
-    // recurse infinitely — only one retry, only if we actually HAD a
+    // recurse infinitely â€” only one retry, only if we actually HAD a
     // refresh token to begin with. This handles the "access token
     // expired mid-session" case without bouncing the user to /login.
     if (res.status === 401 && !retried && getRefreshToken()) {
@@ -200,10 +206,10 @@ export const api = {
       roasts: number;
       personalities: number;
       intents: number;
-    }>("/api/health"),
+    }>("/api/v1/health"),
 
   startSession: (body: StartSessionRequest) =>
-    request<StartSessionResponse>("/api/session/start", {
+    request<StartSessionResponse>("/api/v1/session/start", {
       method: "POST",
       body: JSON.stringify(body),
     }),
@@ -226,7 +232,7 @@ export const api = {
   /**
    * Reconstruct a session from the `roast_sessions` table after a
    * server cold start wiped the in-memory store. Authenticated users
-   * only — anonymous sessions aren't persisted. Requires the JWT
+   * only â€” anonymous sessions aren't persisted. Requires the JWT
    * bearer token to be present (auto-injected by `request`).
    */
   recoverSession: (sessionId: string) =>

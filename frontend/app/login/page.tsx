@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { Suspense, useState } from "react";
 import Link from "next/link";
@@ -12,7 +12,7 @@ export default function LoginPage() {
   // the outer component just wraps it for streaming.
   return (
     <Suspense fallback={
-      <main className="min-h-screen flex items-center justify-center text-slate-500">Loading…</main>
+      <main className="min-h-screen flex items-center justify-center text-slate-500">Loadingâ€¦</main>
     }>
       <LoginPageInner />
     </Suspense>
@@ -24,7 +24,7 @@ function LoginPageInner() {
   const params = useSearchParams();
   // `?return=/pricing` is set by the pricing page when an anonymous
   // visitor clicks "Get Pro". Bring them back here after login.
-  // We validate the return path is a same-origin relative URL —
+  // We validate the return path is a same-origin relative URL â€”
   // otherwise an attacker could craft a phishing link
   // `?return=https://evil.com` and we'd navigate to it.
   const rawReturn = params?.get("return") || "/";

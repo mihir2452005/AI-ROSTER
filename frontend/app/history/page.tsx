@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -55,8 +55,8 @@ export default function HistoryPage() {
     return (
       <div className="grid min-h-[60vh] place-items-center text-muted">
         <div className="text-center">
-          <div className="text-4xl animate-pulse">🔥</div>
-          <p className="mt-3 text-sm">Loading history…</p>
+          <div className="text-4xl animate-pulse">ðŸ”¥</div>
+          <p className="mt-3 text-sm">Loading historyâ€¦</p>
         </div>
       </div>
     );
@@ -70,7 +70,7 @@ export default function HistoryPage() {
           <p className="text-sm text-muted">{total} message{total === 1 ? "" : "s"} saved</p>
         </div>
         <div className="flex gap-2">
-          <a href="/account" className="text-sm text-accent-3 hover:underline">← Account</a>
+          <a href="/account" className="text-sm text-accent-3 hover:underline">â† Account</a>
           {items.length > 0 && (
             <button
               onClick={clearAll}
@@ -109,9 +109,9 @@ export default function HistoryPage() {
                   className={`px-4 py-3 ${it.is_user ? "bg-surface/30" : ""}`}
                 >
                   <div className="mb-1 text-xs text-muted">
-                    {it.is_user ? "👤 You" : "🤖 RoastGPT"}
+                    {it.is_user ? "ðŸ‘¤ You" : "ðŸ¤– RoastGPT"}
                     {it.score_total > 0 && (
-                      <span className="ml-2 text-accent">−{it.score_total} HP</span>
+                      <span className="ml-2 text-accent">âˆ’{it.score_total} HP</span>
                     )}
                   </div>
                   <div className="whitespace-pre-wrap text-sm">

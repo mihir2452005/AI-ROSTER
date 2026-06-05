@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { Suspense, useState } from "react";
 import Link from "next/link";
@@ -11,7 +11,7 @@ type Gender = "male" | "female" | "neutral";
 export default function RegisterPage() {
   return (
     <Suspense fallback={
-      <main className="min-h-screen flex items-center justify-center text-slate-500">Loading…</main>
+      <main className="min-h-screen flex items-center justify-center text-slate-500">Loadingâ€¦</main>
     }>
       <RegisterPageInner />
     </Suspense>
@@ -126,7 +126,7 @@ function RegisterPageInner() {
                       : "border-slate-200 text-slate-600 hover:border-slate-300"
                   }`}
                 >
-                  {g === "female" ? "👩 Female" : g === "male" ? "👨 Male" : "🧑 Neutral"}
+                  {g === "female" ? "ðŸ‘© Female" : g === "male" ? "ðŸ‘¨ Male" : "ðŸ§‘ Neutral"}
                 </button>
               ))}
             </div>

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
@@ -78,7 +78,7 @@ export default function LeaderboardPage() {
     <div className="mx-auto max-w-3xl">
       <header className="mb-6 text-center">
         <h1 className="font-display text-5xl font-extrabold gradient-text">
-          The Burn Board 🔥
+          The Burn Board ðŸ”¥
         </h1>
         <p className="mt-3 text-muted">
           Top damage leaders. Roast hard, climb high.
@@ -100,7 +100,7 @@ export default function LeaderboardPage() {
       </div>
 
       <div className="card">
-        {loading && <p className="p-6 text-center text-muted">Loading…</p>}
+        {loading && <p className="p-6 text-center text-muted">Loadingâ€¦</p>}
         {error && <p className="p-6 text-center text-red-500">{error}</p>}
         {!loading && !error && entries.length === 0 && (
           <p className="p-6 text-center text-muted">
@@ -118,13 +118,13 @@ export default function LeaderboardPage() {
                 className="flex items-center gap-4 rounded-lg border border-border/60 bg-bg/40 p-3"
               >
                 <div className="flex h-9 w-9 items-center justify-center rounded-full bg-surface font-mono font-bold text-base">
-                  {row.rank <= 3 ? ["🥇", "🥈", "🥉"][row.rank - 1] : `#${row.rank}`}
+                  {row.rank <= 3 ? ["ðŸ¥‡", "ðŸ¥ˆ", "ðŸ¥‰"][row.rank - 1] : `#${row.rank}`}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="font-semibold">{row.display_name}</div>
                   <div className="text-xs text-muted">
-                    {row.message_count} message{row.message_count === 1 ? "" : "s"} ·{" "}
-                    {row.masked_email || "—"}
+                    {row.message_count} message{row.message_count === 1 ? "" : "s"} Â·{" "}
+                    {row.masked_email || "â€”"}
                   </div>
                 </div>
                 <div className="font-mono text-lg font-bold gradient-text">
@@ -139,7 +139,7 @@ export default function LeaderboardPage() {
       <div className="mt-6 text-center text-xs text-muted">
         Want your name on the board?{" "}
         <a href="/" className="text-accent-3 hover:underline">Get roasted</a>.
-        {" "}Top scorers get featured rewards 🎁
+        {" "}Top scorers get featured rewards ðŸŽ
       </div>
     </div>
   );

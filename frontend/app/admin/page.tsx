@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -46,7 +46,7 @@ export default function AdminPage() {
       .me()
       .then((u) => {
         if (!u.is_admin) {
-          setMessage("Admins only. Redirecting…");
+          setMessage("Admins only. Redirectingâ€¦");
           setTimeout(() => router.push("/"), 1500);
           return;
         }
@@ -98,7 +98,7 @@ export default function AdminPage() {
     adminApi
       .updateUser(u.id, { [key]: value })
       .then(() => {
-        setMessage(`${u.masked_email} updated ✅`);
+        setMessage(`${u.masked_email} updated âœ…`);
         reloadUsers(search);
       })
       .catch((e) => setMessage("Update failed: " + (e?.detail || "")));
@@ -133,7 +133,7 @@ export default function AdminPage() {
   }
 
   if (loading) {
-    return <main className="min-h-screen flex items-center justify-center text-slate-500">Loading admin…</main>;
+    return <main className="min-h-screen flex items-center justify-center text-slate-500">Loading adminâ€¦</main>;
   }
   if (!me?.is_admin) {
     return (
@@ -151,7 +151,7 @@ export default function AdminPage() {
             <h1 className="text-3xl font-bold text-slate-900">Admin dashboard</h1>
             <p className="text-sm text-slate-500">Signed in as {me.email}</p>
           </div>
-          <a href="/" className="text-sm text-purple-600 hover:underline">← Back to app</a>
+          <a href="/" className="text-sm text-purple-600 hover:underline">â† Back to app</a>
         </header>
 
         {message && (
@@ -182,7 +182,7 @@ export default function AdminPage() {
             <Stat label="Active users" value={stats.active_users} />
             <Stat label="Active subs" value={stats.active_subscriptions} />
             <Stat label="Total payments" value={stats.total_payments} />
-            <Stat label="Revenue" value={`₹${(stats.total_revenue_paise / 100).toFixed(0)}`} />
+            <Stat label="Revenue" value={`â‚¹${(stats.total_revenue_paise / 100).toFixed(0)}`} />
           </div>
         )}
 
@@ -190,7 +190,7 @@ export default function AdminPage() {
           <div>
             <input
               type="text"
-              placeholder="Search by email or name…"
+              placeholder="Search by email or nameâ€¦"
               value={search}
               onChange={(e) => {
                 const v = e.target.value;
@@ -220,12 +220,12 @@ export default function AdminPage() {
                     <tr key={u.id} className="border-t hover:bg-slate-50">
                       <td className="px-3 py-2 text-slate-500">{u.id}</td>
                       <td className="px-3 py-2 text-slate-900">{u.masked_email}</td>
-                      <td className="px-3 py-2 text-slate-700">{u.full_name || "—"}</td>
+                      <td className="px-3 py-2 text-slate-700">{u.full_name || "â€”"}</td>
                       <td className="px-3 py-2">
                         <span className={`text-xs px-2 py-0.5 rounded ${
                           u.has_active_subscription ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-500"
                         }`}>
-                          {u.has_active_subscription ? "Yes" : "—"}
+                          {u.has_active_subscription ? "Yes" : "â€”"}
                         </span>
                       </td>
                       <td className="px-3 py-2">
