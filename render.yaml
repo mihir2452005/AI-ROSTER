@@ -53,6 +53,30 @@ services:
         value: "60"
       - key: TRUSTED_PROXIES
         value: "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,127.0.0.1/32,::1/128"
+      # ---- LLM fallback (Round 6) ----
+      # Default is "stub" (no external calls). Set to "openai" or
+      # "anthropic" and supply LLM_API_KEY to actually call a model when
+      # the rule-based matcher score falls below LLM_FALLBACK_SCORE_THRESHOLD.
+      - key: LLM_PROVIDER
+        value: "stub"
+      - key: LLM_API_KEY
+        sync: false  # leave empty unless LLM_PROVIDER is openai/anthropic
+      - key: LLM_MODEL
+        value: "gpt-4o-mini"
+      # ---- Outbound email (verification + password reset) ----
+      # Dev mode (SMTP_HOST empty) writes emails to dev_emails.log. Set
+      # these to a real SMTP relay (Gmail app password, Resend, SES, etc.)
+      # in production.
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        value: "587"
+      - key: SMTP_USERNAME
+        sync: false
+      - key: SMTP_PASSWORD
+        sync: false
+      - key: SMTP_FROM
+        sync: false
       # ---- Daily backup (any of these stores works for free) ----
       # local (default) — writes to the cron's working directory; on
       # Render Cron this is ephemeral, so use a remote backend unless

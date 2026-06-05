@@ -65,6 +65,30 @@ In **Dashboard → roastgpt-api → Environment**, add:
 | `BACKUP_GITHUB_REPO`      | `your-username/roastgpt-backups`                       |
 | `BACKUP_GITHUB_TOKEN`     | *(fine-grained PAT, `contents:write` on the repo)*     |
 
+**Optional — for verification / password-reset emails (Round 6):**
+
+| Key              | Value                                                                |
+| ---------------- | -------------------------------------------------------------------- |
+| `SMTP_HOST`      | e.g. `smtp.gmail.com`, `smtp.resend.com`, `email-smtp.us-east-1.amazonaws.com` |
+| `SMTP_PORT`      | `587` (TLS)                                                          |
+| `SMTP_USERNAME`  | your SMTP user                                                       |
+| `SMTP_PASSWORD`  | app password / API key                                               |
+| `SMTP_FROM`      | `RoastGPT <[email protected]>`                          |
+
+If `SMTP_HOST` is unset the backend writes outgoing emails to
+`backend/dev_emails.log` (dev mode only).
+
+**Optional — for LLM fallback (Round 6):**
+
+| Key                              | Value                                  |
+| -------------------------------- | -------------------------------------- |
+| `LLM_PROVIDER`                   | `stub` (default), `openai`, or `anthropic` |
+| `LLM_API_KEY`                    | API key for the chosen provider        |
+| `LLM_MODEL`                      | e.g. `gpt-4o-mini` (default), `claude-3-5-haiku-latest` |
+
+When `LLM_PROVIDER=stub` the rule-based matcher is used end-to-end and
+no external calls are made.
+
 Click **Save Changes**. Render redeploys automatically.
 
 ### 1.3. Bootstrap your first admin
@@ -163,6 +187,8 @@ to use the new domains, redeploy both.
 - [ ] `/api/health` returns `library_loaded: true` on the deployed service
 - [ ] `/admin` loads the dashboard with your admin user
 - [ ] `/pricing` loads the 3 plans
+- [ ] `SMTP_*` env vars set (or accept the dev-mode log behavior)
+- [ ] `LLM_PROVIDER` is `stub` unless you have an LLM key to use
 
 ---
 
@@ -222,8 +248,6 @@ These defenses are on by default. **Don't disable them in production.**
 - **No Alembic migrations yet.** Schema is created via `Base.metadata.create_all`
   on boot. Fine for greenfield; switch to `alembic` before the first
   zero-downtime deploy.
-- **No password reset / email verification / account deletion** endpoints.
-  Admins can deactivate users, but a user cannot self-delete or reset.
 - **No CSRF protection** on cookie-based flows (not relevant yet; we're
   using `sessionStorage` Bearer tokens).
 - **No 2FA / TOTP.**
