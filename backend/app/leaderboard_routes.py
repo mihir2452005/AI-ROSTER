@@ -44,16 +44,17 @@ def _safe_display_name(raw: Optional[str]) -> str:
 
 @router.get("")
 def public_leaderboard(
-    period: str = Query("week", pattern="^(week|month|all)$"),
+    period: str = Query("week", pattern="^(day|week|month|all)$"),
     limit: int = Query(10, ge=1, le=50),
     db: Session = Depends(get_db),
 ) -> dict:
     """Top users by total damage dealt.
 
     `period` controls the time window:
-    - `week`: last 7 days
+    - `day`:   last 24 hours
+    - `week`:  last 7 days
     - `month`: last 30 days
-    - `all`: all time
+    - `all`:   all time
 
     Uses a pre-computed `leaderboard_snapshots` row if one is fresh
     (<= 2 hours old) for the same (period, period_id) tuple. Otherwise
@@ -62,7 +63,9 @@ def public_leaderboard(
     """
     from datetime import datetime as _dt
     now = datetime.now(timezone.utc)
-    if period == "week":
+    if period == "day":
+        period_id = now.strftime("%Y-%m-%d")
+    elif period == "week":
         period_id = _week_id(now)
     elif period == "month":
         period_id = now.strftime("%Y-%m")
@@ -97,7 +100,9 @@ def public_leaderboard(
         }
 
     # Fallback: live aggregation.
-    if period == "week":
+    if period == "day":
+        start = now - timedelta(days=1)
+    elif period == "week":
         start = now - timedelta(days=7)
     elif period == "month":
         start = now - timedelta(days=30)

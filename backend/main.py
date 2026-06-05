@@ -16,6 +16,7 @@ load_dotenv()
 
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import PlainTextResponse
 
 # Allow running directly: `python main.py` or via `uvicorn main:app`
 try:
@@ -428,4 +429,53 @@ def root() -> dict:
         "version": app.version,
         "docs": "/docs",
         "health": "/api/health",
+        "metrics": "/api/metrics",
     }
+
+
+# Lightweight Prometheus-style metrics endpoint. We intentionally do
+# NOT pull in the prometheus_client package (free-tier, smaller
+# surface) — instead we expose the same key=value model in
+# text/plain, which any scraper can parse. Counts are best-effort,
+# sampled from in-process state only.
+@app.get("/api/metrics", include_in_schema=False)
+def metrics() -> PlainTextResponse:
+    lines: list[str] = []
+    lines.append("# HELP roastgpt_up 1 if the process is serving requests")
+    lines.append("roastgpt_up 1")
+    lines.append("# HELP roastgpt_rate_limit_tracked_ips Distinct IPs currently tracked")
+    lines.append(f"roastgpt_rate_limit_tracked_ips {len(_request_history)}")
+
+    # In-process circuit breaker from the LLM fallback (if loaded).
+    try:
+        from app.llm_fallback import breaker_status
+        status = breaker_status()
+        open_ = 1 if status.get("open") else 0
+        lines.append("# HELP roastgpt_llm_breaker_open 1 if the LLM fallback breaker is open")
+        lines.append(f"roastgpt_llm_breaker_open {open_}")
+        for k, v in status.get("details", {}).items():
+            lines.append(f"# HELP roastgpt_llm_{k}")
+            lines.append(f"roastgpt_llm_{k} {v}")
+    except Exception:
+        pass
+
+    # Database liveness (cheap COUNT). Catches the case where the
+    # process is up but the DB is unreachable.
+    try:
+        from app.database import SessionLocal
+        from app import db_models
+        db = SessionLocal()
+        try:
+            users = db.query(db_models.User).count()
+            subs = db.query(db_models.Subscription).count()
+        finally:
+            db.close()
+        lines.append("# HELP roastgpt_users_total Total user rows in the database")
+        lines.append(f"roastgpt_users_total {users}")
+        lines.append("# HELP roastgpt_subscriptions_total Total subscription rows")
+        lines.append(f"roastgpt_subscriptions_total {subs}")
+    except Exception as e:
+        lines.append("# roastgpt_db_unreachable 1")
+        lines.append(f"roastgpt_db_unreachable 1 # {e}")
+
+    return PlainTextResponse("\n".join(lines) + "\n", media_type="text/plain; version=0.0.4")

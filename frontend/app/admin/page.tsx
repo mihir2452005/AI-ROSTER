@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import {
   adminApi,
   authApi,
@@ -14,7 +15,7 @@ import {
   type User,
 } from "../../lib/auth-api";
 
-type Tab = "stats" | "users" | "grant" | "leaderboard";
+type Tab = "stats" | "users" | "grant" | "leaderboard" | "audit" | "flags" | "charts";
 
 export default function AdminPage() {
   const router = useRouter();
@@ -24,9 +25,6 @@ export default function AdminPage() {
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [userTotal, setUserTotal] = useState(0);
   const [search, setSearch] = useState("");
-  // Debounce timer for the user search box. Without this, every
-  // keystroke fires an `/api/admin/users?search=...` request which
-  // hammers the DB on long email prefixes.
   const searchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [period, setPeriod] = useState<"week" | "month">("week");
@@ -36,6 +34,27 @@ export default function AdminPage() {
   const [grantDuration, setGrantDuration] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(true);
+  const [auditLogs, setAuditLogs] = useState<Array<{
+    id: number;
+    actor_user_id: number | null;
+    actor_ip: string | null;
+    action: string;
+    target_user_id: number | null;
+    details: Record<string, unknown> | null;
+    created_at: string;
+  }>>([]);
+  const [auditTotal, setAuditTotal] = useState(0);
+  const [auditAction, setAuditAction] = useState("");
+  const [flags, setFlags] = useState<Array<{ key: string; enabled: boolean; description: string | null; updated_at: string | null }>>([]);
+  const [newFlagKey, setNewFlagKey] = useState("");
+  const [newFlagDesc, setNewFlagDesc] = useState("");
+  const [signupSeries, setSignupSeries] = useState<Array<{ date: string; count: number }>>([]);
+  const [chatSeries, setChatSeries] = useState<Array<{ date: string; count: number }>>([]);
+  // Pagination state for users + audit logs.
+  const [userSkip, setUserSkip] = useState(0);
+  const USER_PAGE = 25;
+  const [auditSkip, setAuditSkip] = useState(0);
+  const AUDIT_PAGE = 50;
 
   useEffect(() => {
     if (!getAccessToken()) {
@@ -75,14 +94,89 @@ export default function AdminPage() {
       .finally(() => setLoading(false));
   }, [router]);
 
-  function reloadUsers(q?: string) {
+  function reloadUsers(q?: string, skip = 0) {
     adminApi
-      .listUsers({ search: q, limit: 50 })
+      .listUsers({ search: q, limit: USER_PAGE, skip })
       .then((r) => {
         setUsers(r.users);
         setUserTotal(r.total);
+        setUserSkip(skip);
       })
       .catch((e) => setMessage("Search failed: " + (e?.detail || "")));
+  }
+
+  function loadAudit() {
+    adminApi
+      .listAuditLogs({ action: auditAction || undefined, limit: AUDIT_PAGE, skip: auditSkip })
+      .then((r) => {
+        setAuditLogs(r.logs);
+        setAuditTotal(r.total);
+      })
+      .catch((e) => setMessage("Audit log load failed: " + (e?.detail || "")));
+  }
+
+  function loadFlags() {
+    adminApi
+      .listFeatureFlags()
+      .then((r) => setFlags(r.flags))
+      .catch((e) => setMessage("Flag load failed: " + (e?.detail || "")));
+  }
+
+  function loadCharts() {
+    Promise.all([adminApi.chartsSignups(30), adminApi.chartsChats(30)])
+      .then(([s, c]) => {
+        setSignupSeries(s.series);
+        setChatSeries(c.series);
+      })
+      .catch((e) => setMessage("Charts failed: " + (e?.detail || "")));
+  }
+
+  function reloadTab(t: Tab) {
+    setMessage("");
+    if (t === "audit") loadAudit();
+    else if (t === "flags") loadFlags();
+    else if (t === "charts") loadCharts();
+  }
+
+  function banUser(u: AdminUser) {
+    const reason = prompt(`Ban ${u.masked_email}? Enter a reason (visible to the user):`);
+    if (!reason) return;
+    adminApi
+      .banUser(u.id, reason)
+      .then(() => {
+        toast.success(`${u.masked_email} banned`);
+        reloadUsers(search, userSkip);
+      })
+      .catch((e) => toast.error("Ban failed: " + (e?.message || "")));
+  }
+
+  function unbanUser(u: AdminUser) {
+    if (!confirm(`Lift the ban on ${u.masked_email}?`)) return;
+    adminApi
+      .unbanUser(u.id)
+      .then(() => {
+        toast.success(`${u.masked_email} unbanned`);
+        reloadUsers(search, userSkip);
+      })
+      .catch((e) => toast.error("Unban failed: " + (e?.message || "")));
+  }
+
+  function upsertFlag(key: string, enabled: boolean, description?: string) {
+    adminApi
+      .upsertFeatureFlag(key, enabled, description)
+      .then(() => {
+        toast.success(`Flag ${key} → ${enabled}`);
+        loadFlags();
+      })
+      .catch((e) => toast.error("Flag update failed: " + (e?.message || "")));
+  }
+
+  function submitNewFlag(e: React.FormEvent) {
+    e.preventDefault();
+    if (!newFlagKey.trim()) return;
+    upsertFlag(newFlagKey.trim(), true, newFlagDesc || undefined);
+    setNewFlagKey("");
+    setNewFlagDesc("");
   }
 
   // Cancel any in-flight debounce timer on unmount so we don't try to
@@ -160,18 +254,27 @@ export default function AdminPage() {
           </div>
         )}
 
-        <nav className="flex gap-2 mb-6 border-b border-slate-200">
-          {(["stats", "users", "grant", "leaderboard"] as Tab[]).map((t) => (
+        <nav className="flex flex-wrap gap-2 mb-6 border-b border-slate-200">
+          {([
+            "stats", "users", "grant", "leaderboard",
+            "audit", "flags", "charts",
+          ] as Tab[]).map((t) => (
             <button
               key={t}
-              onClick={() => setTab(t)}
+              onClick={() => { setTab(t); reloadTab(t); }}
               className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px ${
                 tab === t
                   ? "border-purple-600 text-purple-600"
                   : "border-transparent text-slate-500 hover:text-slate-700"
               }`}
             >
-              {t === "stats" ? "Stats" : t === "users" ? `Users (${userTotal})` : t === "grant" ? "Grant" : "Leaderboard"}
+              {t === "stats" ? "Stats" :
+               t === "users" ? `Users (${userTotal})` :
+               t === "grant" ? "Grant" :
+               t === "leaderboard" ? "Leaderboard" :
+               t === "audit" ? `Audit (${auditTotal})` :
+               t === "flags" ? "Flags" :
+               "Charts"}
             </button>
           ))}
         </nav>
@@ -213,6 +316,7 @@ export default function AdminPage() {
                     <th className="px-3 py-2">Active</th>
                     <th className="px-3 py-2">Verified</th>
                     <th className="px-3 py-2">Admin</th>
+                    <th className="px-3 py-2">Status</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -220,12 +324,12 @@ export default function AdminPage() {
                     <tr key={u.id} className="border-t hover:bg-slate-50">
                       <td className="px-3 py-2 text-slate-500">{u.id}</td>
                       <td className="px-3 py-2 text-slate-900">{u.masked_email}</td>
-                      <td className="px-3 py-2 text-slate-700">{u.full_name || "â€”"}</td>
+                      <td className="px-3 py-2 text-slate-700">{u.full_name || "—"}</td>
                       <td className="px-3 py-2">
                         <span className={`text-xs px-2 py-0.5 rounded ${
                           u.has_active_subscription ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-500"
                         }`}>
-                          {u.has_active_subscription ? "Yes" : "â€”"}
+                          {u.has_active_subscription ? "Yes" : "—"}
                         </span>
                       </td>
                       <td className="px-3 py-2">
@@ -247,13 +351,58 @@ export default function AdminPage() {
                           type="checkbox"
                           checked={u.is_admin}
                           onChange={(e) => toggleUserFlag(u, "is_admin", e.target.checked)}
+                          // Don't let an admin demote themselves — that
+                          // would log them out instantly and the user
+                          // would be confused.
+                          disabled={u.id === me?.id}
+                          title={u.id === me?.id ? "You can't demote yourself" : undefined}
                         />
+                      </td>
+                      <td className="px-3 py-2">
+                        {u.is_banned ? (
+                          <button
+                            onClick={() => unbanUser(u)}
+                            className="text-xs px-2 py-1 rounded bg-emerald-100 text-emerald-700 hover:bg-emerald-200"
+                          >
+                            Banned — lift
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => banUser(u)}
+                            className="text-xs px-2 py-1 rounded bg-rose-100 text-rose-700 hover:bg-rose-200"
+                          >
+                            Ban
+                          </button>
+                        )}
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
               {users.length === 0 && <p className="p-4 text-slate-500 text-center">No users found.</p>}
+              {userTotal > USER_PAGE && (
+                <div className="flex items-center justify-between p-3 border-t text-sm">
+                  <span className="text-slate-500">
+                    Showing {userSkip + 1}–{Math.min(userSkip + USER_PAGE, userTotal)} of {userTotal}
+                  </span>
+                  <div className="flex gap-2">
+                    <button
+                      disabled={userSkip === 0}
+                      onClick={() => reloadUsers(search, Math.max(0, userSkip - USER_PAGE))}
+                      className="px-3 py-1 rounded border border-slate-300 disabled:opacity-50"
+                    >
+                      ← Prev
+                    </button>
+                    <button
+                      disabled={userSkip + USER_PAGE >= userTotal}
+                      onClick={() => reloadUsers(search, userSkip + USER_PAGE)}
+                      className="px-3 py-1 rounded border border-slate-300 disabled:opacity-50"
+                    >
+                      Next →
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -361,8 +510,215 @@ export default function AdminPage() {
             </p>
           </div>
         )}
+
+        {/* ---- Audit log tab ---- */}
+        {tab === "audit" && (
+          <div>
+            <div className="flex flex-wrap items-center gap-2 mb-3">
+              <input
+                value={auditAction}
+                onChange={(e) => setAuditAction(e.target.value)}
+                onKeyDown={(e) => { if (e.key === "Enter") { setAuditSkip(0); loadAudit(); } }}
+                placeholder="Filter by action (e.g. login_failed_wrong_password)"
+                className="flex-1 min-w-[200px] px-3 py-2 border border-slate-300 rounded-lg"
+              />
+              <button
+                onClick={() => { setAuditSkip(0); loadAudit(); }}
+                className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+              >
+                Search
+              </button>
+              <button
+                onClick={() => { setAuditAction(""); setAuditSkip(0); loadAudit(); }}
+                className="px-4 py-2 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300"
+              >
+                Clear
+              </button>
+            </div>
+            <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+              <table className="w-full text-sm">
+                <thead className="bg-slate-50 text-left text-slate-500 text-xs uppercase">
+                  <tr>
+                    <th className="px-3 py-2">When</th>
+                    <th className="px-3 py-2">Action</th>
+                    <th className="px-3 py-2">Actor</th>
+                    <th className="px-3 py-2">Target</th>
+                    <th className="px-3 py-2">IP</th>
+                    <th className="px-3 py-2">Details</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {auditLogs.map((log) => (
+                    <tr key={log.id} className="border-t">
+                      <td className="px-3 py-2 text-slate-500 whitespace-nowrap">
+                        {new Date(log.created_at).toLocaleString()}
+                      </td>
+                      <td className="px-3 py-2 font-mono text-xs text-slate-700">
+                        {log.action}
+                      </td>
+                      <td className="px-3 py-2 text-slate-500">
+                        {log.actor_user_id ?? "—"}
+                      </td>
+                      <td className="px-3 py-2 text-slate-500">
+                        {log.target_user_id ?? "—"}
+                      </td>
+                      <td className="px-3 py-2 font-mono text-xs text-slate-500">
+                        {log.actor_ip ?? "—"}
+                      </td>
+                      <td className="px-3 py-2 text-xs text-slate-500 max-w-xs truncate">
+                        {log.details ? JSON.stringify(log.details) : "—"}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              {auditLogs.length === 0 && (
+                <p className="p-4 text-slate-500 text-center">No audit log entries match.</p>
+              )}
+              {auditTotal > AUDIT_PAGE && (
+                <div className="flex items-center justify-between p-3 border-t text-sm">
+                  <span className="text-slate-500">
+                    Showing {auditSkip + 1}–{Math.min(auditSkip + AUDIT_PAGE, auditTotal)} of {auditTotal}
+                  </span>
+                  <div className="flex gap-2">
+                    <button
+                      disabled={auditSkip === 0}
+                      onClick={() => { setAuditSkip(Math.max(0, auditSkip - AUDIT_PAGE)); }}
+                      className="px-3 py-1 rounded border border-slate-300 disabled:opacity-50"
+                    >
+                      ← Prev
+                    </button>
+                    <button
+                      disabled={auditSkip + AUDIT_PAGE >= auditTotal}
+                      onClick={() => setAuditSkip(auditSkip + AUDIT_PAGE)}
+                      className="px-3 py-1 rounded border border-slate-300 disabled:opacity-50"
+                    >
+                      Next →
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+            <p className="text-xs text-slate-400 mt-2">
+              Use the action filter to drill into specific event types (login_failed_*,
+              admin_ban_user, account_hard_deleted, etc.).
+            </p>
+          </div>
+        )}
+
+        {/* ---- Feature flags tab ---- */}
+        {tab === "flags" && (
+          <div>
+            <form onSubmit={submitNewFlag} className="mb-4 flex flex-wrap gap-2">
+              <input
+                value={newFlagKey}
+                onChange={(e) => setNewFlagKey(e.target.value)}
+                placeholder="flag_key (snake_case)"
+                className="flex-1 min-w-[180px] px-3 py-2 border border-slate-300 rounded-lg"
+                pattern="[a-z][a-z0-9_]*"
+                required
+              />
+              <input
+                value={newFlagDesc}
+                onChange={(e) => setNewFlagDesc(e.target.value)}
+                placeholder="Optional description"
+                className="flex-1 min-w-[200px] px-3 py-2 border border-slate-300 rounded-lg"
+              />
+              <button type="submit" className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">
+                Add flag (enabled)
+              </button>
+            </form>
+            <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+              <table className="w-full text-sm">
+                <thead className="bg-slate-50 text-left text-slate-500 text-xs uppercase">
+                  <tr>
+                    <th className="px-3 py-2">Key</th>
+                    <th className="px-3 py-2">Description</th>
+                    <th className="px-3 py-2">State</th>
+                    <th className="px-3 py-2">Updated</th>
+                    <th className="px-3 py-2">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {flags.map((f) => (
+                    <tr key={f.key} className="border-t">
+                      <td className="px-3 py-2 font-mono text-xs">{f.key}</td>
+                      <td className="px-3 py-2 text-slate-500">{f.description || "—"}</td>
+                      <td className="px-3 py-2">
+                        <span className={`text-xs px-2 py-0.5 rounded ${
+                          f.enabled ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-500"
+                        }`}>
+                          {f.enabled ? "ON" : "OFF"}
+                        </span>
+                      </td>
+                      <td className="px-3 py-2 text-xs text-slate-500">
+                        {f.updated_at ? new Date(f.updated_at).toLocaleString() : "—"}
+                      </td>
+                      <td className="px-3 py-2">
+                        <button
+                          onClick={() => upsertFlag(f.key, !f.enabled)}
+                          className={`text-xs px-2 py-1 rounded ${
+                            f.enabled
+                              ? "bg-rose-100 text-rose-700 hover:bg-rose-200"
+                              : "bg-emerald-100 text-emerald-700 hover:bg-emerald-200"
+                          }`}
+                        >
+                          {f.enabled ? "Disable" : "Enable"}
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              {flags.length === 0 && (
+                <p className="p-4 text-slate-500 text-center">No flags yet. Add one above.</p>
+              )}
+            </div>
+            <p className="text-xs text-slate-400 mt-2">
+              Currently enforced: <code className="font-mono">history_export_enabled</code> (gates /api/history/export).
+              Other flags can be wired into routes from the backend.
+            </p>
+          </div>
+        )}
+
+        {/* ---- Charts tab ---- */}
+        {tab === "charts" && (
+          <div className="space-y-6">
+            <ChartCard title="Signups (last 30 days)" series={signupSeries} color="bg-purple-500" />
+            <ChartCard title="Chat volume (last 30 days)" series={chatSeries} color="bg-emerald-500" />
+          </div>
+        )}
       </div>
     </main>
+  );
+}
+
+function ChartCard({
+  title, series, color,
+}: { title: string; series: Array<{ date: string; count: number }>; color: string }) {
+  const max = Math.max(1, ...series.map((d) => d.count));
+  return (
+    <div className="bg-white rounded-xl p-4 shadow-sm">
+      <h3 className="text-sm font-medium text-slate-700 mb-3">{title}</h3>
+      {series.length === 0 ? (
+        <p className="text-sm text-slate-500">No data yet.</p>
+      ) : (
+        <div className="flex items-end gap-1 h-32">
+          {series.map((d) => (
+            <div
+              key={d.date}
+              className={`flex-1 ${color} rounded-t`}
+              style={{ height: `${(d.count / max) * 100}%`, minHeight: d.count > 0 ? "2px" : "0" }}
+              title={`${d.date}: ${d.count}`}
+            />
+          ))}
+        </div>
+      )}
+      <div className="mt-2 flex justify-between text-[10px] text-slate-400">
+        <span>{series[0]?.date}</span>
+        <span>{series[series.length - 1]?.date}</span>
+      </div>
+    </div>
   );
 }
 

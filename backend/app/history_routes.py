@@ -13,7 +13,7 @@ from fastapi.responses import PlainTextResponse, Response
 from sqlalchemy.orm import Session
 from sqlalchemy import func, or_
 
-from . import auth, auth_schemas, db_models
+from . import auth, auth_schemas, db_models, utils
 from .database import get_db
 
 router = APIRouter(prefix="/api/history", tags=["history"])
@@ -96,7 +96,15 @@ def export_history(
       - txt:  plain-text transcript, one message per paragraph
       - md:   Markdown with headers per day
       - json: structured JSON
+
+    Feature flag: `history_export_enabled` (default: True). Set to
+    False in /admin/feature-flags to disable export globally.
     """
+    if not utils.is_flag_enabled(db, "history_export_enabled", default=True):
+        raise HTTPException(
+            status_code=503,
+            detail="History export is temporarily disabled.",
+        )
     items = (
         db.query(db_models.ChatHistory)
         .filter(db_models.ChatHistory.user_id == user.id)

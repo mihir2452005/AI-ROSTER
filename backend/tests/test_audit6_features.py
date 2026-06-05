@@ -735,6 +735,212 @@ def test_audit6_v1_alias_login(client):
     assert "access_token" in r2.json()
 
 
+# ---- Round-7 audit fixes ----
+
+
+def test_audit7_daily_leaderboard_period_accepted(client):
+    r = client.get("/api/leaderboard?period=day&limit=5")
+    assert r.status_code == 200, r.text
+    body = r.json()
+    assert body.get("entries") is not None
+
+
+def test_audit7_daily_leaderboard_v1_alias(client):
+    r = client.get("/api/v1/leaderboard?period=day&limit=5")
+    assert r.status_code == 200, r.text
+
+
+def test_audit7_metrics_endpoint_exposes_basic_stats(client):
+    r = client.get("/api/metrics")
+    assert r.status_code == 200
+    assert r.headers["content-type"].startswith("text/plain")
+    body = r.text
+    assert "roastgpt_up 1" in body
+    assert "roastgpt_rate_limit_tracked_ips" in body
+
+
+def test_audit7_metrics_v1_alias(client):
+    r = client.get("/api/v1/metrics")
+    assert r.status_code == 200
+    assert "roastgpt_up 1" in r.text
+
+
+def test_audit7_history_export_blocked_by_flag(client, db_session):
+    # Set the flag to False, then expect 503.
+    from app import utils
+    # Force-clear the in-process flag cache so a previous test's
+    # populate-without-our-key state doesn't mask the disable.
+    utils._FLAG_CACHE.clear()
+    utils._FLAG_CACHE_LOADED_AT = 0.0
+    utils.set_flag(db_session, "history_export_enabled", False,
+                   description="test", updated_by_id=None)
+    db_session.commit()
+    a = _register(client, "audit7-flag@example.com")
+    r = client.get(
+        "/api/history/export?format=txt",
+        headers=_auth(a["access_token"]),
+    )
+    assert r.status_code == 503, r.text
+    # Restore the flag so later tests aren't affected.
+    utils.set_flag(db_session, "history_export_enabled", True,
+                   description=None, updated_by_id=None)
+    db_session.commit()
+    utils._FLAG_CACHE.clear()
+    utils._FLAG_CACHE_LOADED_AT = 0.0
+
+
+def test_audit7_history_export_allowed_when_flag_default(client):
+    # Default flag (unset) should be enabled.
+    a = _register(client, "audit7-flag2@example.com")
+    r = client.get(
+        "/api/history/export?format=txt",
+        headers=_auth(a["access_token"]),
+    )
+    assert r.status_code == 200, r.text
+
+
+def test_audit7_subscription_upgrade_dev_mode(client, db_session):
+    # Force the dev path by clearing the Razorpay env vars for this
+    # test only. The conftest sets fake keys globally, but the upgrade
+    # endpoint short-circuits to dev mode when neither key is present.
+    import os
+    from datetime import datetime, timezone, timedelta
+    saved_id = os.environ.pop("RAZORPAY_KEY_ID", None)
+    saved_secret = os.environ.pop("RAZORPAY_KEY_SECRET", None)
+    # The module captures the keys at import time; re-read them so the
+    # upgrade endpoint sees the cleared state.
+    import importlib
+    from app import payment_routes
+    importlib.reload(payment_routes)
+    try:
+        plans = client.get("/api/payments/plans").json()["plans"]
+        starter_id = next(p["id"] for p in plans if p["plan_code"] == "starter")
+        pro_id = next(p["id"] for p in plans if p["plan_code"] == "pro")
+        a = _register(client, "audit7-up@example.com")
+        uid = _user_id(db_session, "audit7-up@example.com")
+        sub = db_models.Subscription(
+            user_id=uid, plan_id=starter_id,
+            status=db_models.SubStatus.active,
+            current_period_start=datetime.now(timezone.utc),
+            current_period_end=datetime.now(timezone.utc) + timedelta(days=30),
+        )
+        db_session.add(sub)
+        db_session.commit()
+        r = client.post(
+            "/api/subscriptions/upgrade",
+            json={"target_plan_code": "pro"},
+            headers=_auth(a["access_token"]),
+        )
+        assert r.status_code == 200, r.text
+        body = r.json()
+        assert body.get("plan") == "pro"
+        assert body.get("payment_required") is False
+        db_session.refresh(sub)
+        assert sub.plan_id == pro_id
+    finally:
+        if saved_id is not None:
+            os.environ["RAZORPAY_KEY_ID"] = saved_id
+        if saved_secret is not None:
+            os.environ["RAZORPAY_KEY_SECRET"] = saved_secret
+
+
+def test_audit7_subscription_upgrade_rejects_cheaper(client, db_session):
+    from datetime import datetime, timezone, timedelta
+    plans = client.get("/api/payments/plans").json()["plans"]
+    pro_id = next(p["id"] for p in plans if p["plan_code"] == "pro")
+    a = _register(client, "audit7-up2@example.com")
+    uid = _user_id(db_session, "audit7-up2@example.com")
+    sub = db_models.Subscription(
+        user_id=uid, plan_id=pro_id,
+        status=db_models.SubStatus.active,
+        current_period_start=datetime.now(timezone.utc),
+        current_period_end=datetime.now(timezone.utc) + timedelta(days=30),
+    )
+    db_session.add(sub)
+    db_session.commit()
+    r = client.post(
+        "/api/subscriptions/upgrade",
+        json={"target_plan_code": "starter"},
+        headers=_auth(a["access_token"]),
+    )
+    assert r.status_code == 400, r.text
+
+
+def test_audit7_downgrade_executor_swaps_at_period_end(client, db_session):
+    from datetime import datetime, timezone, timedelta
+    plans = client.get("/api/payments/plans").json()["plans"]
+    starter_id = next(p["id"] for p in plans if p["plan_code"] == "starter")
+    pro_id = next(p["id"] for p in plans if p["plan_code"] == "pro")
+    a = _register(client, "audit7-dg@example.com")
+    uid = _user_id(db_session, "audit7-dg@example.com")
+    past = datetime.now(timezone.utc) - timedelta(days=1)
+    sub = db_models.Subscription(
+        user_id=uid, plan_id=pro_id,
+        status=db_models.SubStatus.active,
+        scheduled_plan_id=starter_id,
+        cancel_at_period_end=True,
+        current_period_start=past - timedelta(days=30),
+        current_period_end=past,
+    )
+    db_session.add(sub)
+    db_session.commit()
+    from app import jobs
+    jobs._process_scheduled_downgrades(db_session)
+    db_session.refresh(sub)
+    assert sub.plan_id == starter_id
+    assert sub.scheduled_plan_id is None
+    assert sub.cancel_at_period_end is False
+
+
+def test_audit7_downgrade_executor_skips_active_period(client, db_session):
+    from datetime import datetime, timezone, timedelta
+    plans = client.get("/api/payments/plans").json()["plans"]
+    starter_id = next(p["id"] for p in plans if p["plan_code"] == "starter")
+    pro_id = next(p["id"] for p in plans if p["plan_code"] == "pro")
+    a = _register(client, "audit7-dg2@example.com")
+    uid = _user_id(db_session, "audit7-dg2@example.com")
+    future = datetime.now(timezone.utc) + timedelta(days=10)
+    sub = db_models.Subscription(
+        user_id=uid, plan_id=pro_id,
+        status=db_models.SubStatus.active,
+        scheduled_plan_id=starter_id,
+        cancel_at_period_end=True,
+        current_period_start=datetime.now(timezone.utc),
+        current_period_end=future,
+    )
+    db_session.add(sub)
+    db_session.commit()
+    from app import jobs
+    jobs._process_scheduled_downgrades(db_session)
+    db_session.refresh(sub)
+    assert sub.plan_id == pro_id
+    assert sub.scheduled_plan_id == starter_id
+
+
+def test_audit7_retention_sweep_anonymises_pii(client, db_session):
+    from datetime import datetime, timezone, timedelta
+    from app import db_models
+    # Soft-delete a user, push deleted_at past 30 days.
+    a = _register(client, "audit7-anon@example.com")
+    uid = _user_id(db_session, "audit7-anon@example.com")
+    u = db_session.query(db_models.User).filter(
+        db_models.User.id == uid
+    ).one()
+    u.deleted_at = datetime.now(timezone.utc) - timedelta(days=31)
+    u.avatar_url = "https://example.com/me.png"
+    u.last_login_ip = "203.0.113.5"
+    u.recent_topics_json = ["x", "y"]
+    u.full_name = "Real Person"
+    db_session.commit()
+    from app import jobs
+    jobs._retention_sweep(db_session)
+    # The user row should be gone (cascade / hard delete).
+    still = db_session.query(db_models.User).filter(
+        db_models.User.id == uid
+    ).all()
+    assert still == []
+
+
 # ---- Helpers ----
 
 

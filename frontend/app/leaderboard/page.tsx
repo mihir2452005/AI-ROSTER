@@ -24,7 +24,7 @@ async function fetchLeaderboard(period: string, limit = 10): Promise<Leaderboard
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 15_000);
   try {
-    const res = await fetch(`${API_BASE}/api/leaderboard?period=${period}&limit=${limit}`, {
+    const res = await fetch(`${API_BASE}/api/v1/leaderboard?period=${period}&limit=${limit}`, {
       cache: "no-store",
       signal: controller.signal,
     });
@@ -38,6 +38,7 @@ async function fetchLeaderboard(period: string, limit = 10): Promise<Leaderboard
 }
 
 const TABS = [
+  { key: "day",   label: "Today" },
   { key: "week",  label: "This week" },
   { key: "month", label: "This month" },
   { key: "all",   label: "All time" },

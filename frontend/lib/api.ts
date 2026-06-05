@@ -215,28 +215,28 @@ export const api = {
     }),
 
   roast: (sessionId: string, body: RoastRequest, opts?: { signal?: AbortSignal }) =>
-    request<RoastResponse>(`/api/session/${sessionId}/roast`, {
+    request<RoastResponse>(`/api/v1/session/${sessionId}/roast`, {
       method: "POST",
       body: JSON.stringify(body),
       signal: opts?.signal,
     }),
 
   endSession: (sessionId: string) =>
-    request<EndSessionResponse>(`/api/session/${sessionId}/end`, {
+    request<EndSessionResponse>(`/api/v1/session/${sessionId}/end`, {
       method: "POST",
     }),
 
   getSession: (sessionId: string) =>
-    request<SessionStateResponse>(`/api/session/${sessionId}`),
+    request<SessionStateResponse>(`/api/v1/session/${sessionId}`),
 
   /**
    * Reconstruct a session from the `roast_sessions` table after a
    * server cold start wiped the in-memory store. Authenticated users
-   * only â€” anonymous sessions aren't persisted. Requires the JWT
+   * only — anonymous sessions aren't persisted. Requires the JWT
    * bearer token to be present (auto-injected by `request`).
    */
   recoverSession: (sessionId: string) =>
-    request<SessionStateResponse>(`/api/session/${sessionId}/recover`, {
+    request<SessionStateResponse>(`/api/v1/session/${sessionId}/recover`, {
       method: "POST",
     }),
 };

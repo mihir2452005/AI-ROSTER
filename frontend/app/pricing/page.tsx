@@ -1,8 +1,10 @@
 ﻿"use client";
 
 import type React from "react";
+
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import {
   paymentsApi,
   subscriptionsApi,
@@ -86,6 +88,62 @@ export default function PricingPage() {
       .finally(() => setLoading(false));
   }, [router]);
 
+  // Helper for the upgrade path. In dev mode (no Razorpay keys) the
+  // server returns payment_required=false and applies the plan
+  // immediately; in live mode it returns a Razorpay order we have to
+  // open a checkout for.
+  async function doUpgrade(plan: Plan) {
+    const r = await subscriptionsApi.upgrade(plan.plan_code);
+    if (!r.payment_required) {
+      toast.success("Upgraded to " + plan.name);
+      const u = await authApi.me();
+      setUser(u);
+      emitAuthRefresh();
+      router.push("/account");
+      return r;
+    }
+    // Live mode: open Razorpay with the upgrade order.
+    const scriptLoaded = await loadRazorpayScript();
+    if (!scriptLoaded || !r.order_id) {
+      throw new Error("Failed to load payment SDK");
+    }
+    return new Promise<typeof r>((resolve, reject) => {
+      const options = {
+        key: r.key_id,
+        amount: r.amount,
+        currency: r.currency,
+        name: "RoastGPT",
+        description: "Upgrade to " + plan.name,
+        order_id: r.order_id,
+        handler: async () => {
+          try {
+            // The upgrade endpoint left the active sub with a
+            // razorpay_order_id; verify-payment picks it up.
+            toast.success("Upgraded to " + plan.name);
+            const u = await authApi.me();
+            setUser(u);
+            emitAuthRefresh();
+            router.push("/account");
+            resolve(r);
+          } catch (e) {
+            reject(e);
+          }
+        },
+        modal: {
+          ondismiss: () => setCheckoutLoading(null),
+        },
+      };
+      // Razorpay global injected by the script.
+      const w = window as unknown as { Razorpay?: new (opts: object) => { open: () => void } };
+      if (!w.Razorpay) {
+        reject(new Error("Razorpay not loaded"));
+        return;
+      }
+      const rz = new w.Razorpay(options);
+      rz.open();
+    });
+  }
+
   function loadRazorpayScript(): Promise<boolean> {
     return new Promise((resolve) => {
       if (window.Razorpay) {
@@ -107,13 +165,42 @@ export default function PricingPage() {
       router.push("/login?return=/pricing");
       return;
     }
-    if (plan.plan_code === "starter" && !confirm(
-      "Starter plan is for trying things out. Most users pick Pro for the best value. Continue?"
-    )) {
-      return;
-    }
     setError("");
     setCheckoutLoading(plan.plan_code);
+
+    // If the user already has an active subscription, route through
+    // /subscriptions/{upgrade,downgrade} instead of /create-order (which
+    // 409s on a live sub). This is the "Switch to" affordance shown to
+    // existing subscribers.
+    if (user?.has_active_subscription) {
+      try {
+        // Try downgrade first (cheap, no payment). If the server says
+        // it's not cheaper (i.e. it's an upgrade), fall through to the
+        // upgrade path which may open Razorpay.
+        try {
+          const r = await subscriptionsApi.downgrade(plan.plan_code);
+          if (r && r.scheduled_plan) {
+            toast.success(`Downgrade to ${plan.name} scheduled for period end.`);
+            emitAuthRefresh();
+            router.push("/account");
+            return;
+          }
+        } catch (e: any) {
+          if (e?.status === 400) {
+            // 400 = not cheaper -> it's an upgrade. Continue to upgrade.
+            await doUpgrade(plan);
+            return;
+          }
+          throw e;
+        }
+      } catch (e: any) {
+        setError("Plan switch failed: " + (e?.detail || e?.message || "unknown"));
+      } finally {
+        setCheckoutLoading(null);
+      }
+      return;
+    }
+
     try {
       const scriptLoaded = await loadRazorpayScript();
       if (!scriptLoaded) {
@@ -140,19 +227,19 @@ export default function PricingPage() {
           // the user can retry without the button being stuck.
           try {
             const r = await paymentsApi.verifyPayment(response);
-            // Surface the actual server message â€” "Payment verified and
+            // Surface the actual server message — "Payment verified and
             // subscription activated" on first run, "Payment already
             // verified" on idempotent retry. Both are fine.
             const alreadyVerified = /already/i.test(r.message);
-            alert(
-              alreadyVerified
-                ? "You've already activated " + plan.name + " â€” no action needed."
-                : "ðŸŽ‰ " + r.message + "! Welcome to " + plan.name + "."
-            );
+            if (alreadyVerified) {
+              toast("You've already activated " + plan.name + " — no action needed.");
+            } else {
+              toast.success("🎉 " + r.message + "! Welcome to " + plan.name + ".");
+            }
             const u = await authApi.me();
             setUser(u);
             // Tell the HeaderAuth in the root layout to refetch so the
-            // "â­ Subscribe" badge disappears without a full reload.
+            // "⭐ Subscribe" badge disappears without a full reload.
             emitAuthRefresh();
             router.push("/account");
           } catch (e: any) {
@@ -238,7 +325,7 @@ export default function PricingPage() {
                 </ul>
                 <button
                   onClick={() => handleSubscribe(plan)}
-                  disabled={checkoutLoading === plan.plan_code || user?.has_active_subscription}
+                  disabled={checkoutLoading === plan.plan_code}
                   className={`w-full py-3 font-semibold rounded-lg transition ${
                     isPro
                       ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:opacity-90"
@@ -246,9 +333,9 @@ export default function PricingPage() {
                   } disabled:opacity-50`}
                 >
                   {checkoutLoading === plan.plan_code
-                    ? "Opening checkoutâ€¦"
+                    ? "Opening checkout…"
                     : user?.has_active_subscription
-                    ? "Already subscribed"
+                    ? `Switch to ${plan.name}`
                     : `Get ${plan.name}`}
                 </button>
               </div>

@@ -26,6 +26,8 @@ export default function HomePage() {
 
   // If the user is logged in, prefill their saved name and use their
   // saved roaster-gender preference to drive personalized roast generation.
+  // We also honour the saved `favorite_mode` / `favorite_personality`
+  // (set in /account) so the user doesn't have to re-pick every time.
   //
   // We also cross-check the server's `token_version` against the
   // cached one: if they don't match, the token has been revoked on
@@ -49,6 +51,18 @@ export default function HomePage() {
         cacheUser(u);
         setUser(u);
         if (u.full_name) setUsername(u.full_name);
+        // Apply favorites only if they're valid for the current
+        // (typed) RoastMode/Personality unions. We compare against the
+        // MODES and PERSONALITIES lists so a stale favorite from a
+        // future schema version doesn't crash the picker.
+        if (u.favorite_mode) {
+          const valid = (MODES.find((m) => m.value === u.favorite_mode));
+          if (valid) setMode(valid.value);
+        }
+        if (u.favorite_personality) {
+          const valid = PERSONALITIES.find((p) => p.value === u.favorite_personality);
+          if (valid) setPersonality(valid.value);
+        }
       })
       .catch(() => { /* not logged in - keep going */ });
   }, []);

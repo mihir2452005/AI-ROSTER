@@ -356,6 +356,30 @@ export const subscriptionsApi = {
     emitAuthRefresh();
     return r;
   },
+  // Upgrade creates a Razorpay order (in live mode) or swaps the
+  // plan directly (in dev mode). Returns a discriminated payload
+  // the pricing page uses to decide whether to open the checkout.
+  upgrade: (target_plan_code: string) =>
+    request<{
+      order_id?: string;
+      amount?: number;
+      currency?: string;
+      key_id?: string;
+      plan?: string;
+      payment_required: boolean;
+      message: string;
+      current_period_end?: string;
+    }>("/api/v1/subscriptions/upgrade", {
+      method: "POST",
+      body: JSON.stringify({ target_plan_code }),
+    }),
+  downgrade: (target_plan_code: string) =>
+    request<{ message: string; current_period_end: string; scheduled_plan: string }>(
+      "/api/v1/subscriptions/downgrade", {
+        method: "POST",
+        body: JSON.stringify({ target_plan_code }),
+      }
+    ),
 };
 
 // ---- History API ----
@@ -380,12 +404,23 @@ export const historyApi = {
     );
   },
   clear: () => request<{ message: string; deleted: number }>("/api/v1/history", { method: "DELETE" }),
-  export: (format: "txt" | "md" | "json" = "txt") =>
-    fetch(
-      `${(typeof window !== "undefined" && (window as unknown as { __API_BASE__?: string }).__API_BASE__) || ""}` +
-      `/api/v1/history/export?format=${format}`,
+  // Note: we use raw `fetch` here (not the shared `request()` helper)
+  // because we need the actual `Response` object to read it as a blob
+  // for the file-download UX. The shared helper would JSON-parse it.
+  // The path is versioned (`/api/v1/...`) to match every other
+  // frontend call. NEXT_PUBLIC_API_URL is the standard way to override
+  // the origin in dev/staging/prod; `__API_BASE__` is a legacy
+  // escape hatch and falls back to "" so the Next.js rewrite in
+  // next.config.mjs proxies to the backend in dev.
+  export: (format: "txt" | "md" | "json" = "txt") => {
+    const base = (typeof process !== "undefined" && process.env.NEXT_PUBLIC_API_URL) ||
+      (typeof window !== "undefined" && (window as unknown as { __API_BASE__?: string }).__API_BASE__) ||
+      "";
+    return fetch(
+      `${base}/api/v1/history/export?format=${format}`,
       { headers: authHeader() },
-    ),
+    );
+  },
 };
 
 // ---- Admin API ----
@@ -402,6 +437,9 @@ export interface AdminUser {
   free_messages_used: number;
   created_at: string;
   has_active_subscription: boolean;
+  is_banned?: boolean;
+  ban_reason?: string | null;
+  banned_at?: string | null;
 }
 
 export interface LeaderboardEntry {
@@ -430,16 +468,77 @@ export const adminApi = {
     if (params?.limit) qs.set("limit", String(params.limit));
     if (params?.search) qs.set("search", params.search);
     const q = qs.toString();
-    return request<{ users: AdminUser[]; total: number }>(`/api/admin/users${q ? `?${q}` : ""}`);
+    return request<{ users: AdminUser[]; total: number }>(`/api/v1/admin/users${q ? `?${q}` : ""}`);
   },
 
-  getUser: (id: number) => request<AdminUser>(`/api/admin/users/${id}`),
+  getUser: (id: number) => request<AdminUser>(`/api/v1/admin/users/${id}`),
 
   updateUser: (id: number, patch: { is_active?: boolean; is_verified?: boolean; is_admin?: boolean }) =>
-    request<{ message: string }>(`/api/admin/users/${id}`, {
+    request<{ message: string }>(`/api/v1/admin/users/${id}`, {
       method: "PATCH",
       body: JSON.stringify(patch),
     }),
+
+  banUser: (id: number, reason: string) =>
+    request<{ message: string }>(`/api/v1/admin/users/${id}/ban`, {
+      method: "POST",
+      body: JSON.stringify({ reason }),
+    }),
+
+  unbanUser: (id: number) =>
+    request<{ message: string }>(`/api/v1/admin/users/${id}/unban`, { method: "POST" }),
+
+  listFeatureFlags: () => request<{ flags: Array<{ key: string; enabled: boolean; description: string | null; updated_at: string | null }> }>(
+    "/api/v1/admin/feature-flags"
+  ),
+
+  upsertFeatureFlag: (key: string, enabled: boolean, description?: string) =>
+    request<{ message: string }>("/api/v1/admin/feature-flags", {
+      method: "PUT",
+      body: JSON.stringify({ key, enabled, description }),
+    }),
+
+  listAuditLogs: (params?: { action?: string; skip?: number; limit?: number }) => {
+    const qs = new URLSearchParams();
+    if (params?.action) qs.set("action", params.action);
+    if (params?.skip !== undefined) qs.set("skip", String(params.skip));
+    if (params?.limit) qs.set("limit", String(params.limit));
+    const q = qs.toString();
+    return request<{ logs: Array<{
+      id: number;
+      actor_user_id: number | null;
+      actor_ip: string | null;
+      action: string;
+      target_user_id: number | null;
+      details: Record<string, unknown> | null;
+      created_at: string;
+    }>; total: number }>(`/api/v1/admin/audit-logs${q ? `?${q}` : ""}`);
+  },
+
+  chartsSignups: (days = 30) =>
+    request<{ days: number; series: Array<{ date: string; count: number }> }>(
+      `/api/v1/admin/charts/signups?days=${days}`
+    ),
+
+  chartsChats: (days = 30) =>
+    request<{ days: number; series: Array<{ date: string; count: number }> }>(
+      `/api/v1/admin/charts/chats?days=${days}`
+    ),
+
+  userAchievements: (id: number) =>
+    request<{
+      achievements: Array<{
+        key: string;
+        name: string;
+        description: string;
+        emoji: string;
+        category: string;
+        rarity: string;
+        points: number;
+        unlocked: boolean;
+        unlocked_at: string | null;
+      }>;
+    }>(`/api/v1/admin/users/${id}/achievements`),
 
   grantSubscription: (data: { user_id: number; plan_code: string; duration_days?: number }) =>
     request<{ message: string; subscription_id: number; current_period_end: string }>(

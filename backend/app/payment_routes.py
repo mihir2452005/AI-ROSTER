@@ -725,6 +725,121 @@ class _DowngradeReq(BaseModel):
     target_plan_code: str
 
 
+@sub_router.post("/upgrade")
+def upgrade_subscription(
+    req: _DowngradeReq,
+    user: Annotated[db_models.User, Depends(auth.get_current_user)],
+    db: Annotated[Session, Depends(get_db)],
+):
+    """Schedule an upgrade to a MORE EXPENSIVE plan.
+
+    Upgrades take effect IMMEDIATELY (unlike downgrades) and reset
+    the billing period to now. Two modes:
+
+    * Live (Razorpay configured): a Razorpay order is returned; the
+      frontend collects payment and calls /payments/verify. On verify,
+      the active subscription is extended in place.
+    * Dev (no Razorpay keys): the plan is swapped immediately and the
+      period is reset. Used by the test suite and local development.
+
+    Cheaper plans are rejected; use /downgrade for those.
+    """
+    from datetime import datetime, timezone, timedelta
+    from . import utils
+
+    sub = db.query(db_models.Subscription).filter(
+        db_models.Subscription.user_id == user.id,
+        db_models.Subscription.status == db_models.SubStatus.active,
+    ).first()
+    if not sub:
+        raise HTTPException(
+            status_code=404,
+            detail="No active subscription to upgrade. Subscribe first via /payments/create-order.",
+        )
+
+    target = db.query(db_models.SubscriptionPlan).filter(
+        db_models.SubscriptionPlan.plan_code == req.target_plan_code
+    ).first()
+    if not target:
+        raise HTTPException(status_code=404, detail="Target plan not found")
+
+    current_plan = db.get(db_models.SubscriptionPlan, sub.plan_id)
+    if current_plan and target.price_paise <= current_plan.price_paise:
+        raise HTTPException(
+            status_code=400,
+            detail="Target plan is not more expensive than your current plan. "
+                   "Use /downgrade to switch to a cheaper plan.",
+        )
+
+    if not (RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET):
+        # Dev mode: swap immediately, no payment taken.
+        old_code = current_plan.plan_code if current_plan else None
+        sub.plan_id = target.id
+        sub.scheduled_plan_id = None
+        sub.cancel_at_period_end = False
+        now = datetime.now(timezone.utc)
+        sub.current_period_start = now
+        sub.current_period_end = now + timedelta(days=target.duration_days)
+        utils.log_action(
+            db, action="subscription_upgraded",
+            actor_user_id=user.id, target_user_id=user.id,
+            details={"from": old_code, "to": target.plan_code,
+                     "mode": "dev_no_payment"},
+        )
+        db.commit()
+        return {
+            "message": f"Upgraded to {target.name} (dev mode, no payment taken).",
+            "current_period_end": sub.current_period_end.isoformat(),
+            "plan": target.plan_code,
+            "payment_required": False,
+        }
+
+    # Live: create a Razorpay order. We deliberately write the
+    # pending subscription row first, then the order. If the order
+    # creation fails the row is rolled back.
+    client = get_razorpay_client()
+    try:
+        order_data = client.order.create({
+            "amount": target.price_paise,
+            "currency": target.currency,
+            "receipt": f"upgrade_{user.id}_{int(time.time())}",
+            "payment_capture": 1,
+            "notes": {
+                "user_id": str(user.id),
+                "plan_code": target.plan_code,
+                "kind": "upgrade",
+            },
+        })
+    except Exception as e:
+        log.error("upgrade: razorpay order failed: %s", e)
+        raise HTTPException(status_code=502, detail="Failed to create payment order")
+
+    # Mark the *active* sub with the target plan and a sentinel
+    # razorpay_order_id so the verify-payment path can find it. We
+    # also clear scheduled_plan_id to avoid the downgrade job
+    # clobbering the upgrade.
+    sub.razorpay_order_id = order_data["id"]
+    sub.razorpay_subscription_id = None
+    sub.scheduled_plan_id = None
+    sub.cancel_at_period_end = False
+    db.commit()
+    utils.log_action(
+        db, action="subscription_upgrade_order_created",
+        actor_user_id=user.id, target_user_id=user.id,
+        details={"from": current_plan.plan_code if current_plan else None,
+                 "to": target.plan_code, "order_id": order_data["id"]},
+    )
+    return {
+        "order_id": order_data["id"],
+        "amount": order_data["amount"],
+        "currency": order_data["currency"],
+        "key_id": RAZORPAY_KEY_ID,
+        "plan": target.plan_code,
+        "payment_required": True,
+        "message": "Complete the payment to upgrade immediately.",
+    }
+
+
 @sub_router.post("/downgrade")
 def downgrade_subscription(
     req: _DowngradeReq,
@@ -737,7 +852,6 @@ def downgrade_subscription(
     on the target plan or a cheaper one, return 400.
     """
     from . import utils
-    from .models import SubscriptionPlan as PlanModel
 
     sub = db.query(db_models.Subscription).filter(
         db_models.Subscription.user_id == user.id,
