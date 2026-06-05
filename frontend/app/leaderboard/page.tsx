@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
+import { ApiError, friendlyError } from "@/lib/api";
 
 interface Entry {
   rank: number;
@@ -12,14 +13,28 @@ interface Entry {
   message_count: number;
 }
 
+interface LeaderboardResponse {
+  period: string;
+  entries: Entry[];
+}
+
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "";
 
-async function fetchLeaderboard(period: string, limit = 10): Promise<{ period: string; entries: Entry[] }> {
-  const res = await fetch(`${API_BASE}/api/leaderboard?period=${period}&limit=${limit}`, {
-    cache: "no-store",
-  });
-  if (!res.ok) throw new Error("Failed to load leaderboard");
-  return res.json();
+async function fetchLeaderboard(period: string, limit = 10): Promise<LeaderboardResponse> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 15_000);
+  try {
+    const res = await fetch(`${API_BASE}/api/leaderboard?period=${period}&limit=${limit}`, {
+      cache: "no-store",
+      signal: controller.signal,
+    });
+    if (!res.ok) {
+      throw new ApiError(res.status, res.statusText || "Failed to load leaderboard");
+    }
+    return res.json();
+  } finally {
+    clearTimeout(timeoutId);
+  }
 }
 
 const TABS = [
@@ -37,12 +52,26 @@ export default function LeaderboardPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
+    let cancelled = false;
     setLoading(true);
     setError("");
     fetchLeaderboard(period)
-      .then((d) => setEntries(d.entries))
-      .catch((e) => setError(e.message))
-      .finally(() => setLoading(false));
+      .then((d) => {
+        if (cancelled) return;
+        setEntries(d.entries);
+      })
+      .catch((e) => {
+        if (cancelled) return;
+        // Use the same error-classifier the rest of the app uses so
+        // a 429 (rate limited) and 5xx (server) show distinct
+        // messages. friendlyError returns "Unknown error." for
+        // non-ApiError throws.
+        setError(friendlyError(e));
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => { cancelled = true; };
   }, [period]);
 
   return (

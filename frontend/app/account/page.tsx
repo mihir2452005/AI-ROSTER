@@ -22,8 +22,12 @@ export default function AccountPage() {
   const [name, setName] = useState("");
   const [gender, setGender] = useState("neutral");
   const [message, setMessage] = useState("");
+  const [showChangePw, setShowChangePw] = useState(false);
+  const [currentPw, setCurrentPw] = useState("");
+  const [newPw, setNewPw] = useState("");
 
   useEffect(() => {
+    let cancelled = false;
     const token = getAccessToken();
     if (!token) {
       router.push("/login");
@@ -31,6 +35,7 @@ export default function AccountPage() {
     }
     Promise.all([authApi.me(), subscriptionsApi.my(), paymentsApi.history()])
       .then(([u, s, h]) => {
+        if (cancelled) return;
         setUser(u);
         setName(u.full_name || "");
         setGender(u.gender_preference);
@@ -38,10 +43,14 @@ export default function AccountPage() {
         setHistory(h);
       })
       .catch((e) => {
+        if (cancelled) return;
         if (e?.status === 401) router.push("/login");
         else setMessage("Failed to load account: " + (e?.detail || ""));
       })
-      .finally(() => setLoading(false));
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => { cancelled = true; };
   }, [router]);
 
   async function saveProfile() {
@@ -53,6 +62,23 @@ export default function AccountPage() {
       setMessage("Profile updated ✅");
     } catch (e: any) {
       setMessage(e?.detail || "Update failed");
+    }
+  }
+
+  async function changePassword() {
+    if (newPw.length < 8) {
+      setMessage("New password must be at least 8 characters");
+      return;
+    }
+    setMessage("");
+    try {
+      await authApi.changePassword({ current_password: currentPw, new_password: newPw });
+      setMessage("Password updated ✅ Other sessions signed out.");
+      setCurrentPw("");
+      setNewPw("");
+      setShowChangePw(false);
+    } catch (e: any) {
+      setMessage(e?.detail || "Password change failed");
     }
   }
 
@@ -74,7 +100,14 @@ export default function AccountPage() {
   }
 
   if (loading) {
-    return <main className="min-h-screen flex items-center justify-center text-slate-500">Loading…</main>;
+    return (
+      <div className="grid min-h-[60vh] place-items-center text-muted">
+        <div className="text-center">
+          <div className="text-4xl animate-pulse">🔥</div>
+          <p className="mt-3 text-sm">Loading account…</p>
+        </div>
+      </div>
+    );
   }
   if (!user) return null;
 
@@ -96,181 +129,239 @@ export default function AccountPage() {
   const anySub = subs[0];
 
   return (
-    <main className="min-h-screen bg-slate-50 px-4 py-8">
-      <div className="max-w-3xl mx-auto space-y-6">
-        <header className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-slate-900">Your Account</h1>
-          <button
-            onClick={logout}
-            className="px-3 py-1.5 text-sm text-slate-600 hover:text-slate-900"
-          >
-            Sign out
-          </button>
-        </header>
+    <div className="mx-auto max-w-3xl space-y-6">
+      <header className="flex items-center justify-between">
+        <h1 className="font-display text-3xl font-bold">Your Account</h1>
+        <button
+          onClick={logout}
+          className="btn-ghost text-sm"
+        >
+          Sign out
+        </button>
+      </header>
 
-        {message && (
-          <div className="p-3 rounded-lg bg-blue-50 border border-blue-200 text-blue-800 text-sm">
-            {message}
+      {message && (
+        <div
+          role="status"
+          className="rounded-lg border border-accent/40 bg-accent/10 p-3 text-sm text-accent"
+        >
+          {message}
+        </div>
+      )}
+
+      {/* Profile */}
+      <section className="card">
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="font-display text-xl font-semibold">Profile</h2>
+          {!editing && (
+            <button onClick={() => setEditing(true)} className="text-sm text-accent-3 hover:underline">
+              Edit
+            </button>
+          )}
+        </div>
+        {editing ? (
+          <div className="space-y-3">
+            <div>
+              <label className="mb-1 block text-sm font-medium text-muted">Name</label>
+              <input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="input"
+                maxLength={255}
+                aria-label="Display name"
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-sm font-medium text-muted">Roaster preference</label>
+              <select
+                value={gender}
+                onChange={(e) => setGender(e.target.value)}
+                className="input"
+                aria-label="Roaster voice preference"
+              >
+                <option value="female">Female</option>
+                <option value="male">Male</option>
+                <option value="neutral">Neutral</option>
+              </select>
+            </div>
+            <div className="flex gap-2">
+              <button onClick={saveProfile} className="btn-primary text-sm">
+                Save
+              </button>
+              <button onClick={() => setEditing(false)} className="btn-ghost text-sm">
+                Cancel
+              </button>
+            </div>
           </div>
+        ) : (
+          <dl className="grid grid-cols-2 gap-3 text-sm">
+            <dt className="text-muted">Email</dt>
+            <dd>{user.email}</dd>
+            <dt className="text-muted">Name</dt>
+            <dd>{user.full_name || "—"}</dd>
+            <dt className="text-muted">Roaster</dt>
+            <dd className="capitalize">{user.gender_preference}</dd>
+            <dt className="text-muted">Free messages used</dt>
+            <dd>{user.free_messages_used} / 5</dd>
+          </dl>
         )}
+      </section>
 
-        {/* Profile */}
-        <section className="bg-white rounded-xl p-6 shadow-sm">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold text-slate-900">Profile</h2>
-            {!editing && (
-              <button onClick={() => setEditing(true)} className="text-sm text-purple-600 hover:underline">
-                Edit
+      {/* Change password (always visible for quick access) */}
+      <section className="card">
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="font-display text-xl font-semibold">Security</h2>
+          {!showChangePw && (
+            <button
+              onClick={() => setShowChangePw(true)}
+              className="text-sm text-accent-3 hover:underline"
+            >
+              Change password
+            </button>
+          )}
+        </div>
+        {showChangePw ? (
+          <div className="space-y-3">
+            <input
+              type="password"
+              placeholder="Current password"
+              value={currentPw}
+              onChange={(e) => setCurrentPw(e.target.value)}
+              className="input"
+              autoComplete="current-password"
+              aria-label="Current password"
+            />
+            <input
+              type="password"
+              placeholder="New password (8+ characters)"
+              value={newPw}
+              onChange={(e) => setNewPw(e.target.value)}
+              className="input"
+              autoComplete="new-password"
+              minLength={8}
+              aria-label="New password"
+            />
+            <div className="flex gap-2">
+              <button onClick={changePassword} className="btn-primary text-sm">
+                Update password
+              </button>
+              <button
+                onClick={() => { setShowChangePw(false); setCurrentPw(""); setNewPw(""); }}
+                className="btn-ghost text-sm"
+              >
+                Cancel
+              </button>
+            </div>
+            <p className="text-xs text-muted">
+              Changing your password signs out all other devices. You&apos;ll stay signed in here.
+            </p>
+          </div>
+        ) : (
+          <p className="text-sm text-muted">
+            Last changed: never recorded. Update regularly.
+          </p>
+        )}
+      </section>
+
+      {/* Subscription */}
+      <section className="card">
+        <h2 className="mb-4 font-display text-xl font-semibold">Subscription</h2>
+        {inEffect ? (
+          <div className="space-y-2 text-sm">
+            <p>
+              {cancellationPending ? (
+                <span className="mr-2 inline-block rounded bg-amber-500/20 px-2 py-0.5 text-xs text-amber-300">
+                  Cancellation pending
+                </span>
+              ) : (
+                <span className="mr-2 inline-block rounded bg-emerald-500/20 px-2 py-0.5 text-xs text-emerald-300">
+                  active
+                </span>
+              )}
+              <strong>{inEffect.plan_name}</strong>
+            </p>
+            <p className="text-muted">
+              {inEffect.current_period_end
+                ? `${cancellationPending ? "Access until" : "Active until"} ${new Date(inEffect.current_period_end).toLocaleDateString()}`
+                : "—"}
+            </p>
+            {inEffect.admin_granted && (
+              <p className="text-xs text-amber-300">
+                🎁 This subscription was granted to you (free).
+              </p>
+            )}
+            {!cancellationPending && (
+              <button
+                onClick={cancelSub}
+                className="btn-ghost mt-3 text-sm text-accent"
+              >
+                Cancel subscription
               </button>
             )}
           </div>
-          {editing ? (
-            <div className="space-y-3">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Name</label>
-                <input
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Roaster preference</label>
-                <select
-                  value={gender}
-                  onChange={(e) => setGender(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg"
-                >
-                  <option value="female">Female</option>
-                  <option value="male">Male</option>
-                  <option value="neutral">Neutral</option>
-                </select>
-              </div>
-              <div className="flex gap-2">
-                <button onClick={saveProfile} className="px-4 py-2 bg-purple-600 text-white rounded-lg">
-                  Save
-                </button>
-                <button onClick={() => setEditing(false)} className="px-4 py-2 text-slate-600">
-                  Cancel
-                </button>
-              </div>
-            </div>
-          ) : (
-            <dl className="grid grid-cols-2 gap-3 text-sm">
-              <dt className="text-slate-500">Email</dt>
-              <dd className="text-slate-900">{user.email}</dd>
-              <dt className="text-slate-500">Name</dt>
-              <dd className="text-slate-900">{user.full_name || "—"}</dd>
-              <dt className="text-slate-500">Roaster</dt>
-              <dd className="text-slate-900 capitalize">{user.gender_preference}</dd>
-              <dt className="text-slate-500">Free messages used</dt>
-              <dd className="text-slate-900">{user.free_messages_used}</dd>
-            </dl>
-          )}
-        </section>
+        ) : anySub ? (
+          <div>
+            <p className="mb-3 text-muted">
+              Your <strong>{anySub.plan_name}</strong> subscription is{" "}
+              <span className="capitalize">{anySub.status}</span>
+              {anySub.current_period_end && (
+                <>
+                  {" "}(expired {new Date(anySub.current_period_end).toLocaleDateString()})
+                </>
+              )}.
+            </p>
+            <a href="/pricing" className="btn-primary text-sm">
+              See plans
+            </a>
+          </div>
+        ) : (
+          <div>
+            <p className="mb-3 text-muted">You don&apos;t have an active subscription.</p>
+            <a href="/pricing" className="btn-primary text-sm">
+              See plans
+            </a>
+          </div>
+        )}
+      </section>
 
-        {/* Subscription */}
-        <section className="bg-white rounded-xl p-6 shadow-sm">
-          <h2 className="text-xl font-semibold text-slate-900 mb-4">Subscription</h2>
-          {inEffect ? (
-            <div className="space-y-2 text-sm">
-              <p>
-                {cancellationPending ? (
-                  <span className="inline-block px-2 py-0.5 rounded text-xs bg-amber-100 text-amber-700 mr-2">
-                    Cancellation pending
-                  </span>
-                ) : (
-                  <span className="inline-block px-2 py-0.5 rounded text-xs bg-emerald-100 text-emerald-700 mr-2">
-                    active
-                  </span>
-                )}
-                <strong>{inEffect.plan_name}</strong>
-              </p>
-              <p className="text-slate-600">
-                {inEffect.current_period_end
-                  ? `${cancellationPending ? "Access until" : "Active until"} ${new Date(inEffect.current_period_end).toLocaleDateString()}`
-                  : "—"}
-              </p>
-              {inEffect.admin_granted && (
-                <p className="text-xs text-amber-600">
-                  🎁 This subscription was granted to you (free).
-                </p>
-              )}
-              {!cancellationPending && (
-                <button
-                  onClick={cancelSub}
-                  className="mt-3 px-4 py-1.5 text-sm text-red-600 hover:bg-red-50 rounded"
-                >
-                  Cancel subscription
-                </button>
-              )}
-            </div>
-          ) : anySub ? (
-            <div>
-              <p className="text-slate-600 mb-3">
-                Your <strong>{anySub.plan_name}</strong> subscription is{" "}
-                <span className="capitalize">{anySub.status}</span>
-                {anySub.current_period_end && (
-                  <>
-                    {" "}(expired {new Date(anySub.current_period_end).toLocaleDateString()})
-                  </>
-                )}.
-              </p>
-              <a
-                href="/pricing"
-                className="inline-block px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg"
-              >
-                See plans
-              </a>
-            </div>
-          ) : (
-            <div>
-              <p className="text-slate-600 mb-3">You don&apos;t have an active subscription.</p>
-              <a
-                href="/pricing"
-                className="inline-block px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg"
-              >
-                See plans
-              </a>
-            </div>
-          )}
-        </section>
-
-        {/* Payment history */}
-        <section className="bg-white rounded-xl p-6 shadow-sm">
-          <h2 className="text-xl font-semibold text-slate-900 mb-4">Payment history</h2>
-          {history.length === 0 ? (
-            <p className="text-sm text-slate-500">No payments yet.</p>
-          ) : (
-            <table className="w-full text-sm">
-              <thead className="text-left text-slate-500 border-b">
-                <tr>
-                  <th className="pb-2">Date</th>
-                  <th className="pb-2">Description</th>
-                  <th className="pb-2 text-right">Amount</th>
-                  <th className="pb-2">Status</th>
+      {/* Payment history */}
+      <section className="card">
+        <h2 className="mb-4 font-display text-xl font-semibold">Payment history</h2>
+        {history.length === 0 ? (
+          <p className="text-sm text-muted">No payments yet.</p>
+        ) : (
+          <table className="w-full text-sm">
+            <thead className="border-b text-left text-muted">
+              <tr>
+                <th className="pb-2">Date</th>
+                <th className="pb-2">Description</th>
+                <th className="pb-2 text-right">Amount</th>
+                <th className="pb-2">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {history.map((p) => (
+                <tr key={p.id} className="border-b last:border-0">
+                  <td className="py-2">{new Date(p.created_at).toLocaleDateString()}</td>
+                  <td className="py-2">{p.description || "—"}</td>
+                  <td className="py-2 text-right">₹{(p.amount / 100).toFixed(2)}</td>
+                  <td className="py-2">
+                    <span
+                      className={`rounded px-2 py-0.5 text-xs ${
+                        p.status === "captured"
+                          ? "bg-emerald-500/20 text-emerald-300"
+                          : "bg-surface text-muted"
+                      }`}
+                    >
+                      {p.status}
+                    </span>
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {history.map((p) => (
-                  <tr key={p.id} className="border-b last:border-0">
-                    <td className="py-2">{new Date(p.created_at).toLocaleDateString()}</td>
-                    <td className="py-2">{p.description || "—"}</td>
-                    <td className="py-2 text-right">₹{(p.amount / 100).toFixed(2)}</td>
-                    <td className="py-2">
-                      <span className={`text-xs px-2 py-0.5 rounded ${
-                        p.status === "captured" ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-600"
-                      }`}>
-                        {p.status}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </section>
-      </div>
-    </main>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </section>
+    </div>
   );
 }

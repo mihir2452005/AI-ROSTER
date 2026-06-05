@@ -52,72 +52,77 @@ export default function HistoryPage() {
   const days = Object.keys(grouped);
 
   if (loading) {
-    return <main className="min-h-screen flex items-center justify-center text-slate-500">Loading…</main>;
+    return (
+      <div className="grid min-h-[60vh] place-items-center text-muted">
+        <div className="text-center">
+          <div className="text-4xl animate-pulse">🔥</div>
+          <p className="mt-3 text-sm">Loading history…</p>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <main className="min-h-screen bg-slate-50 px-4 py-8">
-      <div className="max-w-3xl mx-auto">
-        <header className="mb-6 flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold text-slate-900">Your history</h1>
-            <p className="text-sm text-slate-500">{total} message{total === 1 ? "" : "s"} saved</p>
-          </div>
-          <div className="flex gap-2">
-            <a href="/account" className="text-sm text-purple-600 hover:underline">← Account</a>
-            {items.length > 0 && (
-              <button
-                onClick={clearAll}
-                className="text-sm text-red-600 hover:underline"
-              >
-                Clear all
-              </button>
-            )}
-          </div>
-        </header>
-
-        {error && (
-          <div className="mb-4 p-3 rounded-lg bg-blue-50 border border-blue-200 text-blue-800 text-sm">
-            {error}
-          </div>
-        )}
-
-        {items.length === 0 ? (
-          <div className="bg-white rounded-xl p-8 text-center text-slate-500">
-            <p>No history yet. Start a session to fill this page.</p>
-            <a
-              href="/"
-              className="mt-4 inline-block px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg"
+    <div className="mx-auto max-w-3xl">
+      <header className="mb-6 flex items-center justify-between">
+        <div>
+          <h1 className="font-display text-3xl font-bold">Your history</h1>
+          <p className="text-sm text-muted">{total} message{total === 1 ? "" : "s"} saved</p>
+        </div>
+        <div className="flex gap-2">
+          <a href="/account" className="text-sm text-accent-3 hover:underline">← Account</a>
+          {items.length > 0 && (
+            <button
+              onClick={clearAll}
+              className="text-sm text-accent hover:underline"
             >
-              Start a session
-            </a>
-          </div>
-        ) : (
-          days.map((day) => (
-            <section key={day} className="mb-6">
-              <h2 className="text-xs uppercase font-semibold text-slate-500 mb-2">{day}</h2>
-              <div className="bg-white rounded-xl shadow-sm divide-y">
-                {grouped[day].map((it) => (
-                  <div
-                    key={it.id}
-                    className={`px-4 py-3 ${it.is_user ? "bg-slate-50" : ""}`}
-                  >
-                    <div className="text-xs text-slate-400 mb-1">
-                      {it.is_user ? "👤 You" : "🤖 RoastGPT"}
-                      {it.score_total > 0 && (
-                        <span className="ml-2 text-red-500">−{it.score_total} HP</span>
-                      )}
-                    </div>
-                    <div className="text-sm text-slate-800 whitespace-pre-wrap">
-                      {it.message}
-                    </div>
+              Clear all
+            </button>
+          )}
+        </div>
+      </header>
+
+      {error && (
+        <div
+          role="alert"
+          className="mb-4 rounded-lg border border-accent/40 bg-accent/10 p-3 text-sm text-accent"
+        >
+          {error}
+        </div>
+      )}
+
+      {items.length === 0 ? (
+        <div className="card p-8 text-center text-muted">
+          <p>No history yet. Start a session to fill this page.</p>
+          <a href="/" className="btn-primary mt-4 text-sm">
+            Start a session
+          </a>
+        </div>
+      ) : (
+        days.map((day) => (
+          <section key={day} className="mb-6">
+            <h2 className="mb-2 text-xs font-semibold uppercase text-muted">{day}</h2>
+            <div className="card divide-y divide-border/60 p-0">
+              {grouped[day].map((it) => (
+                <div
+                  key={it.id}
+                  className={`px-4 py-3 ${it.is_user ? "bg-surface/30" : ""}`}
+                >
+                  <div className="mb-1 text-xs text-muted">
+                    {it.is_user ? "👤 You" : "🤖 RoastGPT"}
+                    {it.score_total > 0 && (
+                      <span className="ml-2 text-accent">−{it.score_total} HP</span>
+                    )}
                   </div>
-                ))}
-              </div>
-            </section>
-          ))
-        )}
-      </div>
-    </main>
+                  <div className="whitespace-pre-wrap text-sm">
+                    {it.message}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        ))
+      )}
+    </div>
   );
 }
