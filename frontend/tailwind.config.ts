@@ -1,22 +1,25 @@
-import type { Config } from "tailwindcss";
+﻿import type { Config } from "tailwindcss";
 
 const config: Config = {
   content: [
     "./app/**/*.{ts,tsx}",
     "./components/**/*.{ts,tsx}",
   ],
+  // Use class strategy so we can flip themes via document.documentElement.classList.
+  darkMode: "class",
   theme: {
     extend: {
       colors: {
-        bg:        "#0a0a0a",
-        surface:   "#171717",
-        border:    "#262626",
-        accent:    "#ef4444",
-        "accent-2": "#f97316",
-        "accent-3": "#fbbf24",
-        success:   "#22c55e",
-        muted:     "#737373",
-        text:      "#fafafa",
+        // Default (dark) palette — the base.
+        bg:        "rgb(var(--c-bg) / <alpha-value>)",
+        surface:   "rgb(var(--c-surface) / <alpha-value>)",
+        border:    "rgb(var(--c-border) / <alpha-value>)",
+        accent:    "rgb(var(--c-accent) / <alpha-value>)",
+        "accent-2": "rgb(var(--c-accent-2) / <alpha-value>)",
+        "accent-3": "rgb(var(--c-accent-3) / <alpha-value>)",
+        success:   "rgb(var(--c-success) / <alpha-value>)",
+        muted:     "rgb(var(--c-muted) / <alpha-value>)",
+        text:      "rgb(var(--c-text) / <alpha-value>)",
       },
       fontFamily: {
         sans:  ["Inter", "system-ui", "sans-serif"],

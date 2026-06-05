@@ -38,6 +38,11 @@ export function getRefreshToken(): string | null {
   return _store()?.getItem(REFRESH_KEY) ?? null;
 }
 
+export function authHeader(): Record<string, string> {
+  const t = getAccessToken();
+  return t ? { Authorization: `Bearer ${t}` } : {};
+}
+
 export function setTokens(access: string, refresh: string) {
   const s = _store();
   if (!s) return;
@@ -130,6 +135,28 @@ export interface User {
   has_active_subscription: boolean;
   created_at: string;
   token_version: number;
+  avatar_url?: string | null;
+  is_banned?: boolean;
+  ban_reason?: string | null;
+  banned_at?: string | null;
+  last_login_at?: string | null;
+  favorite_mode?: string | null;
+  favorite_personality?: string | null;
+}
+
+export interface UserStats {
+  total_messages: number;
+  total_sessions: number;
+  total_score: number;
+  average_score: number;
+  best_score: number;
+  score_by_mode: Record<string, { count: number; total: number }>;
+  score_by_personality: Record<string, { count: number; total: number }>;
+  recent_topics: string[];
+  rank: number | null;
+  rank_period: "daily" | "weekly" | "monthly" | "all_time" | null;
+  achievements_unlocked: number;
+  achievements_total: number;
 }
 
 export interface Plan {
@@ -230,6 +257,30 @@ export const authApi = {
   changePassword: (data: { current_password: string; new_password: string }) =>
     request<{ message: string }>("/api/v1/auth/change-password", { method: "POST", body: JSON.stringify(data) }),
 
+  // Account / verification / password / avatar / favorites / stats
+  sendVerification: () =>
+    request<{ message: string }>("/api/v1/auth/send-verification", { method: "POST" }),
+
+  verifyEmail: (token: string) =>
+    request<{ message: string }>("/api/v1/auth/verify-email", { method: "POST", body: JSON.stringify({ token }) }),
+
+  forgotPassword: (email: string) =>
+    request<{ message: string }>("/api/v1/auth/forgot-password", { method: "POST", body: JSON.stringify({ email }) }),
+
+  resetPassword: (token: string, new_password: string) =>
+    request<{ message: string }>("/api/v1/auth/reset-password", { method: "POST", body: JSON.stringify({ token, new_password }) }),
+
+  deleteMe: () =>
+    request<{ message: string }>("/api/v1/auth/me", { method: "DELETE" }),
+
+  uploadAvatar: (avatar_data_uri: string) =>
+    request<{ avatar_url: string }>("/api/v1/auth/me/avatar", { method: "POST", body: JSON.stringify({ avatar_data_uri }) }),
+
+  myStats: () => request<UserStats>("/api/v1/auth/me/stats"),
+
+  setFavorites: (data: { favorite_mode?: string | null; favorite_personality?: string | null }) =>
+    request<User>("/api/v1/auth/me/favorites", { method: "PUT", body: JSON.stringify(data) }),
+
   // Server-side logout: bumps token_version so the current token is
   // immediately invalid, and clears local state. Falls back to local
   // clear if the network call fails (we don't want a transient network
@@ -243,10 +294,35 @@ export const authApi = {
     clearTokens();
     emitAuthRefresh();
     if (typeof window !== "undefined") {
-      // Full nav is fine here â€” the user is logging out and there's
+      // Full nav is fine here — the user is logging out and there's
       // no chat state to preserve. router.push would be cleaner but
       // this module is imported from non-React code paths in places.
       window.location.href = "/login";
+    }
+  },
+
+  // Admin auth (separate JWT + is_admin gate)
+  adminLogin: async (data: { email: string; password: string }) => {
+    const r = await request<{ access_token: string; token_type: string; expires_in: number }>(
+      "/api/v1/auth/admin/login", { method: "POST", body: JSON.stringify(data) }
+    );
+    // Admin login uses a different storage key so it doesn't clobber the
+    // user session token.
+    if (typeof window !== "undefined") {
+      try { sessionStorage.setItem("roastgpt_admin_token", r.access_token); } catch { /* ignore */ }
+    }
+    return r;
+  },
+
+  adminMe: async () => {
+    const t = typeof window !== "undefined" ? sessionStorage.getItem("roastgpt_admin_token") : null;
+    if (!t) throw new Error("not logged in as admin");
+    return request<User>("/api/v1/auth/me", { headers: { Authorization: `Bearer ${t}` } });
+  },
+
+  adminLogout: () => {
+    if (typeof window !== "undefined") {
+      try { sessionStorage.removeItem("roastgpt_admin_token"); } catch { /* ignore */ }
     }
   },
 };
@@ -293,16 +369,23 @@ export interface ChatHistoryItem {
 }
 
 export const historyApi = {
-  list: (params?: { skip?: number; limit?: number }) => {
+  list: (params?: { skip?: number; limit?: number; q?: string }) => {
     const qs = new URLSearchParams();
     if (params?.skip) qs.set("skip", String(params.skip));
     if (params?.limit) qs.set("limit", String(params.limit));
+    if (params?.q) qs.set("q", params.q);
     const q = qs.toString();
     return request<{ items: ChatHistoryItem[]; total: number }>(
-      `/api/history${q ? `?${q}` : ""}`
+      `/api/v1/history${q ? `?${q}` : ""}`
     );
   },
   clear: () => request<{ message: string; deleted: number }>("/api/v1/history", { method: "DELETE" }),
+  export: (format: "txt" | "md" | "json" = "txt") =>
+    fetch(
+      `${(typeof window !== "undefined" && (window as unknown as { __API_BASE__?: string }).__API_BASE__) || ""}` +
+      `/api/v1/history/export?format=${format}`,
+      { headers: authHeader() },
+    ),
 };
 
 // ---- Admin API ----

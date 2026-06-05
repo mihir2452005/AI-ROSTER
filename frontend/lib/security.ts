@@ -1,4 +1,4 @@
-/* RoastGPT — Small client-side security helpers. */
+﻿/* RoastGPT â€” Small client-side security helpers. */
 
 /**
  * Validates a `?return=` (or similar) redirect target to prevent open
@@ -8,9 +8,9 @@
  *   - `/chat/abc123?foo=bar`    (with query / hash)
  *
  * Rejected:
- *   - `//evil.com`              (protocol-relative — goes to evil.com)
+ *   - `//evil.com`              (protocol-relative â€” goes to evil.com)
  *   - `https://evil.com`        (absolute URL)
- *   - `/\\evil.com`             (backslash variant — some parsers treat
+ *   - `/\\evil.com`             (backslash variant â€” some parsers treat
  *                               `\` as `/`, leading to evil.com)
  *   - `javascript:...`          (JS URI)
  *   - any URL with a scheme
@@ -29,7 +29,7 @@ export function isSafeReturnPath(p: string | null | undefined): boolean {
   // Reject `//` and `/\` at the start (treated as protocol-relative or
   // host-relative by some routers).
   if (p.startsWith("//") || p.startsWith("/\\")) return false;
-  // Reject any backslash in the path — Next router / browser parsers
+  // Reject any backslash in the path â€” Next router / browser parsers
   // may normalise `\` to `/`, smuggling a host portion.
   if (p.includes("\\")) return false;
   // Reject embedded scheme (e.g., `/redirect?url=javascript:...`).

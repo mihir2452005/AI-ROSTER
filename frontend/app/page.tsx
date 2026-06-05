@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
@@ -99,7 +99,7 @@ export default function HomePage() {
         >
           <div className="card">
             <label className="mb-2 block text-sm font-medium text-muted">
-              Your name <span className="text-muted/60">(optional — the AI will use it against you)</span>
+              Your name <span className="text-muted/60">(optional â€” the AI will use it against you)</span>
             </label>
             <input
               type="text"
@@ -114,7 +114,7 @@ export default function HomePage() {
               disabled={busy}
               className="btn-primary mt-4 w-full text-base"
             >
-              {busy ? "Warming up the roaster…" : "Start a roast session 🔥"}
+              {busy ? "Warming up the roasterâ€¦" : "Start a roast session ðŸ”¥"}
             </button>
             {error && (
               <p className="mt-3 text-sm text-accent">{error}</p>

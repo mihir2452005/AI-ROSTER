@@ -1,4 +1,4 @@
-export default function TermsPage() {
+﻿export default function TermsPage() {
   return (
     <article className="prose prose-invert mx-auto max-w-3xl">
       <h1 className="font-display text-4xl font-bold">Terms of Service</h1>
@@ -12,7 +12,7 @@ export default function TermsPage() {
 
       <h2 className="mt-6 font-display text-2xl">2. Refunds</h2>
       <p className="text-muted">
-        Paid plans are billed once for the stated duration (e.g. ₹299 for 10 days). If a paid
+        Paid plans are billed once for the stated duration (e.g. â‚¹299 for 10 days). If a paid
         feature is broken for more than 48 hours after you report it, contact
         <a className="text-accent-3" href="mailto:support@roastgpt.app">support@roastgpt.app</a>
         for a prorated refund.

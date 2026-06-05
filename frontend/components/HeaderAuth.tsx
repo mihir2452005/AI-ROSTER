@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -14,7 +14,7 @@ import {
 
 // Broadcast channel name used by other parts of the app to tell
 // HeaderAuth to refetch. The pricing page fires this on successful
-// payment so the "⭐ Subscribe" badge disappears without a full
+// payment so the "â­ Subscribe" badge disappears without a full
 // page reload.
 const REFRESH_EVENT = "roastgpt:auth-refresh";
 
@@ -81,7 +81,7 @@ export default function HeaderAuth() {
           href="/pricing"
           className="rounded-md bg-gradient-to-r from-purple-600 to-pink-600 px-3 py-1.5 text-xs font-semibold text-white"
         >
-          ⭐ Subscribe
+          â­ Subscribe
         </Link>
       )}
       {user.is_admin && (

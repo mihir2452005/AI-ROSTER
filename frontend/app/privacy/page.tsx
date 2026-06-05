@@ -1,4 +1,4 @@
-export default function PrivacyPage() {
+﻿export default function PrivacyPage() {
   return (
     <article className="prose prose-invert mx-auto max-w-3xl">
       <h1 className="font-display text-4xl font-bold">Privacy Policy</h1>

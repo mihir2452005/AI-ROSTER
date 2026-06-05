@@ -20,12 +20,12 @@ export { ApiError, codeFor, friendlyError };
 export type { ApiErrorCode } from "./errors";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "";
-// API versioning: every request is sent under /api/v1/*. The backend's
-// `api_v1_alias` middleware strips the /v1 prefix and forwards to the
-// unversioned handler, so legacy clients on /api/* keep working while
-// the frontend pins to v1. If/when v2 lands, switch the constant and
-// the backend's v2 middleware takes over â€” no client code changes.
-const API_PREFIX = "/api/v1/v1";
+// API versioning: every caller passes paths like "/api/v1/..." which
+// get concatenated with API_BASE. The backend's `api_v1_alias` ASGI
+// middleware strips the /v1 segment and forwards to the unversioned
+// handler, so legacy clients on /api/* keep working while the frontend
+// pins to v1. If/when v2 lands, switch all "/api/v1/" prefixes to
+// "/api/v2/" and the backend's v2 middleware takes over.
 if (!API_BASE && typeof window !== "undefined" && process.env.NODE_ENV === "production") {
   // Loud, once-per-load warning if the env var is missing in production.
   // Without this, every API call silently hits the Next.js origin and

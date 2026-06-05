@@ -1,4 +1,4 @@
-/* RoastGPT — Shared API error type.
+﻿/* RoastGPT â€” Shared API error type.
 
 Both `lib/api.ts` (chat/session endpoints) and `lib/auth-api.ts`
 (auth/payment/admin endpoints) previously defined their own `ApiError`
@@ -15,9 +15,9 @@ export type ApiErrorCode =
   | "rate_limited"
   | "validation"
   | "free_tier"
-  | "unauthorized" // 401 — surfaced as a friendly "session expired" UI
+  | "unauthorized" // 401 â€” surfaced as a friendly "session expired" UI
   | "forbidden"    // 403
-  | "conflict"     // 409 — duplicate, etc.
+  | "conflict"     // 409 â€” duplicate, etc.
   | "server"       // 5xx
   | "network"      // fetch threw (offline, CORS, etc.)
   | "timeout"      // AbortController fired

@@ -1,7 +1,8 @@
 ﻿"use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import {
   authApi,
   subscriptionsApi,
@@ -11,6 +12,11 @@ import {
   type Subscription,
   type Payment,
 } from "../../lib/auth-api";
+
+const AVATAR_MAX_BYTES = 2 * 1024 * 1024; // 2 MB
+
+const ROSTASTE_MODES = ["savage", "programmer", "gamer", "student", "startup", "general", "corporate", "friendly"] as const;
+const PERSONALITIES = ["sarcastic", "savage", "wholesome", "dry", "nerdy"] as const;
 
 export default function AccountPage() {
   const router = useRouter();
@@ -25,6 +31,8 @@ export default function AccountPage() {
   const [showChangePw, setShowChangePw] = useState(false);
   const [currentPw, setCurrentPw] = useState("");
   const [newPw, setNewPw] = useState("");
+  const [resending, setResending] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -55,9 +63,6 @@ export default function AccountPage() {
 
   async function saveProfile() {
     setMessage("");
-    // Trim the name; reject whitespace-only as a "no name" (we treat
-    // empty name as "clear it" which is allowed, but spaces-only is
-    // not).
     const trimmed = name.trim();
     if (name.length > 0 && trimmed.length === 0) {
       setMessage("Name can't be only whitespace.");
@@ -67,7 +72,8 @@ export default function AccountPage() {
       const u = await authApi.updateMe({ full_name: trimmed, gender_preference: gender });
       setUser(u);
       setEditing(false);
-      setMessage("Profile updated âœ…");
+      toast.success("Profile updated");
+      setMessage("");
     } catch (e: any) {
       setMessage(e?.detail || "Update failed");
     }
@@ -89,7 +95,7 @@ export default function AccountPage() {
     setMessage("");
     try {
       await authApi.changePassword({ current_password: currentPw, new_password: newPw });
-      setMessage("Password updated âœ… Other sessions signed out.");
+      toast.success("Password updated. Other sessions signed out.");
       setCurrentPw("");
       setNewPw("");
       setShowChangePw(false);
@@ -100,14 +106,9 @@ export default function AccountPage() {
 
   async function cancelSub() {
     if (!confirm("Cancel your subscription? You will keep access until the period ends.")) return;
-    setMessage("");
     try {
       const r = await subscriptionsApi.cancel();
-      setMessage("Cancelled âœ… Access until " + new Date(r.current_period_end).toLocaleDateString());
-      // The second fetch (refresh subscription list) is best-effort.
-      // If it fails, the user still sees the success message â€” the
-      // header was already updated via emitAuthRefresh inside
-      // subscriptionsApi.cancel.
+      toast.success("Cancelled — access until " + new Date(r.current_period_end).toLocaleDateString());
       try {
         const s = await subscriptionsApi.my();
         setSubs(s.subscriptions);
@@ -121,33 +122,110 @@ export default function AccountPage() {
     await authApi.logout();
   }
 
+  async function onAvatarFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = ""; // allow re-selecting the same file later
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please choose an image file");
+      return;
+    }
+    if (file.size > AVATAR_MAX_BYTES) {
+      toast.error("Avatar must be 2 MB or smaller");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = async () => {
+      const data_uri = String(reader.result);
+      try {
+        const r = await authApi.uploadAvatar(data_uri);
+        // Refresh user so header (which reads cached user) sees new avatar
+        const fresh = await authApi.me();
+        setUser(fresh);
+        toast.success("Avatar updated");
+        // touch r so it isn't flagged as unused
+        void r;
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : "Upload failed";
+        toast.error(msg);
+      }
+    };
+    reader.onerror = () => toast.error("Could not read file");
+    reader.readAsDataURL(file);
+  }
+
+  async function setFavMode(mode: string) {
+    try {
+      const u = await authApi.setFavorites({ favorite_mode: mode });
+      setUser(u);
+      toast.success("Favorite mode saved");
+    } catch (e) {
+      toast.error("Could not save favorite");
+    }
+  }
+  async function setFavPersonality(p: string) {
+    try {
+      const u = await authApi.setFavorites({ favorite_personality: p });
+      setUser(u);
+      toast.success("Favorite personality saved");
+    } catch (e) {
+      toast.error("Could not save favorite");
+    }
+  }
+
+  async function resendVerification() {
+    if (resending) return;
+    setResending(true);
+    try {
+      await authApi.sendVerification();
+      toast.success("Verification email sent — check your inbox");
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "Could not send";
+      toast.error(msg);
+    } finally {
+      setResending(false);
+    }
+  }
+
+  async function deleteAccount() {
+    if (!user) return;
+    const confirmText = prompt(
+      "This will soft-delete your account. Your data will be permanently removed after 30 days.\n\nType DELETE to confirm:",
+    );
+    if (confirmText !== "DELETE") return;
+    try {
+      await authApi.deleteMe();
+      toast.success("Account scheduled for deletion. Signing you out…");
+      // Clear local tokens and bounce to home — soft-delete makes the
+      // current JWT invalid (token_version bump).
+      setTimeout(() => {
+        if (typeof window !== "undefined") window.location.href = "/";
+      }, 1200);
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "Delete failed";
+      toast.error(msg);
+    }
+  }
+
   if (loading) {
     return (
       <div className="grid min-h-[60vh] place-items-center text-muted">
         <div className="text-center">
-          <div className="text-4xl animate-pulse">ðŸ”¥</div>
-          <p className="mt-3 text-sm">Loading accountâ€¦</p>
+          <div className="text-4xl animate-pulse">🔥</div>
+          <p className="mt-3 text-sm">Loading account…</p>
         </div>
       </div>
     );
   }
   if (!user) return null;
 
-  // "Currently in effect" means: status=active AND period_end > now. This
-  // matches the backend's `has_active_subscription` rule. The "Cancel
-  // subscription" button only renders when the user hasn't already
-  // requested cancellation (cancel_at_period_end).
   const now = Date.now();
   const inEffect = subs.find(
     (s) => s.status === "active" && s.current_period_end && new Date(s.current_period_end).getTime() > now
   );
-  // Sub being cancelled this period (status still "active" but
-  // cancel_at_period_end is set) â€” show "Cancellation pending" badge
-  // and hide the cancel button.
   const cancellationPending = subs.find(
     (s) => s.status === "active" && s.cancel_at_period_end
   );
-  // Any subscription at all, even expired/cancelled.
   const anySub = subs[0];
 
   return (
@@ -171,6 +249,40 @@ export default function AccountPage() {
         </div>
       )}
 
+      {/* Email verification banner */}
+      {!user.is_verified && (
+        <div className="rounded-lg border border-amber-500/40 bg-amber-500/10 p-3 text-sm">
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-amber-300">Your email isn&apos;t verified yet.</span>
+            <button
+              className="btn-ghost text-xs"
+              onClick={resendVerification}
+              disabled={resending}
+            >
+              {resending ? "Sending…" : "Resend verification email"}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Banned banner */}
+      {user.is_banned && (
+        <div className="rounded-lg border border-accent/60 bg-accent/15 p-3 text-sm">
+          <p className="font-semibold text-accent">This account is suspended.</p>
+          {user.ban_reason && (
+            <p className="mt-1 text-muted">Reason: {user.ban_reason}</p>
+          )}
+          {user.banned_at && (
+            <p className="mt-1 text-xs text-muted">
+              Suspended on {new Date(user.banned_at).toLocaleString()}.
+            </p>
+          )}
+          <p className="mt-2 text-xs text-muted">
+            Contact support if you believe this is a mistake.
+          </p>
+        </div>
+      )}
+
       {/* Profile */}
       <section className="card">
         <div className="mb-4 flex items-center justify-between">
@@ -181,6 +293,39 @@ export default function AccountPage() {
             </button>
           )}
         </div>
+
+        {/* Avatar */}
+        <div className="mb-4 flex items-center gap-4">
+          {user.avatar_url ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={user.avatar_url}
+              alt="Your avatar"
+              className="h-16 w-16 rounded-full border border-border object-cover"
+            />
+          ) : (
+            <div className="flex h-16 w-16 items-center justify-center rounded-full border border-border bg-surface text-xl font-bold text-muted">
+              {(user.full_name || user.email).slice(0, 1).toUpperCase()}
+            </div>
+          )}
+          <div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={onAvatarFile}
+            />
+            <button
+              className="btn-ghost text-sm"
+              onClick={() => fileInputRef.current?.click()}
+            >
+              {user.avatar_url ? "Replace avatar" : "Upload avatar"}
+            </button>
+            <p className="mt-1 text-xs text-muted">PNG/JPG, up to 2 MB.</p>
+          </div>
+        </div>
+
         {editing ? (
           <div className="space-y-3">
             <div>
@@ -218,15 +363,74 @@ export default function AccountPage() {
         ) : (
           <dl className="grid grid-cols-2 gap-3 text-sm">
             <dt className="text-muted">Email</dt>
-            <dd>{user.email}</dd>
+            <dd>
+              {user.email}
+              {user.is_verified && (
+                <span className="ml-2 inline-block rounded bg-emerald-500/20 px-1.5 py-0.5 text-[10px] text-emerald-300">
+                  verified
+                </span>
+              )}
+            </dd>
             <dt className="text-muted">Name</dt>
-            <dd>{user.full_name || "â€”"}</dd>
+            <dd>{user.full_name || "—"}</dd>
             <dt className="text-muted">Roaster</dt>
             <dd className="capitalize">{user.gender_preference}</dd>
             <dt className="text-muted">Free messages used</dt>
             <dd>{user.free_messages_used} / 5</dd>
+            {user.last_login_at && (
+              <>
+                <dt className="text-muted">Last sign-in</dt>
+                <dd>{new Date(user.last_login_at).toLocaleString()}</dd>
+              </>
+            )}
           </dl>
         )}
+      </section>
+
+      {/* Favorites */}
+      <section className="card">
+        <h2 className="mb-3 font-display text-xl font-semibold">Favorites</h2>
+        <p className="mb-3 text-xs text-muted">
+          These pre-fill on the chat screen. They only affect your defaults.
+        </p>
+        <div className="space-y-3">
+          <div>
+            <div className="mb-1 text-sm text-muted">Favorite roast mode</div>
+            <div className="flex flex-wrap gap-2">
+              {ROSTASTE_MODES.map((m) => (
+                <button
+                  key={m}
+                  className={`rounded-full border px-3 py-1 text-xs ${
+                    user.favorite_mode === m
+                      ? "border-accent bg-accent/10 text-accent"
+                      : "border-border bg-surface text-muted hover:text-text"
+                  }`}
+                  onClick={() => setFavMode(m)}
+                >
+                  {m}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <div className="mb-1 text-sm text-muted">Favorite personality</div>
+            <div className="flex flex-wrap gap-2">
+              {PERSONALITIES.map((p) => (
+                <button
+                  key={p}
+                  className={`rounded-full border px-3 py-1 text-xs capitalize ${
+                    user.favorite_personality === p
+                      ? "border-accent-2 bg-accent-2/10 text-accent-2"
+                      : "border-border bg-surface text-muted hover:text-text"
+                  }`}
+                  onClick={() => setFavPersonality(p)}
+                >
+                  {p}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
       </section>
 
       {/* Change password (always visible for quick access) */}
@@ -305,11 +509,11 @@ export default function AccountPage() {
             <p className="text-muted">
               {inEffect.current_period_end
                 ? `${cancellationPending ? "Access until" : "Active until"} ${new Date(inEffect.current_period_end).toLocaleDateString()}`
-                : "â€”"}
+                : "—"}
             </p>
             {inEffect.admin_granted && (
               <p className="text-xs text-amber-300">
-                ðŸŽ This subscription was granted to you (free).
+                🎁 This subscription was granted to you (free).
               </p>
             )}
             {!cancellationPending && (
@@ -365,8 +569,8 @@ export default function AccountPage() {
               {history.map((p) => (
                 <tr key={p.id} className="border-b last:border-0">
                   <td className="py-2">{new Date(p.created_at).toLocaleDateString()}</td>
-                  <td className="py-2">{p.description || "â€”"}</td>
-                  <td className="py-2 text-right">â‚¹{(p.amount / 100).toFixed(2)}</td>
+                  <td className="py-2">{p.description || "—"}</td>
+                  <td className="py-2 text-right">₹{(p.amount / 100).toFixed(2)}</td>
                   <td className="py-2">
                     <span
                       className={`rounded px-2 py-0.5 text-xs ${
@@ -384,6 +588,22 @@ export default function AccountPage() {
           </table>
         )}
       </section>
+
+      {/* Danger zone */}
+      <section className="card border-accent/40">
+        <h2 className="mb-2 font-display text-xl font-semibold text-accent">Danger zone</h2>
+        <p className="mb-3 text-sm text-muted">
+          Deleting your account is permanent after a 30-day grace period. During the grace
+          period, sign back in with the same email to restore it.
+        </p>
+        <button
+          onClick={deleteAccount}
+          className="rounded-lg border border-accent/50 px-3 py-1.5 text-sm text-accent hover:bg-accent/10"
+        >
+          Delete my account
+        </button>
+      </section>
     </div>
   );
 }
+

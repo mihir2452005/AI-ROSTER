@@ -4,6 +4,32 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Default = dark theme. The .light class on <html> switches to the
+   light palette via the same CSS variables. We keep the same accent
+   hues for brand consistency, only the surface/text/border change. */
+:root {
+  --c-bg:        10 10 10;          /* #0a0a0a */
+  --c-surface:   23 23 23;          /* #171717 */
+  --c-border:    38 38 38;          /* #262626 */
+  --c-accent:    239 68 68;         /* #ef4444 */
+  --c-accent-2:  249 115 22;        /* #f97316 */
+  --c-accent-3:  251 191 36;        /* #fbbf24 */
+  --c-success:   34 197 94;         /* #22c55e */
+  --c-muted:     115 115 115;       /* #737373 */
+  --c-text:      250 250 250;       /* #fafafa */
+}
+.light {
+  --c-bg:        255 255 255;       /* #ffffff */
+  --c-surface:   248 250 252;       /* #f8fafc */
+  --c-border:    226 232 240;       /* #e2e8f0 */
+  --c-accent:    220 38 38;         /* darker red, more legible on white */
+  --c-accent-2:  234 88 12;         /* #ea580c */
+  --c-accent-3:  202 138 4;         /* #ca8a04 */
+  --c-success:   22 163 74;         /* #16a34a */
+  --c-muted:     100 116 139;       /* #64748b */
+  --c-text:      15 23 42;          /* #0f172a */
+}
+
 @layer base {
   html, body {
     @apply bg-bg text-text antialiased;

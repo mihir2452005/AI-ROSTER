@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ApiError, api, friendlyError } from "@/lib/api";
 import { getAccessToken } from "@/lib/auth-api";
+import { toast } from "sonner";
 import type {
   ChatMessage,
   Personality,
@@ -31,6 +32,7 @@ export default function ChatClient({ sessionId }: Props) {
   const [finalScores, setFinalScores] = useState<SessionScores | null>(null);
   const [closer, setCloser] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [transcriptCopied, setTranscriptCopied] = useState(false);
   const [endedRemote, setEndedRemote] = useState(false);
   // Set true when we successfully recovered the session from the
   // backend's `roast_sessions` table after a server cold start. We
@@ -252,6 +254,28 @@ export default function ChatClient({ sessionId }: Props) {
     );
   }
 
+  function copyTranscript() {
+    if (messages.length === 0) return;
+    if (typeof window === "undefined" || !window.isSecureContext || !navigator.clipboard) {
+      setError("Your browser doesn't support one-click copy.");
+      return;
+    }
+    const lines = messages.map((m) => {
+      const who = m.role === "user" ? "You" : "RoastGPT";
+      return `${who}: ${m.content}`;
+    });
+    navigator.clipboard.writeText(lines.join("\n")).then(
+      () => {
+        setTranscriptCopied(true);
+        if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
+        copyTimerRef.current = setTimeout(() => setTranscriptCopied(false), 1800);
+      },
+      () => {
+        setError("Couldn't copy transcript.");
+      },
+    );
+  }
+
   const canSend = !busy && !endedRemote && !finalScores && input.trim().length > 0;
 
   return (
@@ -268,6 +292,14 @@ export default function ChatClient({ sessionId }: Props) {
           </div>
           <div className="flex gap-2">
             <button
+              onClick={copyTranscript}
+              disabled={messages.length === 0}
+              className="btn-ghost text-xs"
+              title="Copy the full conversation as text"
+            >
+              {transcriptCopied ? "Copied ✓" : "Copy transcript"}
+            </button>
+            <button
               onClick={() => router.push("/")}
               className="btn-ghost text-xs"
             >
@@ -278,7 +310,7 @@ export default function ChatClient({ sessionId }: Props) {
               disabled={ending || !!finalScores}
               className="btn-primary text-xs"
             >
-              {finalScores ? "Session ended" : ending ? "Endingâ€¦" : "End & get score"}
+              {finalScores ? "Session ended" : ending ? "Ending…" : "End & get score"}
             </button>
           </div>
         </div>
