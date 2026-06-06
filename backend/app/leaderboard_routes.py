@@ -94,6 +94,8 @@ def public_leaderboard(
                     "user_id": r.user_id,
                     "total_damage": float(r.total_damage or 0.0),
                     "message_count": int(r.message_count or 0),
+                    "display_name": r.display_name,
+                    "masked_email": r.masked_email,
                 }
                 for r in fresh
             ],

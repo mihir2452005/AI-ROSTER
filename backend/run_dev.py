@@ -20,16 +20,14 @@ os.environ.update({
     "RATE_LIMIT_ADMIN_CLEANUP": "10000",
     "DISABLE_BACKGROUND_JOBS": "1",
     "LLM_PROVIDER": "stub",
-    "SQLITE_FILE": "smoke.db",
     "PYTHONIOENCODING": "utf-8",
+    # NOTE: do NOT set SQLITE_FILE here. Leave it unset so the dev
+    # server uses the same roastgpt_dev.db that scripts/bootstrap_admin
+    # and other manual tools write to. Setting it to a separate
+    # "smoke.db" file makes those two write/read different databases
+    # and tests pass locally but the manual admin bootstrap appears
+    # to "not work" (it's writing to a different file).
 })
-
-# Clean any stale files.
-for f in ("smoke.db", "dev_emails.log", "server_err.log", "server_out.log"):
-    try:
-        os.unlink(f)
-    except FileNotFoundError:
-        pass
 
 # Spawn.
 log = open("server_out.log", "w", encoding="utf-8")

@@ -175,11 +175,22 @@ def _snapshot_one(db: Session, period: str, period_id: str) -> None:
         db_models.LeaderboardSnapshot.period == period,
         db_models.LeaderboardSnapshot.period_id == period_id,
     ).delete()
+    # Pre-fetch the denormalised user fields (display name + masked
+    # email) so the public leaderboard can render without a join.
+    from .sanitize import mask_email
+    user_ids = [uid for uid, _dmg, _count in rows]
+    user_lookup: dict = {}
+    if user_ids:
+        for u in db.query(db_models.User).filter(db_models.User.id.in_(user_ids)).all():
+            user_lookup[u.id] = u
     for rank, (uid, dmg, count) in enumerate(rows, start=1):
+        u = user_lookup.get(uid)
         db.add(db_models.LeaderboardSnapshot(
             period=period, period_id=period_id, rank=rank,
             user_id=uid, total_damage=float(dmg or 0),
             message_count=int(count or 0),
+            display_name=(u.full_name or u.email.split("@")[0]) if u else None,
+            masked_email=mask_email(u.email) if u and u.email else None,
         ))
     db.commit()
     log.info("snapshot: %s/%s -> %d rows", period, period_id, len(rows))

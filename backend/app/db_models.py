@@ -636,6 +636,12 @@ class LeaderboardSnapshot(Base):
     )
     total_damage: Mapped[float] = mapped_column(Float, default=0.0)
     message_count: Mapped[int] = mapped_column(Integer, default=0)
+    # Denormalised user display fields so the public leaderboard
+    # endpoint can render in O(1) without a User join. Snapshots are
+    # captured periodically; if the user later renames, the next
+    # capture picks it up.
+    display_name: Mapped[Optional[str]] = mapped_column(String(120), nullable=True)
+    masked_email: Mapped[Optional[str]] = mapped_column(String(180), nullable=True)
     captured_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=utcnow, index=True
     )

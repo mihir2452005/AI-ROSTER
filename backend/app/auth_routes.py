@@ -8,7 +8,7 @@ import binascii
 import logging
 import os
 from datetime import datetime, timezone
-from typing import Annotated, Optional
+from typing import Annotated, Dict, List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from jose import JWTError
@@ -263,31 +263,52 @@ def logout_all(
     return {"message": "All sessions invalidated. Please sign in again."}
 
 
+def _build_user_out(user: db_models.User, db: Session) -> dict:
+    """Construct a UserOut dict from a User row, including the optional
+    profile fields (avatar, ban status, last login, favorites) that the
+    frontend's account page reads. Centralised so /me, PATCH /me,
+    /me/avatar, /me/favorites, /auth/login, /auth/register all return
+    the same shape — and adding a field is a one-line change here.
+
+    Returns a dict (not a UserOut model instance) so endpoints that
+    declare `response_model=UserOut` get the right type, and endpoints
+    that don't (like /me/favorites which previously returned only two
+    fields) still serialise correctly.
+    """
+    has_sub = db.query(db_models.Subscription).filter(
+        db_models.Subscription.user_id == user.id,
+        db_models.Subscription.status == db_models.SubStatus.active,
+        db_models.Subscription.current_period_end > datetime.now(timezone.utc),
+    ).first() is not None
+    return {
+        "id": user.id,
+        "email": user.email,
+        "full_name": user.full_name,
+        "gender_preference": user.gender_preference.value,
+        "is_verified": user.is_verified,
+        "is_admin": user.is_admin,
+        "role": user.role,
+        "free_messages_used": user.free_messages_used,
+        "created_at": user.created_at,
+        "has_active_subscription": has_sub,
+        "token_version": user.token_version,
+        "avatar_url": user.avatar_url,
+        "is_banned": user.is_banned,
+        "ban_reason": user.ban_reason,
+        "banned_at": user.banned_at,
+        "last_login_at": user.last_login_at,
+        "favorite_mode": user.favorite_mode,
+        "favorite_personality": user.favorite_personality,
+    }
+
+
 @router.get("/me", response_model=auth_schemas.UserOut)
 def get_me(
     user: Annotated[db_models.User, Depends(auth.get_current_user)],
     db: Annotated[Session, Depends(get_db)],
 ) -> auth_schemas.UserOut:
     """Return the currently authenticated user's profile."""
-    has_sub = db.query(db_models.Subscription).filter(
-        db_models.Subscription.user_id == user.id,
-        db_models.Subscription.status == db_models.SubStatus.active,
-        db_models.Subscription.current_period_end > datetime.now(timezone.utc),
-    ).first() is not None
-
-    return auth_schemas.UserOut(
-        id=user.id,
-        email=user.email,
-        full_name=user.full_name,
-        gender_preference=user.gender_preference.value,
-        is_verified=user.is_verified,
-        is_admin=user.is_admin,
-        role=user.role,
-        free_messages_used=user.free_messages_used,
-        created_at=user.created_at,
-        has_active_subscription=has_sub,
-        token_version=user.token_version,
-    )
+    return _build_user_out(user, db)
 
 
 @router.patch("/me", response_model=auth_schemas.UserOut)
@@ -560,21 +581,129 @@ def my_stats(
     user: Annotated[db_models.User, Depends(auth.get_current_user)],
     db: Annotated[Session, Depends(get_db)],
 ) -> dict:
-    """Per-user stats: message counts, per-mode breakdown, score, days
-    since signup, achievements earned, current streak, etc."""
+    """Per-user stats: message counts, per-mode/personality score
+    breakdown, total/best/average score, days since signup,
+    achievements, current streak, weekly rank, and recent topics.
+
+    Response shape matches the frontend `UserStats` interface (see
+    `frontend/lib/auth-api.ts`) — `score_by_mode` and
+    `score_by_personality` are `{count, total}` maps so the UI can
+    render an average inline without a second query.
+    """
     from . import db_models
+    from sqlalchemy import func as sqlfunc
+
     mem = db.query(db_models.UserMemory).filter(
         db_models.UserMemory.user_id == user.id
     ).first()
     mode_counts = (mem.mode_counts_json if mem else {}) or {}
     personality_counts = (mem.personality_counts_json if mem else {}) or {}
+
     unlocked = db.query(db_models.UserAchievement).filter(
         db_models.UserAchievement.user_id == user.id
     ).count()
-    # Current streak: number of consecutive days with at least one message.
-    # Cheap heuristic — query the last 30 days of chat_history.
-    from sqlalchemy import func as sqlfunc
+    achievements_total = db.query(db_models.Achievement).count()
+
+    # Per-mode & per-personality score breakdown. We compute on the fly
+    # by joining ChatHistory with the mode/personality on the matching
+    # roast_sessions row (mode/personality live on the session, not the
+    # chat_history row, because the user can change them mid-session).
+    score_by_mode: Dict[str, Dict[str, int]] = {}
+    score_by_personality: Dict[str, Dict[str, int]] = {}
+    rows = (
+        db.query(
+            db_models.RoastSession.mode,
+            db_models.RoastSession.personality,
+            sqlfunc.coalesce(
+                sqlfunc.sum(db_models.ChatHistory.score_total), 0.0
+            ).label("total"),
+            sqlfunc.count(db_models.ChatHistory.id).label("count"),
+        )
+        .join(db_models.ChatHistory, db_models.ChatHistory.session_id == db_models.RoastSession.session_id)
+        .filter(db_models.ChatHistory.user_id == user.id)
+        .group_by(db_models.RoastSession.mode, db_models.RoastSession.personality)
+        .all()
+    )
+    for mode, personality, total, count in rows:
+        if mode:
+            slot = score_by_mode.setdefault(mode, {"count": 0, "total": 0})
+            slot["count"] += int(count or 0)
+            slot["total"] += int(total or 0)
+        if personality:
+            slot = score_by_personality.setdefault(personality, {"count": 0, "total": 0})
+            slot["count"] += int(count or 0)
+            slot["total"] += int(total or 0)
+
+    # Total distinct sessions the user has chatted in.
+    total_sessions = (
+        db.query(sqlfunc.count(sqlfunc.distinct(db_models.ChatHistory.session_id)))
+        .filter(db_models.ChatHistory.user_id == user.id, db_models.ChatHistory.session_id.isnot(None))
+        .scalar() or 0
+    )
+
+    # Best score: max score_total across all of this user's chat rows.
+    best_score = (
+        db.query(sqlfunc.coalesce(sqlfunc.max(db_models.ChatHistory.score_total), 0.0))
+        .filter(db_models.ChatHistory.user_id == user.id)
+        .scalar() or 0.0
+    )
+
+    # Recent topics: last 10 distinct (case-insensitive) user messages,
+    # most-recent first. Capped at 60 chars to keep the chips short.
+    recent_topics_rows = (
+        db.query(db_models.ChatHistory.message)
+        .filter(
+            db_models.ChatHistory.user_id == user.id,
+            db_models.ChatHistory.is_user == True,  # noqa: E712
+        )
+        .order_by(db_models.ChatHistory.created_at.desc())
+        .limit(100)
+        .all()
+    )
+    seen = set()
+    recent_topics: List[str] = []
+    for (msg,) in recent_topics_rows:
+        if not msg:
+            continue
+        s = " ".join(msg.split()).strip()
+        if not s:
+            continue
+        key = s.lower()
+        if key in seen:
+            continue
+        seen.add(key)
+        recent_topics.append(s[:60])
+        if len(recent_topics) >= 10:
+            break
+
+    # Weekly rank: how this user compares to other users in the last 7
+    # days. Computed in-process (no snapshot dependency) so it's always
+    # fresh. Returns None if the user has no chat in the window.
     from datetime import timedelta
+    now = datetime.now(timezone.utc)
+    week_start = now - timedelta(days=7)
+    user_weekly = (
+        db.query(sqlfunc.coalesce(sqlfunc.sum(db_models.ChatHistory.score_total), 0.0))
+        .filter(
+            db_models.ChatHistory.user_id == user.id,
+            db_models.ChatHistory.created_at >= week_start,
+        )
+        .scalar() or 0.0
+    )
+    rank: Optional[int] = None
+    if user_weekly and user_weekly > 0:
+        higher = (
+            db.query(sqlfunc.count(sqlfunc.distinct(db_models.ChatHistory.user_id)))
+            .filter(
+                db_models.ChatHistory.created_at >= week_start,
+            )
+            .group_by(db_models.ChatHistory.user_id)
+            .having(sqlfunc.sum(db_models.ChatHistory.score_total) > user_weekly)
+            .all()
+        )
+        rank = len(higher) + 1
+
+    # Current streak: number of consecutive days with at least one message.
     rows = (
         db.query(sqlfunc.date(db_models.ChatHistory.created_at).label("d"))
         .filter(
@@ -596,6 +725,9 @@ def my_stats(
         else:
             break
     total_messages = int((mem.total_messages if mem else 0) or 0)
+    score_total = float((mem.score_total if mem else 0) or 0.0)
+    average_score = (score_total / total_messages) if total_messages else 0.0
+
     # SQLite drops tzinfo on read; normalise to naive UTC before diffing.
     days = 0
     if user.created_at:
@@ -604,11 +736,24 @@ def my_stats(
             created = created.replace(tzinfo=timezone.utc)
         days = (datetime.now(timezone.utc) - created).days
     return {
+        # Frontend-expected shape (UserStats in lib/auth-api.ts)
         "total_messages": total_messages,
-        "score_total": float((mem.score_total if mem else 0) or 0.0),
+        "total_sessions": int(total_sessions),
+        "total_score": score_total,
+        "average_score": round(average_score, 2),
+        "best_score": float(best_score),
+        "score_by_mode": score_by_mode,
+        "score_by_personality": score_by_personality,
+        "recent_topics": recent_topics,
+        "rank": rank,
+        "rank_period": "weekly" if rank is not None else None,
+        "achievements_unlocked": unlocked,
+        "achievements_total": achievements_total,
+        # Legacy fields kept for any older client / test that still
+        # reads them. (See audit pass round-9.)
+        "score_total": score_total,
         "mode_counts": mode_counts,
         "personality_counts": personality_counts,
-        "achievements_unlocked": unlocked,
         "current_streak_days": streak,
         "favorite_mode": user.favorite_mode,
         "favorite_personality": user.favorite_personality,
@@ -646,10 +791,11 @@ def set_favorites(
             )
         user.favorite_personality = req.favorite_personality
     db.commit()
-    return {
-        "favorite_mode": user.favorite_mode,
-        "favorite_personality": user.favorite_personality,
-    }
+    # Return a full UserOut so the frontend can update its session
+    # cache in one place (the previous partial-dict response caused
+    # the cache to be overwritten with only two fields and silently
+    # break the account page for the rest of the session).
+    return _build_user_out(user, db)
 
 
 # ----- Admin JWT login (alternative to X-Admin-Key header) -----

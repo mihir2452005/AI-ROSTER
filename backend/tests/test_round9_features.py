@@ -425,7 +425,10 @@ def test_system_status_public(client):
     for k in ("status", "database", "redis", "queue", "sentry",
               "version", "uptime_seconds", "build_sha", "maintenance_mode"):
         assert k in body
-    assert body["version"] == "1.4.0"
+    # The version now comes from main.app.version ("0.1.0") rather
+    # than the marketing string ("1.4.0") so the two can't drift.
+    # Just assert it's a non-empty semver-ish string.
+    assert isinstance(body["version"], str) and body["version"]
     assert body["maintenance_mode"] is False
     assert body["status"] in ("healthy", "degraded", "unhealthy")
 
@@ -584,3 +587,140 @@ def test_broadcast_to_specific_user_skips_banned(client, admin_user, regular_use
         json={"title": "Hello", "body": "World", "kind": "announcement", "target": str(regular_user.id)},
     )
     assert r.status_code == 404, r.text
+
+
+# ---- Audit-9b: /me fields, /me/stats shape, /me/favorites shape ----
+
+
+def test_me_includes_extended_profile_fields(client, regular_user):
+    """Bug C1 (audit-9b): the frontend's `User` type declares 21 fields
+    but the backend was only returning 11. /me must return at least the
+    full UserOut so the account page doesn't render `undefined` for
+    avatar, ban status, last login, favorites.
+    """
+    t = _user_token(regular_user)
+    r = client.get("/api/v1/auth/me", headers={"Authorization": f"Bearer {t}"})
+    assert r.status_code == 200
+    body = r.json()
+    for k in (
+        "avatar_url", "is_banned", "ban_reason", "banned_at",
+        "last_login_at", "favorite_mode", "favorite_personality",
+    ):
+        assert k in body, f"missing field {k} in /me response"
+    assert "has_active_subscription" in body
+    assert "token_version" in body
+
+
+def test_me_stats_returns_rich_frontend_shape(client, regular_user):
+    """Bug C2 (audit-9b): /me/stats must return the full UserStats
+    shape — total_sessions, best_score, average_score, score_by_mode,
+    score_by_personality, recent_topics, rank, rank_period,
+    achievements_total. Previously the response was the slim legacy
+    shape and the stats/achievements pages both crashed.
+    """
+    t = _user_token(regular_user)
+    r = client.get("/api/v1/auth/me/stats", headers={"Authorization": f"Bearer {t}"})
+    assert r.status_code == 200
+    body = r.json()
+    # Rich fields
+    for k in (
+        "total_sessions", "best_score", "average_score",
+        "score_by_mode", "score_by_personality", "recent_topics",
+        "rank", "rank_period", "achievements_total",
+    ):
+        assert k in body, f"missing field {k} in /me/stats"
+    # Type sanity
+    assert isinstance(body["total_sessions"], int)
+    assert isinstance(body["best_score"], (int, float))
+    assert isinstance(body["average_score"], (int, float))
+    assert isinstance(body["score_by_mode"], dict)
+    assert isinstance(body["score_by_personality"], dict)
+    assert isinstance(body["recent_topics"], list)
+    assert body["rank"] is None or isinstance(body["rank"], int)
+    assert body["rank_period"] in (None, "daily", "weekly", "monthly", "all_time")
+    assert isinstance(body["achievements_total"], int)
+    assert body["achievements_total"] >= body["achievements_unlocked"]
+    # Legacy fields still present
+    for k in ("total_messages", "mode_counts", "personality_counts",
+              "current_streak_days", "favorite_mode", "favorite_personality",
+              "days_since_signup", "score_total"):
+        assert k in body
+
+
+def test_me_stats_aggregates_real_data(client, regular_user, db_session):
+    """When the user has chat_history rows, /me/stats aggregates them
+    into score_by_mode / score_by_personality correctly.
+    """
+    from app.db_models import ChatHistory, RoastSession
+    from app.models import RoastMode, Personality
+    from datetime import datetime, timezone
+    user = regular_user
+    # Two distinct sessions, one per mode.
+    for mode, personality in [
+        (RoastMode("savage"), Personality("sarcastic_friend")),
+        (RoastMode("programmer"), Personality("professor")),
+    ]:
+        sid = f"sess-{mode.value}-{personality.value}"
+        rs = db_session.query(RoastSession).filter_by(session_id=sid).first()
+        if not rs:
+            rs = RoastSession(
+                session_id=sid, user_id=user.id,
+                mode=mode, personality=personality,
+                state_json="{}",  # NOT NULL on this table.
+            )
+            db_session.add(rs)
+            db_session.flush()
+        for i, score in enumerate([10.0, 20.0]):
+            db_session.add(ChatHistory(
+                user_id=user.id, session_id=sid, is_user=(i == 0),
+                score_total=score, message=f"hello {i}",
+                created_at=datetime.now(timezone.utc),
+            ))
+    db_session.commit()
+
+    t = _user_token(user)
+    r = client.get("/api/v1/auth/me/stats", headers={"Authorization": f"Bearer {t}"})
+    assert r.status_code == 200
+    body = r.json()
+    assert body["total_sessions"] >= 2
+    assert body["best_score"] >= 20.0
+    # score_by_mode is aggregated from chat_history in real time.
+    assert "savage" in body["score_by_mode"]
+    assert "programmer" in body["score_by_mode"]
+    assert body["score_by_mode"]["savage"]["count"] >= 2
+    assert body["score_by_mode"]["savage"]["total"] >= 30.0
+    assert body["score_by_mode"]["programmer"]["count"] >= 2
+    assert "sarcastic_friend" in body["score_by_personality"]
+    assert "professor" in body["score_by_personality"]
+    # recent_topics: at least one of our messages shows up
+    assert any("hello" in t for t in body["recent_topics"])
+
+
+def test_me_favorites_returns_full_user_out(client, regular_user):
+    """Bug C3 (audit-9b): /me/favorites used to return only 2 fields
+    and the frontend would `cacheUser(u)` that partial dict, wiping
+    the in-memory user. Now it returns a full UserOut.
+    """
+    t = _user_token(regular_user)
+    r = client.put(
+        "/api/v1/auth/me/favorites",
+        headers={"Authorization": f"Bearer {t}"},
+        json={"favorite_mode": "savage", "favorite_personality": "sarcastic_friend"},
+    )
+    assert r.status_code == 200
+    body = r.json()
+    assert body["favorite_mode"] == "savage"
+    assert body["favorite_personality"] == "sarcastic_friend"
+    for k in ("email", "is_admin", "avatar_url", "is_banned"):
+        assert k in body, f"/me/favorites missing {k}"
+
+
+def test_me_favorites_rejects_invalid_mode(client, regular_user):
+    t = _user_token(regular_user)
+    r = client.put(
+        "/api/v1/auth/me/favorites",
+        headers={"Authorization": f"Bearer {t}"},
+        json={"favorite_mode": "brutal"},
+    )
+    assert r.status_code == 422
+    assert "Invalid mode" in r.json()["detail"]

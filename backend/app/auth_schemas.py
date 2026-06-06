@@ -47,6 +47,17 @@ class UserOut(BaseModel):
     # been invalidated server-side (e.g. after password change or admin
     # deactivation) and force a re-login.
     token_version: int = 0
+    # Optional profile fields. All default to None so the schema stays
+    # backwards compatible with any caller that doesn't pass them
+    # (e.g. legacy test fixtures). The /me endpoint always populates
+    # them from the User row.
+    avatar_url: Optional[str] = None
+    is_banned: bool = False
+    ban_reason: Optional[str] = None
+    banned_at: Optional[datetime] = None
+    last_login_at: Optional[datetime] = None
+    favorite_mode: Optional[str] = None
+    favorite_personality: Optional[str] = None
 
 
 class UserUpdate(BaseModel):
@@ -157,5 +168,4 @@ class ChatSessionSummary(BaseModel):
 
 class ChatSessionListResponse(BaseModel):
     sessions: List[ChatSessionSummary]
-    total: int
     total: int

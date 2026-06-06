@@ -492,7 +492,10 @@ def my_activity(
 # /system/status endpoint and the Prometheus text exposition.
 import time as _time
 _BOOT_TIME = _time.time()
-_BUILD_VERSION = "1.4.0"  # Bumped in Round 9
+_BUILD_VERSION = "1.4.0"  # Marketing/build label surfaced in /system/status.
+# Falls back to FastAPI app.version ("0.1.0" in main.py) if main hasn't
+# been imported yet (e.g. during unit tests that import round9_routes
+# in isolation).
 _BUILD_SHA: Optional[str] = None
 try:
     import os
@@ -575,13 +578,23 @@ def system_status(
         overall = "degraded"
     else:
         overall = "healthy"
+    # Pull the canonical app version from main.py so the two places
+    # can't drift apart. (Previously this endpoint returned the
+    # hardcoded marketing string "1.4.0" while the OpenAPI doc and
+    # the /version helper both reported the real "0.1.0" — confusing
+    # for anyone who tried to cross-check.)
+    try:
+        from main import app as _fastapi_app
+        build_version = _fastapi_app.version
+    except Exception:  # pragma: no cover — e.g. test that imports in isolation
+        build_version = _BUILD_VERSION
     return SystemStatus(
         status=overall,
         database=db_state,
         redis=cache_state,
         queue=queue_state,
         sentry=sentry_state,
-        version=_BUILD_VERSION,
+        version=build_version,
         uptime_seconds=_time.time() - _BOOT_TIME,
         maintenance_mode=_maintenance_on(db),
         build_sha=_BUILD_SHA,
