@@ -572,6 +572,147 @@ export const adminApi = {
     ),
 };
 
+
+// =============================================================================
+// Round 9: contact, notifications, system status
+// =============================================================================
+
+
+export interface ContactMessage {
+  id: number;
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+  status: "new" | "in_progress" | "closed" | "spam";
+  ip: string | null;
+  user_agent: string | null;
+  created_at: string;
+}
+
+export interface Notification {
+  id: number;
+  kind: string;
+  title: string;
+  body: string;
+  link: string | null;
+  is_read: boolean;
+  created_at: string;
+}
+
+export interface ActivityItem {
+  id: number;
+  action: string;
+  label: string;
+  icon: string;
+  created_at: string;
+  details: Record<string, unknown> | null;
+}
+
+export interface SystemStatus {
+  status: "healthy" | "degraded" | "unhealthy";
+  database: string;
+  redis: string;
+  queue: string;
+  sentry: string;
+  version: string;
+  uptime_seconds: number;
+  maintenance_mode: boolean;
+  build_sha: string | null;
+}
+
+
+export const contactApi = {
+  submit: (data: { name: string; email: string; subject: string; message: string }) =>
+    request<{ id: number; status: string; created_at: string }>(
+      "/api/v1/contact",
+      { method: "POST", body: JSON.stringify(data) }
+    ),
+};
+
+
+export const notificationsApi = {
+  list: (params?: { skip?: number; limit?: number; unread_only?: boolean }) => {
+    const qs = new URLSearchParams();
+    if (params?.skip) qs.set("skip", String(params.skip));
+    if (params?.limit) qs.set("limit", String(params.limit));
+    if (params?.unread_only) qs.set("unread_only", "true");
+    const q = qs.toString();
+    return request<{ items: Notification[]; total: number; unread_count: number }>(
+      `/api/v1/notifications${q ? `?${q}` : ""}`
+    );
+  },
+  markRead: (ids: number[]) =>
+    request<{ updated: number }>("/api/v1/notifications/mark-read", {
+      method: "POST", body: JSON.stringify({ ids }),
+    }),
+  markAllRead: () =>
+    request<{ updated: number }>("/api/v1/notifications/mark-all-read", {
+      method: "POST",
+    }),
+  activity: (params?: { skip?: number; limit?: number }) => {
+    const qs = new URLSearchParams();
+    if (params?.skip) qs.set("skip", String(params.skip));
+    if (params?.limit) qs.set("limit", String(params.limit));
+    const q = qs.toString();
+    return request<{ items: ActivityItem[]; total: number }>(
+      `/api/v1/auth/me/activity${q ? `?${q}` : ""}`
+    );
+  },
+};
+
+
+export const systemApi = {
+  status: () => request<SystemStatus>("/api/v1/system/status"),
+  // Returns raw text (Prometheus format). Use a plain fetch so the
+  // shared `request` helper doesn't try to JSON-parse it.
+  metrics: async (): Promise<string> => {
+    const base = (typeof process !== "undefined" && process.env.NEXT_PUBLIC_API_URL) ||
+      (typeof window !== "undefined" && (window as unknown as { __API_BASE__?: string }).__API_BASE__) ||
+      "";
+    const r = await fetch(`${base}/api/v1/system/metrics`);
+    if (!r.ok) throw new Error(`metrics fetch failed: ${r.status}`);
+    return r.text();
+  },
+};
+
+
+// Admin-side extensions for Round 9 endpoints. The broadcast helper
+// accepts `target: "all"` or `target: "<user_id>"` (string) to match
+// the server's contract.
+export const adminContactApi = {
+  list: (params?: { status?: string; skip?: number; limit?: number }) => {
+    const qs = new URLSearchParams();
+    if (params?.status) qs.set("status", params.status);
+    if (params?.skip) qs.set("skip", String(params.skip));
+    if (params?.limit) qs.set("limit", String(params.limit));
+    const q = qs.toString();
+    return request<{ messages: ContactMessage[]; total: number }>(
+      `/api/v1/admin/contact-messages${q ? `?${q}` : ""}`
+    );
+  },
+  updateStatus: (id: number, status: "new" | "in_progress" | "closed" | "spam") =>
+    request<{ message: string; id: number; status: string }>(
+      `/api/v1/admin/contact-messages/${id}?status=${status}`,
+      { method: "PATCH" }
+    ),
+};
+
+export const adminNotificationsApi = {
+  broadcast: (data: {
+    title: string;
+    body: string;
+    kind?: string;
+    link?: string;
+    target: "all" | string;
+  }) =>
+    request<{ delivered_to: number; kind: string; id?: number }>(
+      "/api/v1/admin/notifications/broadcast",
+      { method: "POST", body: JSON.stringify(data) }
+    ),
+};
+
+
 // Re-export the shared refresh so non-React callers can trigger a
 // refresh explicitly if they need to (e.g., background poll loops).
 export { tryRefresh };

@@ -5,17 +5,22 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import {
   adminApi,
+  adminContactApi,
+  adminNotificationsApi,
   authApi,
   paymentsApi,
   getAccessToken,
+  systemApi,
   type AdminUser,
   type AdminStats,
+  type ContactMessage,
   type LeaderboardEntry,
   type Plan,
+  type SystemStatus,
   type User,
 } from "../../lib/auth-api";
 
-type Tab = "stats" | "users" | "grant" | "leaderboard" | "audit" | "flags" | "charts";
+type Tab = "stats" | "users" | "grant" | "leaderboard" | "audit" | "flags" | "charts" | "monitoring" | "contact" | "broadcast";
 
 export default function AdminPage() {
   const router = useRouter();
@@ -131,11 +136,36 @@ export default function AdminPage() {
       .catch((e) => setMessage("Charts failed: " + (e?.detail || "")));
   }
 
+  // ---- Round 9: monitoring, contact inbox, broadcast ----
+  const [systemStatus, setSystemStatus] = useState<SystemStatus | null>(null);
+  const [promText, setPromText] = useState<string>("");
+  const [contactMessages, setContactMessages] = useState<ContactMessage[]>([]);
+
+  function loadMonitoring() {
+    systemApi
+      .status()
+      .then(setSystemStatus)
+      .catch((e) => setMessage("Status failed: " + (e?.detail || "")));
+    systemApi
+      .metrics()
+      .then(setPromText)
+      .catch((e) => setMessage("Metrics failed: " + (e?.detail || "")));
+  }
+
+  function loadContact() {
+    adminContactApi
+      .list({ limit: 100 })
+      .then((res) => setContactMessages(res.messages))
+      .catch((e) => setMessage("Contact list failed: " + (e?.detail || "")));
+  }
+
   function reloadTab(t: Tab) {
     setMessage("");
     if (t === "audit") loadAudit();
     else if (t === "flags") loadFlags();
     else if (t === "charts") loadCharts();
+    else if (t === "monitoring") loadMonitoring();
+    else if (t === "contact") loadContact();
   }
 
   function banUser(u: AdminUser) {
@@ -270,6 +300,7 @@ function toggleUserFlag(u: AdminUser, key: "is_active" | "is_verified" | "is_adm
           {([
             "stats", "users", "grant", "leaderboard",
             "audit", "flags", "charts",
+            "monitoring", "contact", "broadcast",
           ] as Tab[]).map((t) => (
             <button
               key={t}
@@ -286,6 +317,9 @@ function toggleUserFlag(u: AdminUser, key: "is_active" | "is_verified" | "is_adm
                t === "leaderboard" ? "Leaderboard" :
                t === "audit" ? `Audit (${auditTotal})` :
                t === "flags" ? "Flags" :
+               t === "monitoring" ? "Monitoring" :
+               t === "contact" ? `Contact (${contactMessages.length})` :
+               t === "broadcast" ? "Broadcast" :
                "Charts"}
             </button>
           ))}
@@ -713,8 +747,237 @@ function toggleUserFlag(u: AdminUser, key: "is_active" | "is_verified" | "is_adm
             <ChartCard title="Chat volume (last 30 days)" series={chatSeries} color="bg-emerald-500" />
           </div>
         )}
+
+        {/* ---- Monitoring tab (Round 9) ---- */}
+        {tab === "monitoring" && (
+          <div className="space-y-4">
+            <h2 className="text-lg font-semibold">System health</h2>
+            {!systemStatus && <p className="text-sm text-slate-500">Loading…</p>}
+            {systemStatus && (
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                <MonitorCard label="Overall" value={systemStatus.status} />
+                <MonitorCard label="Database" value={systemStatus.database} />
+                <MonitorCard label="Cache" value={systemStatus.redis} />
+                <MonitorCard label="Queue" value={systemStatus.queue} />
+                <MonitorCard label="Sentry" value={systemStatus.sentry} />
+                <MonitorCard label="Maintenance" value={systemStatus.maintenance_mode ? "on" : "off"} />
+                <MonitorCard label="Version" value={`v${systemStatus.version}`} />
+                <MonitorCard label="Build SHA" value={systemStatus.build_sha || "unknown"} />
+                <MonitorCard label="Uptime" value={`${Math.floor(systemStatus.uptime_seconds / 60)}m`} />
+              </div>
+            )}
+            <h3 className="text-md font-semibold mt-6">Prometheus /metrics (text)</h3>
+            <pre className="text-[10px] bg-slate-900 text-slate-100 rounded p-3 overflow-x-auto max-h-96">{promText || "Loading…"}</pre>
+            <p className="text-xs text-slate-500">
+              Point your Prometheus scraper at <code className="bg-slate-100 px-1 rounded">/api/v1/system/metrics</code>.
+              The metrics endpoint is public so uptime monitors can scrape it without auth.
+            </p>
+          </div>
+        )}
+
+        {/* ---- Contact inbox (Round 9) ---- */}
+        {tab === "contact" && (
+          <div className="space-y-3">
+            <h2 className="text-lg font-semibold">Contact messages</h2>
+            {contactMessages.length === 0 && (
+              <p className="text-sm text-slate-500">No contact-form submissions yet.</p>
+            )}
+            <ul className="space-y-2">
+              {contactMessages.map((m) => (
+                <li
+                  key={m.id}
+                  className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm"
+                >
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <span className="font-semibold">{m.name}</span>
+                      <span className="ml-2 text-sm text-slate-500">{m.email}</span>
+                    </div>
+                    <span
+                      className={`rounded px-2 py-0.5 text-xs ${
+                        m.status === "new"
+                          ? "bg-amber-100 text-amber-800"
+                          : m.status === "closed"
+                          ? "bg-emerald-100 text-emerald-800"
+                          : m.status === "spam"
+                          ? "bg-rose-100 text-rose-800"
+                          : "bg-sky-100 text-sky-800"
+                      }`}
+                    >
+                      {m.status}
+                    </span>
+                  </div>
+                  <div className="mt-1 text-sm font-medium">{m.subject}</div>
+                  <div className="mt-1 whitespace-pre-wrap text-sm text-slate-700">{m.message}</div>
+                  <div className="mt-2 flex items-center justify-between text-xs text-slate-500">
+                    <span>{new Date(m.created_at).toLocaleString()}</span>
+                    <div className="flex gap-2">
+                      {(["new", "in_progress", "closed", "spam"] as const).map((s) => (
+                        <button
+                          key={s}
+                          onClick={() =>
+                            adminContactApi
+                              .updateStatus(m.id, s)
+                              .then(() => setContactMessages((prev) => prev.map((x) => x.id === m.id ? { ...x, status: s } : x)))
+                              .catch((e) => setMessage("Update failed: " + (e?.detail || "")))
+                          }
+                          className="rounded border border-slate-200 px-2 py-0.5 text-xs hover:border-purple-400"
+                        >
+                          {s}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {/* ---- Broadcast tab (Round 9) ---- */}
+        {tab === "broadcast" && (
+          <BroadcastPanel
+            onSent={(n) => {
+              setMessage(`Broadcast delivered to ${n.delivered_to} user(s).`);
+            }}
+          />
+        )}
       </div>
     </main>
+  );
+}
+
+
+function MonitorCard({ label, value }: { label: string; value: string }) {
+  const tone =
+    /^(ok|active|healthy|on)$/i.test(value)
+      ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+      : /^(degraded|disabled|inactive|off|down)$/i.test(value)
+      ? "bg-amber-50 text-amber-700 border-amber-200"
+      : /^(unhealthy|error|fail)/i.test(value)
+      ? "bg-rose-50 text-rose-700 border-rose-200"
+      : "bg-slate-50 text-slate-700 border-slate-200";
+  return (
+    <div className={`rounded-lg border p-3 ${tone}`}>
+      <div className="text-[10px] uppercase tracking-wide font-semibold">{label}</div>
+      <div className="mt-1 text-lg font-bold">{value}</div>
+    </div>
+  );
+}
+
+
+function BroadcastPanel({ onSent }: { onSent: (r: { delivered_to: number }) => void }) {
+  const [target, setTarget] = useState<"all" | "user">("all");
+  const [userId, setUserId] = useState("");
+  const [title, setTitle] = useState("");
+  const [body, setBody] = useState("");
+  const [link, setLink] = useState("");
+  const [sending, setSending] = useState(false);
+
+  async function submit() {
+    if (!title.trim() || title.trim().length < 3) {
+      alert("Title must be at least 3 characters.");
+      return;
+    }
+    if (!body.trim() || body.trim().length < 3) {
+      alert("Body must be at least 3 characters.");
+      return;
+    }
+    if (target === "user" && !userId.trim()) {
+      alert("Enter a user id to target a single user.");
+      return;
+    }
+    setSending(true);
+    try {
+      const res = await adminNotificationsApi.broadcast({
+        title: title.trim(),
+        body: body.trim(),
+        link: link.trim() || undefined,
+        target: target === "all" ? "all" : userId.trim(),
+      });
+      onSent(res);
+      setTitle("");
+      setBody("");
+      setLink("");
+    } catch (e: any) {
+      alert("Broadcast failed: " + (e?.detail || e?.message || ""));
+    } finally {
+      setSending(false);
+    }
+  }
+
+  return (
+    <div className="space-y-3 max-w-xl">
+      <h2 className="text-lg font-semibold">Broadcast a notification</h2>
+      <p className="text-sm text-slate-500">
+        Send a notification to every user (or a single one). Users will see it in the
+        bell icon and on their Account page.
+      </p>
+      <div className="flex items-center gap-3 text-sm">
+        <label className="flex items-center gap-1">
+          <input
+            type="radio"
+            name="target"
+            value="all"
+            checked={target === "all"}
+            onChange={() => setTarget("all")}
+          />
+          All users
+        </label>
+        <label className="flex items-center gap-1">
+          <input
+            type="radio"
+            name="target"
+            value="user"
+            checked={target === "user"}
+            onChange={() => setTarget("user")}
+          />
+          Single user (id)
+        </label>
+      </div>
+      {target === "user" && (
+        <input
+          type="text"
+          inputMode="numeric"
+          value={userId}
+          onChange={(e) => setUserId(e.target.value)}
+          placeholder="User id, e.g. 42"
+          className="w-full rounded border border-slate-200 px-3 py-2 text-sm"
+        />
+      )}
+      <input
+        type="text"
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        placeholder="Title"
+        maxLength={200}
+        className="w-full rounded border border-slate-200 px-3 py-2 text-sm"
+      />
+      <textarea
+        value={body}
+        onChange={(e) => setBody(e.target.value)}
+        placeholder="Body text"
+        maxLength={1000}
+        rows={3}
+        className="w-full rounded border border-slate-200 px-3 py-2 text-sm"
+      />
+      <input
+        type="text"
+        value={link}
+        onChange={(e) => setLink(e.target.value)}
+        placeholder="Optional link (e.g. /pricing)"
+        maxLength={500}
+        className="w-full rounded border border-slate-200 px-3 py-2 text-sm"
+      />
+      <button
+        type="button"
+        onClick={submit}
+        disabled={sending}
+        className="rounded bg-purple-600 px-4 py-2 text-sm font-semibold text-white hover:bg-purple-700 disabled:opacity-60"
+      >
+        {sending ? "Sending…" : "Send broadcast"}
+      </button>
+    </div>
   );
 }
 

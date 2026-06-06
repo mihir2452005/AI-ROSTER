@@ -11,6 +11,7 @@ import {
   getStoredTokenVersion,
   type User,
 } from "../lib/auth-api";
+import { NotificationBell } from "./NotificationBell";
 
 // Broadcast channel name used by other parts of the app to tell
 // HeaderAuth to refetch. The pricing page fires this on successful
@@ -84,6 +85,7 @@ export default function HeaderAuth() {
           â­ Subscribe
         </Link>
       )}
+      <NotificationBell />
       {user.is_admin && (
         <Link href="/admin" className="btn-ghost text-sm">Admin</Link>
       )}

@@ -7,10 +7,12 @@ import {
   authApi,
   subscriptionsApi,
   paymentsApi,
+  notificationsApi,
   getAccessToken,
   type User,
   type Subscription,
   type Payment,
+  type ActivityItem,
 } from "../../lib/auth-api";
 
 const AVATAR_MAX_BYTES = 2 * 1024 * 1024; // 2 MB
@@ -489,6 +491,9 @@ export default function AccountPage() {
         )}
       </section>
 
+      {/* Recent Activity */}
+      <ActivitySection />
+
       {/* Subscription */}
       <section className="card">
         <h2 className="mb-4 font-display text-xl font-semibold">Subscription</h2>
@@ -604,6 +609,58 @@ export default function AccountPage() {
         </button>
       </section>
     </div>
+  );
+}
+
+
+function ActivitySection() {
+  const [items, setItems] = useState<ActivityItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    notificationsApi
+      .activity({ limit: 20 })
+      .then((res) => {
+        if (cancelled) return;
+        setItems(res.items);
+        setLoading(false);
+      })
+      .catch((e) => {
+        if (cancelled) return;
+        setError(e?.message || "Couldn't load activity");
+        setLoading(false);
+      });
+    return () => { cancelled = true; };
+  }, []);
+
+  return (
+    <section className="card">
+      <h2 className="mb-3 font-display text-xl font-semibold">Recent Activity</h2>
+      {loading && <p className="text-sm text-muted">Loading…</p>}
+      {error && <p className="text-sm text-rose-400">{error}</p>}
+      {!loading && !error && items.length === 0 && (
+        <p className="text-sm text-muted">No activity yet. Actions like logging in, sharing a roast, or starting a subscription will show up here.</p>
+      )}
+      {!loading && items.length > 0 && (
+        <ul className="divide-y divide-white/5">
+          {items.map((it) => (
+            <li key={it.id} className="flex items-start gap-3 py-2 text-sm">
+              <span aria-hidden className="w-6 text-center text-base">
+                {it.icon}
+              </span>
+              <div className="min-w-0 flex-1">
+                <div className="text-fg">{it.label}</div>
+                <div className="text-xs text-muted">
+                  {new Date(it.created_at).toLocaleString()}
+                </div>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
   );
 }
 

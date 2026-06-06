@@ -5,6 +5,7 @@ import HeaderAuth from "../components/HeaderAuth";
 import ErrorBoundary from "../components/ErrorBoundary";
 import ThemeProvider from "../components/ThemeProvider";
 import ThemeToggle from "../components/ThemeToggle";
+import { CookieBanner } from "../components/CookieBanner";
 
 export const metadata: Metadata = {
   title: "RoastGPT — The Internet's Most Ruthless AI Roaster",
@@ -72,12 +73,25 @@ export default function RootLayout({
             <main className="mx-auto max-w-6xl px-4 py-6">{children}</main>
             <footer className="mx-auto max-w-6xl px-4 py-8 text-center text-xs text-muted">
               <p>RoastGPT — for entertainment only. No feelings were harmed in the making of this product. (Some were, though.)</p>
-              <p className="mt-2">
+              <p className="mt-2 space-x-3">
                 <a href="/privacy" className="hover:text-accent-2">Privacy</a>
-                {" · "}
+                <span>·</span>
                 <a href="/terms" className="hover:text-accent-2">Terms</a>
+                <span>·</span>
+                <a href="/about" className="hover:text-accent-2">About</a>
+                <span>·</span>
+                <a href="/contact" className="hover:text-accent-2">Contact</a>
+                <span>·</span>
+                <a href="/faq" className="hover:text-accent-2">FAQ</a>
+                <span>·</span>
+                <a href="/changelog" className="hover:text-accent-2">Changelog</a>
+                <span>·</span>
+                <a href="/status" className="hover:text-accent-2">Status</a>
+                <span>·</span>
+                <a href="/developers" className="hover:text-accent-2">Developers</a>
               </p>
             </footer>
+            <CookieBanner />
           </ErrorBoundary>
         </ThemeProvider>
       </body>
