@@ -16,7 +16,8 @@ Chat with an AI whose only mission is to roast you. Pick a mode, pick a personal
 | **Billing** | Razorpay (3 plans, webhooks, HMAC-SHA256 verified, idempotent) |
 | **RBAC** | 6 roles (user → moderator → support → finance → admin → super_admin) · 14 permissions |
 | **Storage** | 13 tables incl. audit_logs, user_memories, leaderboard_snapshots, achievements |
-| **Tests** | **402 passed / 22 skipped** · ~80s wall-clock |
+| **Tests** | **427 passed / 22 skipped** · ~130s wall-clock |
+| **Health** | `/api/v1/system/status` (db / cache / queue / sentry / version) · `/api/v1/system/metrics` (Prometheus text) |
 | **Cost** | **$0/mo** on free tiers (Render 750h + Neon 0.5GB + Upstash 10k cmd/day + Vercel 100GB + Sentry 5k errors) |
 
 ---
@@ -61,15 +62,16 @@ AI ROSTER/
 │   │   ├── history_routes.py    # /api/history + /api/history/sessions
 │   │   ├── payment_routes.py    # /api/payments/* + 3 default plans
 │   │   ├── leaderboard_routes.py
-│   │   ├── db_models.py         # 13 tables · Role enum · PERMISSIONS catalog
+│   │   ├── db_models.py         # 15 tables · Role enum · PERMISSIONS catalog
 │   │   ├── cache.py             # Redis + in-memory fallback
 │   │   ├── queue.py             # Celery + in-memory fallback
 │   │   ├── monitoring.py        # Sentry + JSON logging
+│   │   ├── round9_routes.py     # contact / notifications / system / activity
 │   │   ├── jobs.py              # 3 background tasks
 │   │   ├── models.py            # Pydantic response models
-│   │   ├── utils.py             # feature flags (cache-backed) + sanitize_text
+│   │   ├── utils.py             # feature flags + sanitize_text + 4 email templates
 │   │   └── filler.py            # 6 placeholder types
-│   └── tests/                   # 402 tests / 22 skipped
+│   └── tests/                   # 427 tests / 22 skipped
 │
 └── frontend/                    # Next.js 14 chat UI
     ├── app/
@@ -77,19 +79,20 @@ AI ROSTER/
     │   ├── chat/[sessionId]/    # chat client
     │   ├── login/  register/  verify-email/  forgot-password/  reset-password/
     │   ├── pricing/             # 3 plans + Razorpay
-    │   ├── account/             # profile · subscription · payments
+    │   ├── account/             # profile · subscription · payments · activity
     │   ├── history/             # messages + Sessions tab
-    │   ├── admin/               # 7-tab dashboard + role badges
+    │   ├── admin/               # 10-tab dashboard (incl. monitoring + broadcast + contact inbox)
     │   ├── leaderboard/         # public weekly/monthly/all-time
     │   ├── achievements/        # 15 badge catalog
     │   ├── stats/               # personal user stats
     │   ├── share/[id]/          # public share view
+    │   ├── about/  faq/  changelog/  contact/  developers/  status/   # Round 9
     │   ├── terms/  privacy/     # legal
     │   ├── not-found.tsx · error.tsx · loading.tsx
-    ├── components/              # HeaderAuth · ScorePanel · ...
+    ├── components/              # HeaderAuth · ScorePanel · NotificationBell · CookieBanner · ...
     ├── lib/
     │   ├── api.ts               # auto-injects bearer, maps 402 → free_tier
-    │   ├── auth-api.ts          # typed client (auth, history, payments, admin)
+    │   ├── auth-api.ts          # typed client (auth, history, payments, admin, contact, notifications, system)
     │   ├── types.ts
     │   └── errors.ts
     └── tests/                   # Vitest
@@ -282,22 +285,22 @@ Total / Active users · Total chats · Revenue · Subscription count · Avg sess
 ### ⚙️ API — 7 / 7 ✅
 All routes versioned at `/api/v1/*` with `/api/*` alias for back-compat
 
-### 🎨 Frontend — 10 / 10 ✅
-Landing · Login · Register · Chat · History · Pricing · Account · Leaderboard · Admin · 404/500/loading
+### 🎨 Frontend — 17 / 17 ✅
+Landing · Login · Register · Chat · History · Pricing · Account · Leaderboard · Admin · 404/500/loading · **FAQ · Changelog · About · Contact · Developers · Status · Notification center**
 
 ### 🚀 Deployment — 7 / 7 ✅
 GitHub · Env config · Render · Vercel · Neon · Custom domains · HTTPS (HSTS)
 
 ### 🧪 Testing — 6 / 6 ✅
-Unit · API · Auth · Payment · Chat · Integration — **402 passing**
+Unit · API · Auth · Payment · Chat · Integration — **427 passing**
 
-### ⭐ Nice to have — 21 / 22 ⚠️
-Dark mode · Mobile responsive · Loading states · Toasts · Copy · Export · User stats · Achievements · LLM fallback · Redis cache · Gold standard SaaS features · Audit logs · Background jobs · Queue system · Feature flags · API versioning · Monitoring · Health check · DB backups · Soft delete · **RBAC**
+### ⭐ Nice to have — 28 / 29 ⚠️
+Dark mode · Mobile responsive · Loading states · Toasts · Copy · Export · User stats · Achievements · LLM fallback · Redis cache · Gold standard SaaS features · Audit logs · Background jobs · Queue system · Feature flags · API versioning · Monitoring · Health check · DB backups · Soft delete · RBAC · **Public contact form · Notification center · User activity log · Maintenance mode · Email templates (welcome/payment/expiring/cancelled) · Prometheus /metrics · Real-time admin monitoring dashboard**
 
 > **Skipped:** Voice mode — the only non-implemented item, intentionally
 > deferred (browser Speech API is unreliable; Vapi/Twilio adds $50+/mo).
 
-**Total: 126 / 127 = 99.2%**
+**Total: 133 / 134 = 99.3%**
 
 ---
 
