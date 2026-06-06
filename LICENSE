@@ -1,0 +1,181 @@
+ROASTGPT™ — PROPRIETARY SOFTWARE LICENSE
+Copyright © 2024–2026 MIHIR K PATEL. All Rights Reserved.
+
+================================================================================
+1. DEFINITIONS
+================================================================================
+
+"Software" means the RoastGPT application, including but not limited to:
+  - All source code in the /backend and /frontend directories
+  - All configuration files (render.yaml, vercel.json, .env.example)
+  - All documentation files (README.md, DEPLOY.md, ROAST_LIBRARY.md)
+  - The roast library (/roast-library) including 187 hand-written roasts
+  - The brand "RoastGPT", the slogan, the logo, and all marketing copy
+  - The product name, feature names, and UI design
+
+"Author" means MIHIR K PATEL, the sole creator and copyright holder.
+
+"Licensee" means any individual or entity that views, forks, or interacts
+with the Software through GitHub or any other channel.
+
+================================================================================
+2. GRANT OF LIMITED LICENSE
+================================================================================
+
+Subject to the terms below, the Author grants Licensee a LIMITED,
+NON-EXCLUSIVE, NON-TRANSFERABLE, REVOCABLE license to:
+
+  (a) View the source code on GitHub for personal, non-commercial
+      educational evaluation.
+  (b) Reference this project (with proper attribution) in articles,
+      tutorials, blog posts, or academic papers.
+  (c) Submit bug reports or security disclosures via the official
+      channels listed in the README.
+
+================================================================================
+3. RESTRICTIONS — YOU MAY NOT, WITHOUT PRIOR WRITTEN CONSENT
+================================================================================
+
+  (a) Copy, reproduce, duplicate, or transcribe the Software, in whole
+      or in part, by any means.
+  (b) Modify, adapt, translate, reverse-engineer, decompile, or
+      disassemble the Software, or attempt to derive its source code.
+  (c) Merge the Software with any other software, or create derivative
+      works based upon the Software.
+  (d) Distribute, sublicense, sell, rent, lease, lend, transfer,
+      publish, or otherwise make available the Software to any third
+      party.
+  (e) Use the Software, in whole or in part, for any commercial purpose
+      including but not limited to: running a paid service, building a
+      competing product, offering SaaS features derived from the
+      Software, or using the roasts in another product.
+  (f) Use the name "RoastGPT", the slogan, the logo, or any confusingly
+      similar name for any product or service.
+  (g) Remove, alter, or obscure any copyright notice, trademark,
+      watermark, or proprietary marking contained in or accompanying
+      the Software.
+  (h) Use any part of the Software to train, fine-tune, or evaluate
+      machine learning models, large language models, or any AI system.
+  (i) Circumvent any technical measures that protect the Software or
+      any associated intellectual property.
+
+================================================================================
+4. INTELLECTUAL PROPERTY
+================================================================================
+
+The Software is the sole and exclusive property of the Author and is
+protected by:
+
+  - The Indian Copyright Act, 1957
+  - The Information Technology Act, 2000
+  - The Berne Convention for the Protection of Literary and Artistic Works
+  - The WIPO Copyright Treaty
+  - The Digital Millennium Copyright Act (DMCA) of the United States
+  - The EU Copyright Directive (2001/29/EC)
+  - The TRIPS Agreement
+  - Applicable international copyright and trademark treaties
+
+The "RoastGPT" name, logo, and associated trade dress are trademarks of
+the Author. All rights not expressly granted herein are RESERVED by the
+Author.
+
+================================================================================
+5. ENFORCEMENT
+================================================================================
+
+The Author reserves the right to enforce these terms through any and all
+legal means available, including but not limited to:
+
+  - Issuing DMCA takedown notices to GitHub, hosting providers, and
+    search engines for any unauthorized copies.
+  - Sending cease-and-desist letters to violators.
+  - Filing civil suits for copyright infringement, trademark
+    infringement, and unfair competition.
+  - Pursuing criminal remedies where applicable.
+
+Violations WILL be prosecuted to the maximum extent permitted by law.
+Statutory damages under 17 U.S.C. § 504 may apply for willful
+infringement, including damages of up to $150,000 per infringed work.
+
+================================================================================
+6. COMMERCIAL LICENSING
+================================================================================
+
+If you wish to:
+  - Use the Software for commercial purposes
+  - Run the Software as a paid service
+  - White-label the Software for your own product
+  - Incorporate the Software into a larger product
+  - Train a model on the roast library
+
+You MUST obtain a separate written commercial license from the Author at:
+  licensing@roastgpt.app
+
+================================================================================
+7. NO WARRANTY
+================================================================================
+
+THE SOFTWARE IS PROVIDED "AS IS" AND "AS AVAILABLE", WITHOUT WARRANTY OF
+ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND
+NON-INFRINGEMENT.
+
+THE AUTHOR DOES NOT WARRANT THAT THE SOFTWARE WILL BE UNINTERRUPTED,
+ERROR-FREE, SECURE, OR FREE OF HARMFUL COMPONENTS. THE AUTHOR IS NOT
+RESPONSIBLE FOR ANY DAMAGE TO YOUR DEVICE, DATA, OR BUSINESS ARISING
+FROM YOUR USE OF THE SOFTWARE.
+
+================================================================================
+8. LIMITATION OF LIABILITY
+================================================================================
+
+IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING
+FROM, OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE, EVEN IF THE AUTHOR HAS BEEN ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGES.
+
+MAXIMUM AGGREGATE LIABILITY: ₹1 (one Indian Rupee).
+
+================================================================================
+9. TERMINATION
+================================================================================
+
+This license is effective until terminated. It will terminate
+automatically if you breach any of its terms. Upon termination, you
+must immediately destroy any copies of the Software in your possession.
+
+================================================================================
+10. GOVERNING LAW & JURISDICTION
+================================================================================
+
+This license is governed by the laws of India. Any disputes shall be
+subject to the exclusive jurisdiction of the competent courts in
+Ahmedabad, Gujarat, India. The Author also retains the right to seek
+injunctive relief in any competent jurisdiction worldwide.
+
+================================================================================
+11. CONTACT
+================================================================================
+
+Copyright inquiries:    copyright@roastgpt.app
+Commercial licensing:   licensing@roastgpt.app
+Security disclosures:   security@roastgpt.app
+General:                hello@roastgpt.app
+
+================================================================================
+
+Copyright © 2024–2026 MIHIR K PATEL.
+All Rights Reserved.
+
+This is proprietary software. Unauthorized copying, distribution,
+modification, or commercial use is strictly prohibited and will be
+prosecuted.
+
+   ____  _   _   ____ _____ ____  ____   ___  __  __ ___ __________ ____
+  |  _ \| | | | / ___|_   _|  _ \/ ___| |  _ \ \ \/ /|_ _|__  / ____|  _ \
+  | |_) | |_| | \___ \ | | | |_) \___ \ | |_) | \  /  | |  / /|  _| | |_) |
+  |  _ <|  _  |  ___) || | |  _ < ___) ||  _ <  /  \  | | / /_| |___|  _ <
+  |_| \_\_| |_| |____/ |_| |_| \_\____/ |_| \_\/_/\_\___/____|_____|_| \_\
+
+================================================================================

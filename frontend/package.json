@@ -2,6 +2,14 @@
   "name": "roastgpt-frontend",
   "version": "0.1.0",
   "private": true,
+  "author": {
+    "name": "MIHIR K PATEL",
+    "email": "hello@roastgpt.app",
+    "url": "https://github.com/mihir2452005"
+  },
+  "license": "UNLICENSED",
+  "copyright": "Copyright (c) 2024-2026 MIHIR K PATEL. All Rights Reserved.",
+  "description": "RoastGPT frontend - proprietary software owned by MIHIR K PATEL. See ../LICENSE.",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

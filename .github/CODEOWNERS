@@ -1,0 +1,37 @@
+# CODEOWNERS
+# Every file in this repository is the sole intellectual property
+# of MIHIR K PATEL. All changes, reviews, and approvals must come
+# from the author.
+#
+# See LICENSE for the proprietary license terms.
+#
+# Format: pattern <space> owner
+# Last owner in the list wins.
+
+# Default owner for everything in the repository.
+/**    @mihir2452005
+
+# Backend
+/backend/**              @mihir2452005
+/backend/app/**          @mihir2452005
+/backend/tests/**        @mihir2452005
+/backend/scripts/**      @mihir2452005
+
+# Frontend
+/frontend/**             @mihir2452005
+/frontend/app/**         @mihir2452005
+/frontend/components/**  @mihir2452005
+/frontend/lib/**         @mihir2452005
+
+# Roast library (the actual content)
+/roast-library/**        @mihir2452005
+
+# Configuration & documentation
+/render.yaml             @mihir2452005
+/vercel.json             @mihir2452005
+/.env.example            @mihir2452005
+/README.md               @mihir2452005
+/DEPLOY.md               @mihir2452005
+/ROAST_LIBRARY.md        @mihir2452005
+/LICENSE                 @mihir2452005
+/CODEOWNERS              @mihir2455

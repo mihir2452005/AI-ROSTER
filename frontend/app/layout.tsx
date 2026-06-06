@@ -10,20 +10,34 @@ import { CookieBanner } from "../components/CookieBanner";
 export const metadata: Metadata = {
   title: "RoastGPT — The Internet's Most Ruthless AI Roaster",
   description: "Get roasted by an AI with no chill, no filter, and no regrets.",
+  applicationName: "RoastGPT",
+  authors: [{ name: "MIHIR K PATEL", url: "https://github.com/mihir2452005" }],
+  creator: "MIHIR K PATEL",
+  publisher: "MIHIR K PATEL",
+  keywords: [
+    "AI roaster", "roast bot", "savage AI", "comedy AI",
+    "MIHIR K PATEL", "RoastGPT",
+  ],
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://roastgpt.vercel.app"),
   openGraph: {
     title: "RoastGPT — The Internet's Most Ruthless AI Roaster",
     description: "Get roasted by an AI with no chill, no filter, and no regrets.",
     type: "website",
+    siteName: "RoastGPT",
   },
   twitter: {
     card: "summary_large_image",
     title: "RoastGPT — The Internet's Most Ruthless AI Roaster",
     description: "Get roasted by an AI with no chill, no filter, and no regrets.",
+    creator: "@mihir2452005",
   },
   robots: {
     index: true,
     follow: true,
+  },
+  other: {
+    "copyright": "Copyright (c) 2024-2026 MIHIR K PATEL. All rights reserved.",
+    "author": "MIHIR K PATEL",
   },
 };
 

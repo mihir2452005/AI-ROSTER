@@ -1,0 +1,79 @@
+ROASTGPT™
+Copyright © 2024–2026 MIHIR K PATEL
+All Rights Reserved.
+
+This product includes software developed by MIHIR K PATEL.
+
+================================================================================
+THIRD-PARTY ACKNOWLEDGEMENTS
+================================================================================
+
+This product uses open-source software. The respective licenses and
+copyright notices of these packages are reproduced below (or, where
+lengthy, available in the corresponding PyPI / npm pages).
+
+Python packages (selected; see backend/requirements.txt for the full list):
+  - FastAPI       — MIT       — Copyright (c) Sebastián Ramírez
+  - SQLAlchemy    — MIT       — Copyright (c) SQLAlchemy authors
+  - Pydantic      — MIT       — Copyright (c) Samuel Colvin
+  - python-jose   — MIT       — Copyright (c) Michael Barr
+  - passlib       — BSD       — Copyright (c) Assurance Technologies
+  - bcrypt        — Apache 2  — Copyright (c) The Python Cryptographic Authority
+  - uvicorn       — BSD       — Copyright (c) Encode OSS Ltd
+  - gunicorn      — MIT       — Copyright (c) Benoît Chesneau
+  - redis-py      — MIT       — Copyright (c) Redis Inc
+  - celery        — BSD       — Copyright (c) Celery Team
+  - sentry-sdk    — MIT       — Copyright (c) Sentry
+  - httpx         — BSD       — Copyright (c) Encode OSS Ltd
+  - razorpay      — MIT       — Copyright (c) Razorpay
+  - alembic       — MIT       — Copyright (c) Michael Bayer
+
+JavaScript packages (selected; see frontend/package.json for the full list):
+  - next          — MIT       — Copyright (c) Vercel
+  - react         — MIT       — Copyright (c) Meta Platforms
+  - typescript    — Apache 2  — Copyright (c) Microsoft
+  - tailwindcss   — MIT       — Copyright (c) Tailwind Labs
+  - framer-motion — MIT       — Copyright (c) Framer
+  - sonner        — MIT       — Copyright (c) Emil Sjölander
+  - zustand       — MIT       — Copyright (c) Paul Henschel
+
+Infrastructure:
+  - Hosted on Render (https://render.com) and Vercel (https://vercel.com)
+    under their respective Terms of Service.
+  - PostgreSQL on Neon (https://neon.tech).
+  - Redis on Upstash (https://upstash.com).
+  - Payments via Razorpay (https://razorpay.com).
+  - Monitoring via Sentry (https://sentry.io).
+  - Transactional email via Resend (https://resend.com).
+
+================================================================================
+ROAST LIBRARY
+================================================================================
+
+The 187 hand-written roasts in /roast-library are original works by
+MIHIR K PATEL, copyright © 2024–2026, all rights reserved.
+
+You may NOT:
+  - Use these roasts in any commercial product
+  - Train any AI model on these roasts
+  - Redistribute or sell the roasts as a dataset
+  - Display the roasts in a public-facing application without permission
+
+================================================================================
+TRADEMARK
+================================================================================
+
+"RoastGPT™" and the associated logo are trademarks of MIHIR K PATEL.
+Unauthorized use of these marks is prohibited under the Trade Marks
+Act, 1999 (India) and equivalent international trademark law.
+
+================================================================================
+CONTACT
+================================================================================
+
+Copyright:   copyright@roastgpt.app
+Licensing:   licensing@roastgpt.app
+Security:    security@roastgpt.app
+General:     hello@roastgpt.app
+
+================================================================================
