@@ -22,11 +22,11 @@ from datetime import datetime, timezone
 from typing import Annotated, List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
 from sqlalchemy import desc, func, select
 from sqlalchemy.orm import Session
 
-from .auth import get_current_user
+from .auth import get_current_user, require_admin
 from .database import get_db
 from .db_models import ContactMessage, Notification, User
 from . import monitoring, utils
@@ -49,15 +49,14 @@ class ContactRequest(BaseModel):
 
 
 class ContactResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
     id: int
     status: str
     created_at: datetime
 
-    class Config:
-        from_attributes = True
-
 
 class NotificationOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
     id: int
     kind: str
     title: str
@@ -65,9 +64,6 @@ class NotificationOut(BaseModel):
     link: Optional[str] = None
     is_read: bool
     created_at: datetime
-
-    class Config:
-        from_attributes = True
 
 
 class NotificationList(BaseModel):
@@ -168,7 +164,7 @@ def submit_contact(
     summary="List contact-form messages (admin)",
 )
 def list_contact_messages(
-    admin: Annotated[User, Depends(__import__("app.auth", fromlist=["require_role"]).require_role(__import__("app.db_models", fromlist=["Role"]).Role.admin))],
+    admin: Annotated[User, Depends(require_admin)],
     db: Annotated[Session, Depends(get_db)],
     status_filter: Optional[str] = Query(default=None, alias="status"),
     skip: int = Query(0, ge=0),
@@ -204,7 +200,7 @@ def list_contact_messages(
 )
 def update_contact_message(
     message_id: int,
-    admin: Annotated[User, Depends(__import__("app.auth", fromlist=["require_role"]).require_role(__import__("app.db_models", fromlist=["Role"]).Role.admin))],
+    admin: Annotated[User, Depends(require_admin)],
     db: Annotated[Session, Depends(get_db)],
     status: str = Query(...),
 ) -> dict:
@@ -327,7 +323,7 @@ def mark_all_notifications_read(
 )
 def admin_broadcast_notification(
     payload: BroadcastRequest,
-    admin: Annotated[User, Depends(__import__("app.auth", fromlist=["require_role"]).require_role(__import__("app.db_models", fromlist=["Role"]).Role.admin))],
+    admin: Annotated[User, Depends(require_admin)],
     db: Annotated[Session, Depends(get_db)],
 ) -> dict:
     from .utils import sanitize_text
@@ -335,12 +331,13 @@ def admin_broadcast_notification(
     body = sanitize_text(payload.body, 1000)
 
     if payload.target == "all":
-        # Fan-out to all non-deleted users. For a free-tier service
-        # this is at most a few thousand rows; we chunk at 500 to
-        # avoid a single huge INSERT.
+        # Fan-out to all non-deleted, non-banned users. For a free-tier
+        # service this is at most a few thousand rows; we chunk at 500
+        # to avoid a single huge INSERT.
         users = (
             db.query(User.id)
             .filter(User.deleted_at.is_(None))
+            .filter(User.is_banned.is_(False))
             .yield_per(500)
         )
         count = 0
@@ -360,7 +357,7 @@ def admin_broadcast_notification(
             uid = int(payload.target)
         except ValueError:
             raise HTTPException(400, "target must be 'all' or a numeric user_id")
-        u = db.query(User).filter(User.id == uid, User.deleted_at.is_(None)).one_or_none()
+        u = db.query(User).filter(User.id == uid, User.deleted_at.is_(None), User.is_banned.is_(False)).one_or_none()
         if u is None:
             raise HTTPException(404, "user not found")
         n = _create_notification(db, uid, payload.kind, title, body, payload.link)
@@ -703,12 +700,12 @@ def prometheus_metrics(
     lines.append("# HELP roastgpt_database_up 1=db reachable, 0=db down")
     lines.append("# TYPE roastgpt_database_up gauge")
     lines.append(f"roastgpt_database_up {1 if db_state == 'ok' else 0}")
-    lines.append("# HELP roastgpt_cache_up 1=cache ok, 0=cache down")
+    lines.append("# HELP roastgpt_cache_up 1=cache ok or in-process fallback, 0=down")
     lines.append("# TYPE roastgpt_cache_up gauge")
-    lines.append(f"roastgpt_cache_up {1 if cache_state not in ('down',) else 0}")
-    lines.append("# HELP roastgpt_queue_up 1=queue ok, 0=queue down")
+    lines.append(f"roastgpt_cache_up {1 if cache_state != 'down' else 0}")
+    lines.append("# HELP roastgpt_queue_up 1=queue ok or in-process fallback, 0=down")
     lines.append("# TYPE roastgpt_queue_up gauge")
-    lines.append(f"roastgpt_queue_up {1 if queue_state not in ('down',) else 0}")
+    lines.append(f"roastgpt_queue_up {1 if queue_state != 'down' else 0}")
     lines.append("# HELP roastgpt_sentry_up 1=sentry active, 0=disabled/down")
     lines.append("# TYPE roastgpt_sentry_up gauge")
     lines.append(f"roastgpt_sentry_up {1 if sentry_state == 'active' else 0}")

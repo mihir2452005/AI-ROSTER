@@ -27,6 +27,11 @@ const ENTRIES: Entry[] = [
     fixes: [
       "Old /api/metrics endpoint now delegates to the comprehensive Prometheus output.",
       "Maintenance middleware skip list updated to include unversioned /api/system/* paths.",
+      "Maintenance middleware now lets CORS preflights through (was returning 503, which broke the frontend in the browser).",
+      "Broadcast to all users now skips banned and soft-deleted accounts.",
+      "Contact form endpoint now rate-limited at 10/min per IP (was falling through to the global default).",
+      "ApiError now carries the parsed response body so callers can branch on extra fields like `maintenance`.",
+      "Replaced deprecated Pydantic v1 `class Config` with `ConfigDict` in round9 schemas.",
     ],
   },
   {
@@ -66,7 +71,7 @@ const ENTRIES: Entry[] = [
     date: "2026-04-01",
     highlights: [
       "Initial public release.",
-      "Four roast modes (Friend, Savage, Flirty, Motivational) across five personalities.",
+      "Eight roast modes (Friendly, Savage, Programmer, Student, Gamer, Corporate, Startup, General) across six personalities.",
       "Free tier (5 messages) + Pro / Premium subscription tiers.",
       "Razorpay payments, history, share, leaderboard, achievements.",
     ],

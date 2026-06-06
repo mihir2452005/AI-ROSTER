@@ -59,11 +59,17 @@ export class ApiError extends Error {
   status: number;
   detail: string;
   code: ApiErrorCode;
-  constructor(status: number, detail: string) {
+  /** The parsed JSON body of the error response (if any). Some
+   * endpoints include extra fields — e.g. maintenance mode returns
+   * `{detail, maintenance: true}`. Callers can use this to show a
+   * specific UX for those cases. */
+  data: Record<string, unknown> | null;
+  constructor(status: number, detail: string, data: Record<string, unknown> | null = null) {
     super(detail);
     this.name = "ApiError";
     this.status = status;
     this.detail = detail;
+    this.data = data;
     this.code = codeFor(status, detail);
   }
 }

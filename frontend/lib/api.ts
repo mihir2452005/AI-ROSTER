@@ -103,12 +103,14 @@ export async function request<T>(path: string, init?: RequestOptions): Promise<T
   if (!res.ok) {
     let body = "";
     try { body = await res.text(); } catch { /* noop */ }
-    // FastAPI 422 returns JSON like {"detail":[{...}]} â€” extract a
+    // FastAPI 422 returns JSON like {"detail":[{...}]} — extract a
     // short message so we don't show the user the full validation
     // dump.
     let detail = body || res.statusText;
+    let parsed: Record<string, unknown> | null = null;
     try {
       const j = JSON.parse(body);
+      parsed = j && typeof j === "object" ? (j as Record<string, unknown>) : null;
       if (typeof j?.detail === "string") detail = j.detail;
       else if (Array.isArray(j?.detail) && j.detail[0]?.msg) detail = j.detail[0].msg;
     } catch { /* not JSON; keep raw */ }
@@ -132,7 +134,7 @@ export async function request<T>(path: string, init?: RequestOptions): Promise<T
         } as RequestOptions);
       }
     }
-    throw new ApiError(res.status, detail);
+    throw new ApiError(res.status, detail, parsed);
   }
 
   // Guard against non-JSON 2xx responses (e.g., an HTML proxy error

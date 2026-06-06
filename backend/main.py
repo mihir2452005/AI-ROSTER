@@ -64,6 +64,13 @@ logging.basicConfig(
     format="%(asctime)s %(levelname)s %(name)s - %(message)s",
     stream=sys.stdout,
 )
+# Reconfigure stdout to UTF-8 so emoji + non-ASCII log lines (e.g.
+# the dev-mode email preview) don't crash on Windows cp1252 terminals.
+try:
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")  # type: ignore[attr-defined]
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")  # type: ignore[attr-defined]
+except Exception:
+    pass
 log = logging.getLogger("roastgpt")
 
 # Initialise Sentry + structured logging as early as possible so any
@@ -254,6 +261,10 @@ RATE_LIMIT_OVERRIDES: Dict[str, tuple] = {
     # (one action every 2s) — enough for legitimate bulk operations.
     "/api/admin/grant-subscription": (30, 60),
     "/api/admin/users": (60, 60),
+    # Public contact form — cap to 10/min per IP to slow down
+    # spam-relay abuse. The contact endpoint is unauthenticated so
+    # this is the only line of defence against scripted abuse.
+    "/api/contact": (int(os.environ.get("RATE_LIMIT_CONTACT", "10")), 60),
 }
 # Trusted reverse proxies (CIDR list, comma-separated). When a request
 # arrives from one of these, we honour the X-Forwarded-For header; for
@@ -422,12 +433,20 @@ app.include_router(round9_router, prefix="/api")      # /api/contact, /api/notif
 @app.middleware("http")
 async def maintenance_middleware(request: Request, call_next):
     path = request.url.path
+    # Always let CORS preflights through. If we returned 503 to a
+    # preflight, the browser would block the actual request and the
+    # frontend would appear completely broken during maintenance —
+    # even though the user is admin or just looking at the status
+    # page. The actual request will be 503'd by this same middleware
+    # if it needs to be.
+    if request.method == "OPTIONS":
+        return await call_next(request)
     if path.startswith("/api/") and path not in (
         # Health + monitoring endpoints are always served so admins
-        # and uptime scrapers can see what's happening. Each path is
-        # listed twice — once before the api_v1_alias rewrites it
-        # (raw request) and once after (rewritten). Middleware order
-        # means we usually see the rewritten form.
+        # and uptime scrapers can see what's happening. Both
+        # /api/system/* and /api/v1/system/* are listed because the
+        # request URL is NOT rewritten yet at this point (api_v1_alias
+        # runs AFTER this middleware in the request flow).
         "/api/health", "/api/v1/health",
         "/api/system/status", "/api/v1/system/status",
         "/api/system/metrics", "/api/v1/system/metrics",

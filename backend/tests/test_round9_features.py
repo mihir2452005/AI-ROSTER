@@ -131,6 +131,21 @@ def regular_user(db_session):
     return u
 
 
+@pytest.fixture
+def second_user(db_session):
+    from app.auth import hash_password
+    u = db_models.User(
+        email="user2@example.com",
+        hashed_password=hash_password("userpass5678"),
+        is_admin=False,
+        is_verified=True,
+    )
+    db_session.add(u)
+    db_session.commit()
+    db_session.refresh(u)
+    return u
+
+
 def _admin_token(admin: db_models.User) -> str:
     from app.auth import create_access_token
     return create_access_token(admin.id, admin.email)
@@ -505,3 +520,67 @@ def test_email_templates_dev_mode_log(monkeypatch, db_session, regular_user):
     utils.send_payment_success_email(regular_user.email, "Pro", None)
     utils.send_subscription_expiring_email(regular_user.email, "Pro", 3)
     utils.send_subscription_cancelled_email(regular_user.email, "Pro")
+
+
+# ---- Broadcast must skip banned & deleted users ----
+
+
+def test_broadcast_all_skips_banned_and_deleted(client, admin_user, regular_user, second_user, db_session):
+    """Broadcasting to `all` should not deliver to banned or soft-deleted users."""
+    from app.db_models import Notification
+    from datetime import datetime, timezone
+
+    # Ban the regular user; soft-delete the second user
+    regular_user.is_banned = True
+    regular_user.banned_at = datetime.now(timezone.utc)
+    second_user.deleted_at = datetime.now(timezone.utc)
+    db_session.commit()
+
+    t = _admin_token(admin_user)
+    r = client.post(
+        "/api/v1/admin/notifications/broadcast",
+        headers={"Authorization": f"Bearer {t}"},
+        json={"title": "SkipTest", "body": "World", "kind": "announcement", "target": "all"},
+    )
+    assert r.status_code == 201, r.text
+
+    # Banned user should have zero notifications with this title
+    banned_user_notifs = (
+        db_session.query(Notification)
+        .filter(Notification.user_id == regular_user.id, Notification.title == "SkipTest")
+        .count()
+    )
+    assert banned_user_notifs == 0, "banned user should not receive broadcast"
+
+    # Soft-deleted user should have zero notifications with this title
+    deleted_user_notifs = (
+        db_session.query(Notification)
+        .filter(Notification.user_id == second_user.id, Notification.title == "SkipTest")
+        .count()
+    )
+    assert deleted_user_notifs == 0, "soft-deleted user should not receive broadcast"
+
+    # Admin (the actor) should have at least one (admin is alive & not banned)
+    admin_notifs = (
+        db_session.query(Notification)
+        .filter(Notification.user_id == admin_user.id, Notification.title == "SkipTest")
+        .count()
+    )
+    assert admin_notifs >= 1, "live admin should have received the broadcast"
+
+
+def test_broadcast_to_specific_user_skips_banned(client, admin_user, regular_user, db_session):
+    """A targeted broadcast to a banned user should 404 (not deliver silently)."""
+    from datetime import datetime, timezone
+
+    regular_user.is_banned = True
+    regular_user.banned_at = datetime.now(timezone.utc)
+    db_session.commit()
+
+    t = _admin_token(admin_user)
+    r = client.post(
+        "/api/v1/admin/notifications/broadcast",
+        headers={"Authorization": f"Bearer {t}"},
+        json={"title": "Hello", "body": "World", "kind": "announcement", "target": str(regular_user.id)},
+    )
+    assert r.status_code == 404, r.text

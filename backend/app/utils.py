@@ -146,8 +146,14 @@ def _send_email(to: str, subject: str, body: str) -> None:
     host = os.environ.get("SMTP_HOST", "").strip()
     from_addr = os.environ.get("SMTP_FROM", "no-reply@roastgpt.local")
     if not host:
-        # Dev mode: log the body and append to dev_emails.log.
-        log.info("DEV EMAIL to=%s subject=%s\n%s", to, subject, body)
+        # Dev mode: log the body and append to dev_emails.log. The
+        # body can contain non-ASCII (emojis, i18n) so we always
+        # encode safely for the application log — without this, a
+        # Windows cp1252 console would crash the worker mid-request.
+        log.info(
+            "DEV EMAIL to=%s subject=%s\n%s",
+            to, subject, body,
+        )
         try:
             with open("dev_emails.log", "a", encoding="utf-8") as f:
                 f.write(f"\n--- {datetime.now(timezone.utc).isoformat()} ---\n")
