@@ -948,3 +948,246 @@ def _user_id(db_session, email: str) -> int:
     return db_session.query(db_models.User).filter(
         db_models.User.email == email
     ).one().id
+
+
+# =============================================================================
+# Round 8 — RBAC, Redis, Celery, Sentry, share token, continue previous chat
+# =============================================================================
+
+
+# ---- RBAC ----
+
+
+def test_audit8_user_defaults_to_role_user(client, db_session):
+    a = _register(client, "audit8-rbac-default@example.com")
+    uid = _user_id(db_session, "audit8-rbac-default@example.com")
+    u = db_session.query(db_models.User).filter(
+        db_models.User.id == uid
+    ).one()
+    assert u.role == "user"
+    assert u.is_admin is False
+    # /me returns the role
+    r = client.get("/api/auth/me", headers=_auth(a["access_token"]))
+    assert r.json()["role"] == "user"
+
+
+def test_audit8_role_enum_ranking():
+    from app.db_models import Role
+    assert Role.user.rank() < Role.moderator.rank() < Role.admin.rank()
+    assert Role.admin.can(Role.moderator)
+    assert not Role.moderator.can(Role.admin)
+    assert Role.from_string("admin") == Role.admin
+    assert Role.from_string("") == Role.user
+    assert Role.from_string(None) == Role.user
+    assert Role.from_string("garbage") == Role.user
+
+
+def test_audit8_set_is_admin_promotes_to_admin_role(client, db_session):
+    a = _register(client, "audit8-rbac-iso@example.com")
+    uid = _user_id(db_session, "audit8-rbac-iso@example.com")
+    u = db_session.query(db_models.User).filter(
+        db_models.User.id == uid
+    ).one()
+    u.is_admin = True
+    db_session.commit()
+    db_session.refresh(u)
+    assert u.role == "admin"
+    assert u.is_admin is True
+
+
+def test_audit8_admin_list_roles(client, db_session):
+    # Promote a user to admin via the ORM
+    a = _register(client, "audit8-roles-admin@example.com")
+    uid = _user_id(db_session, "audit8-roles-admin@example.com")
+    u = db_session.query(db_models.User).filter(
+        db_models.User.id == uid
+    ).one()
+    u.role = "admin"
+    u.is_admin = True
+    db_session.commit()
+    r = client.get(
+        "/api/v1/admin/roles",
+        headers=_auth(a["access_token"]),
+    )
+    assert r.status_code == 200
+    body = r.json()
+    roles = {x["name"] for x in body["roles"]}
+    assert {"user", "moderator", "admin", "super_admin"} <= roles
+    # Each role has at least one permission
+    for entry in body["roles"]:
+        assert isinstance(entry["permissions"], list)
+
+
+def test_audit8_moderator_can_ban_but_not_change_role(client, db_session):
+    # Promote the registered user to moderator via the ORM (super_admin
+    # would normally do this; we set directly to avoid privilege tests
+    # blocking the actual role-gate check).
+    a = _register(client, "audit8-rbac-mod@example.com")
+    uid = _user_id(db_session, "audit8-rbac-mod@example.com")
+    u = db_session.query(db_models.User).filter(
+        db_models.User.id == uid
+    ).one()
+    u.role = "moderator"
+    u.is_admin = False
+    db_session.commit()
+
+    # Target user
+    _register(client, "audit8-rbac-victim@example.com")
+    victim_id = _user_id(db_session, "audit8-rbac-victim@example.com")
+    headers = _auth(a["access_token"])
+
+    # Ban is allowed (moderator has user.ban)
+    r = client.post(
+        f"/api/v1/admin/users/{victim_id}/ban",
+        json={"reason": "test ban for moderator RBAC check"},
+        headers=headers,
+    )
+    assert r.status_code in (200, 400), r.text  # 400 if already banned
+
+    # Role change is NOT allowed (no user.set_role)
+    r = client.patch(
+        f"/api/v1/admin/users/{victim_id}",
+        json={"role": "admin"},
+        headers=headers,
+    )
+    assert r.status_code == 403
+
+
+def test_audit8_user_cannot_ban(client, db_session):
+    a = _register(client, "audit8-rbac-plain@example.com")
+    _register(client, "audit8-rbac-vic2@example.com")
+    victim_id = _user_id(db_session, "audit8-rbac-vic2@example.com")
+    r = client.post(
+        f"/api/v1/admin/users/{victim_id}/ban",
+        headers=_auth(a["access_token"]),
+    )
+    assert r.status_code == 403
+
+
+# ---- Share token ----
+
+
+def test_audit8_share_token_mint_and_revoke(client, db_session):
+    a = _register(client, "audit8-share@example.com")
+    headers = _auth(a["access_token"])
+    r = client.post(
+        "/api/session/start",
+        json={"mode": "savage", "personality": "savage_one"},
+        headers=headers,
+    )
+    sid = r.json()["session_id"]
+    client.post(f"/api/session/{sid}/roast", json={"message": "hi"}, headers=headers)
+    client.post(f"/api/session/{sid}/end", headers=headers)
+
+    # Mint share token
+    r = client.post(f"/api/session/{sid}/share", headers=headers)
+    assert r.status_code == 200
+    body = r.json()
+    assert body["share_url"].startswith("/share/")
+    token1 = body["token"]
+    assert len(token1) >= 32
+
+    # Re-mint returns the SAME token (idempotent)
+    r = client.post(f"/api/session/{sid}/share", headers=headers)
+    assert r.json()["token"] == token1
+
+    # Public endpoint serves the share page data
+    r = client.get(f"/api/share/{token1}")
+    assert r.status_code == 200
+    assert r.json()["session_id"] == sid
+
+    # Revoke
+    r = client.delete(f"/api/session/{sid}/share", headers=headers)
+    assert r.status_code == 200
+
+    # Public endpoint now 410
+    r = client.get(f"/api/share/{token1}")
+    assert r.status_code in (403, 404, 410)
+
+
+def test_audit8_share_requires_auth(client):
+    r = client.post("/api/session/start", json={"mode": "savage", "personality": "savage_one"})
+    sid = r.json()["session_id"]
+    # No auth header
+    r = client.post(f"/api/session/{sid}/share")
+    assert r.status_code in (401, 403)
+
+
+# ---- Continue previous chat ----
+
+
+def test_audit8_history_sessions_groups_messages(client, db_session):
+    from app import db_models
+    a = _register(client, "audit8-cont@example.com")
+    uid = _user_id(db_session, "audit8-cont@example.com")
+    db_session.add(db_models.ChatHistory(
+        user_id=uid, message="hello session A", is_user=True,
+        roast_response="roast A1", score_total=1.0,
+        session_id="sess-aaa",
+    ))
+    db_session.add(db_models.ChatHistory(
+        user_id=uid, message="hello session A 2", is_user=True,
+        roast_response="roast A2", score_total=2.0,
+        session_id="sess-aaa",
+    ))
+    db_session.add(db_models.ChatHistory(
+        user_id=uid, message="hello session B", is_user=True,
+        roast_response="roast B1", score_total=3.0,
+        session_id="sess-bbb",
+    ))
+    # The /sessions endpoint queries RoastSession rows, not ChatHistory
+    # directly. Create matching RoastSession rows so the grouping works.
+    db_session.add(db_models.RoastSession(
+        session_id="sess-aaa", user_id=uid,
+        mode="savage", personality="savage_one",
+        state_json={},
+    ))
+    db_session.add(db_models.RoastSession(
+        session_id="sess-bbb", user_id=uid,
+        mode="savage", personality="savage_one",
+        state_json={},
+    ))
+    db_session.commit()
+
+    r = client.get(
+        "/api/history/sessions",
+        headers=_auth(a["access_token"]),
+    )
+    assert r.status_code == 200
+    body = r.json()
+    assert body["total"] == 2
+    by_id = {x["session_id"]: x for x in body["sessions"]}
+    assert "sess-aaa" in by_id
+    assert by_id["sess-aaa"]["message_count"] == 2
+    assert by_id["sess-aaa"]["score_total"] == 3.0
+    assert by_id["sess-bbb"]["message_count"] == 1
+
+
+def test_audit8_history_item_includes_session_id(client, db_session):
+    from app import db_models
+    a = _register(client, "audit8-cont2@example.com")
+    uid = _user_id(db_session, "audit8-cont2@example.com")
+    db_session.add(db_models.ChatHistory(
+        user_id=uid, message="hi", is_user=True, roast_response="r",
+        session_id="sess-xyz",
+    ))
+    db_session.commit()
+    r = client.get("/api/history", headers=_auth(a["access_token"]))
+    assert r.status_code == 200
+    items = r.json()["items"]
+    assert items[0]["session_id"] == "sess-xyz"
+
+
+# ---- Cache / Queue / Monitoring (smoke) ----
+
+
+def test_audit8_cache_and_queue_backends_init():
+    from app import cache, queue as q, monitoring
+    assert cache.backend() in ("redis", "memory")
+    assert cache.clear_all() is None  # idempotent, never raises
+    # Queue may auto-enroll a no-op test
+    stats = q.stats()
+    backend_info = stats.get("memory", {})
+    assert "registered" in backend_info
+    # monitoring is a no-op when SENTRY_DSN unset
+    assert monitoring.capture_exception(Exception("smoke")) is None

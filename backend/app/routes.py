@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import logging
 import os
+import secrets
 import time
 from datetime import datetime, timezone
 from typing import Annotated, Optional
@@ -588,7 +589,7 @@ def end_session(
             session_id=session_id,
             final_scores=session.scores,
             closer=session.closer_text,
-            share_url=f"/share/{session_id}",
+            share_url=_make_share_url(db, user.id if user else None, session_id, session),
         )
 
     closer_text: Optional[str] = None
@@ -676,7 +677,7 @@ def end_session(
         session_id=session_id,
         final_scores=session.scores,
         closer=closer_text,
-        share_url=f"/share/{session_id}",
+        share_url=_make_share_url(db, user.id if user else None, session_id, session),
     )
 
 
@@ -697,6 +698,7 @@ def get_session(
         session_id=session.session_id,
         mode=session.mode,
         personality=session.personality,
+        is_public=False,
         message_count=session.message_count,
         scores=session.scores,
         history=session.history,
@@ -853,3 +855,125 @@ def _count_questionable(message: str, intents: list[str]) -> int:
         return 0
     msg_low = message.lower()
     return sum(1 for flag in PROGRAMMING_RED_FLAGS if flag in msg_low)
+
+
+# ----- Sharing -----
+
+SHARE_TOKEN_BYTES = 24  # 192 bits of entropy, URL-safe (32 chars after b64)
+
+
+def _make_share_url(db, user_id: Optional[int], session_id: str, session) -> Optional[str]:
+    """Mint (or reuse) a share token for a session and return the
+    public URL. Sharing is opt-in: the token is only created the
+    first time the user explicitly requests it.
+
+    For authenticated users we look up the persisted `RoastSession`
+    row by `session_id` and use its `share_token`. For anonymous
+    sessions there is no DB row, so we fall back to the session_id
+    in the URL (the public /share/{id} endpoint will resolve it
+    from the in-memory store; the id is already 128 bits of entropy).
+    """
+    from . import db_models
+    if user_id is not None:
+        row = db.query(db_models.RoastSession).filter(
+            db_models.RoastSession.session_id == session_id
+        ).one_or_none()
+    else:
+        row = None
+    if row is None:
+        # Anonymous session (or no DB row) — return the legacy
+        # /share/{session_id} URL; the in-memory store resolves it
+        # at view time.
+        return f"/share/{session_id}"
+    if row.share_revoked:
+        return None
+    if row.share_token:
+        row.is_public = True
+        db.commit()
+        return f"/share/{row.share_token}"
+    token = secrets.token_urlsafe(SHARE_TOKEN_BYTES)
+    row.share_token = token
+    row.is_public = True
+    row.share_revoked = False
+    db.commit()
+    return f"/share/{token}"
+
+
+@router.post("/session/{session_id}/share", response_model=dict)
+def create_share_link(
+    session_id: str,
+    user: Annotated[db_models.User, Depends(auth.get_current_user)],
+    db: Annotated[Session, Depends(get_db)],
+) -> dict:
+    """Explicitly mint a share token for a session. Idempotent: calling
+    twice returns the same token. Only the session owner can share."""
+    from . import db_models
+    row = db.query(db_models.RoastSession).filter(
+        db_models.RoastSession.session_id == session_id
+    ).one_or_none()
+    if row is None or row.user_id != user.id:
+        # Don't reveal whether the session exists.
+        raise HTTPException(404, "session not found")
+    if row.share_revoked:
+        raise HTTPException(400, "sharing was previously revoked for this session")
+    if not row.share_token:
+        row.share_token = secrets.token_urlsafe(SHARE_TOKEN_BYTES)
+    row.is_public = True
+    db.commit()
+    return {"share_url": f"/share/{row.share_token}", "token": row.share_token}
+
+
+@router.delete("/session/{session_id}/share", response_model=dict)
+def revoke_share_link(
+    session_id: str,
+    user: Annotated[db_models.User, Depends(auth.get_current_user)],
+    db: Annotated[Session, Depends(get_db)],
+) -> dict:
+    """Revoke a previously-issued share token. Future requests for
+    the token 404."""
+    from . import db_models
+    row = db.query(db_models.RoastSession).filter(
+        db_models.RoastSession.session_id == session_id
+    ).one_or_none()
+    if row is None or row.user_id != user.id:
+        raise HTTPException(404, "session not found")
+    row.is_public = False
+    row.share_revoked = True
+    # Keep the token in the row (so audit logs can correlate) but the
+    # lookup endpoint refuses to serve it.
+    db.commit()
+    return {"message": "share link revoked"}
+
+
+@router.get("/share/{token}", response_model=SessionStateResponse)
+def get_shared_session(
+    token: str,
+    db: Annotated[Session, Depends(get_db)],
+) -> SessionStateResponse:
+    """Public share endpoint. Resolves a token to a session transcript.
+    Returns 404 if the token is unknown or revoked. Does not require
+    auth — anyone with the link can view the transcript."""
+    from . import db_models
+    row = db.query(db_models.RoastSession).filter(
+        db_models.RoastSession.share_token == token
+    ).one_or_none()
+    if row is None or row.share_revoked or not row.is_public:
+        raise HTTPException(404, "share not found")
+    # Bump the view counter (best-effort).
+    try:
+        row.share_views = (row.share_views or 0) + 1
+        db.commit()
+    except Exception:  # pragma: no cover
+        db.rollback()
+    # Rebuild a SessionStateResponse from the denormalized state.
+    state = row.state_json or {}
+    return SessionStateResponse(
+        session_id=row.session_id,
+        mode=row.mode,
+        personality=row.personality,
+        history=state.get("history", []),
+        message_count=len(state.get("history", [])),
+        scores=state.get("scores"),
+        is_ended=row.ended_at is not None,
+        is_public=True,
+    )

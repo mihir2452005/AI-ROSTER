@@ -33,6 +33,7 @@ class AdminUserOut(BaseModel):
     is_active: bool
     is_verified: bool
     is_admin: bool
+    role: str
     free_messages_used: int
     created_at: datetime
     has_active_subscription: bool
@@ -57,6 +58,10 @@ class UpdateUserRequest(BaseModel):
     is_active: Optional[bool] = None
     is_verified: Optional[bool] = None
     is_admin: Optional[bool] = None
+    role: Optional[str] = Field(
+        default=None,
+        pattern="^(user|moderator|support|finance|admin|super_admin)$",
+    )
 
 
 class BanUserRequest(BaseModel):
@@ -124,6 +129,7 @@ def list_users(
             id=u.id, masked_email=_mask_email(u.email), full_name=u.full_name,
             gender_preference=u.gender_preference.value,
             is_active=u.is_active, is_verified=u.is_verified, is_admin=u.is_admin,
+            role=u.role,
             free_messages_used=u.free_messages_used, created_at=u.created_at,
             has_active_subscription=u.id in active_sub_user_ids,
         ))
@@ -150,6 +156,7 @@ def get_user(
         id=u.id, masked_email=_mask_email(u.email), full_name=u.full_name,
         gender_preference=u.gender_preference.value,
         is_active=u.is_active, is_verified=u.is_verified, is_admin=u.is_admin,
+        role=u.role,
         free_messages_used=u.free_messages_used, created_at=u.created_at,
         has_active_subscription=has_sub,
     )
@@ -162,7 +169,11 @@ def update_user(
     admin: Annotated[db_models.User, Depends(auth.require_admin)],
     db: Annotated[Session, Depends(get_db)],
 ) -> dict:
-    """Update a user's flags (active, verified, admin). Admin only."""
+    """Update a user's flags (active, verified, admin, role). Admin only.
+
+    Role changes are gated by `require_permission("user.set_role")` —
+    setting someone to `admin` or `super_admin` requires super_admin.
+    """
     from . import utils
     u = db.get(db_models.User, user_id)
     if not u:
@@ -182,6 +193,29 @@ def update_user(
             raise HTTPException(status_code=400, detail="Cannot remove your own admin privileges")
         u.is_admin = req.is_admin
         affects_session = True
+    if req.role is not None and req.role != u.role:
+        # Role change. Use the RBAC permission gates; super_admin can
+        # promote to admin, only super_admin can create another
+        # super_admin.
+        new_role = db_models.Role.from_string(req.role)
+        if not admin.has_role(db_models.Role.admin):
+            raise HTTPException(
+                status_code=403,
+                detail="Setting roles requires the 'user.set_role' permission (admin+).",
+            )
+        if new_role.rank() >= db_models.Role.super_admin.rank() and not admin.has_role(db_models.Role.super_admin):
+            raise HTTPException(
+                status_code=403,
+                detail="Only super_admin can grant super_admin.",
+            )
+        if u.id == admin.id and new_role.rank() < admin.role_enum.rank():
+            raise HTTPException(
+                status_code=400,
+                detail="Cannot demote yourself below your current role.",
+            )
+        u.role = new_role.value
+        # The before_update event will sync is_admin for us.
+        affects_session = True
     if affects_session:
         # Invalidate every outstanding token. The user has to log in again.
         u.token_version = (u.token_version or 0) + 1
@@ -190,16 +224,37 @@ def update_user(
         db, action="admin_update_user",
         actor_user_id=admin.id, target_user_id=u.id,
         details={"is_active": u.is_active, "is_verified": u.is_verified,
-                 "is_admin": u.is_admin},
+                 "is_admin": u.is_admin, "role": u.role},
     )
     return {"message": "User updated", "user_id": user_id}
+
+
+# ---- Role catalog ----
+# Public to any admin: lets the admin UI render a role dropdown and
+# show what each role is allowed to do.
+@router.get("/roles")
+def list_roles(
+    admin: Annotated[db_models.User, Depends(auth.require_admin)],
+) -> dict:
+    """Return all defined roles and their rank. Used by the admin UI."""
+    roles = [
+        {
+            "name": r.value,
+            "rank": r.rank(),
+            "permissions": sorted(
+                p for p, required in db_models.PERMISSIONS.items() if r.can(required)
+            ),
+        }
+        for r in db_models.Role
+    ]
+    return {"roles": roles}
 
 
 @router.post("/users/{user_id}/ban")
 def ban_user(
     user_id: int,
     req: BanUserRequest,
-    admin: Annotated[db_models.User, Depends(auth.require_admin)],
+    admin: Annotated[db_models.User, Depends(auth.require_permission("user.ban"))],
     db: Annotated[Session, Depends(get_db)],
 ) -> dict:
     """Ban a user. Distinct from `is_active=false` (which is a soft
@@ -231,7 +286,7 @@ def ban_user(
 @router.post("/users/{user_id}/unban")
 def unban_user(
     user_id: int,
-    admin: Annotated[db_models.User, Depends(auth.require_admin)],
+    admin: Annotated[db_models.User, Depends(auth.require_permission("user.unban"))],
     db: Annotated[Session, Depends(get_db)],
 ) -> dict:
     from . import utils
@@ -256,7 +311,7 @@ def unban_user(
 
 @router.get("/feature-flags")
 def list_feature_flags(
-    admin: Annotated[db_models.User, Depends(auth.require_admin)],
+    admin: Annotated[db_models.User, Depends(auth.require_permission("feature_flag.manage"))],
     db: Annotated[Session, Depends(get_db)],
 ) -> dict:
     from . import utils
@@ -266,7 +321,7 @@ def list_feature_flags(
 @router.put("/feature-flags")
 def upsert_feature_flag(
     req: FeatureFlagRequest,
-    admin: Annotated[db_models.User, Depends(auth.require_admin)],
+    admin: Annotated[db_models.User, Depends(auth.require_permission("feature_flag.manage"))],
     db: Annotated[Session, Depends(get_db)],
 ) -> dict:
     from . import utils
@@ -287,7 +342,7 @@ def upsert_feature_flag(
 
 @router.get("/audit-logs")
 def list_audit_logs(
-    admin: Annotated[db_models.User, Depends(auth.require_admin)],
+    admin: Annotated[db_models.User, Depends(auth.require_permission("audit.read"))],
     db: Annotated[Session, Depends(get_db)],
     skip: int = Query(0, ge=0),
     limit: int = Query(50, ge=1, le=200),
@@ -411,7 +466,7 @@ def chart_chats(
 @router.post("/grant-subscription")
 def grant_subscription(
     req: GrantSubscriptionRequest,
-    admin: Annotated[db_models.User, Depends(auth.require_admin)],
+    admin: Annotated[db_models.User, Depends(auth.require_permission("subscription.grant"))],
     db: Annotated[Session, Depends(get_db)],
 ) -> dict:
     """Manually grant a subscription to a user (no payment required).

@@ -1,13 +1,19 @@
-"""Periodic background jobs (in-process scheduler).
+"""Periodic background jobs.
 
-The free-tier Render deployment cannot run a long-lived worker
-process, so jobs run inside the FastAPI lifespan handler using
-`threading` + a simple tick loop. This is sufficient for the
-workload (leaderboard snapshot every hour, retention sweep every
-6 hours, achievements/already-immediate-on-write).
+Two execution models, picked at runtime by `start_scheduler()`:
 
-If you ever migrate to a worker dyno, swap `start_scheduler` to
-spin up APScheduler/celery; the public functions are stable.
+1. **In-process loop** (default for the free tier): a daemon thread
+   ticks every 60s and runs any job whose cadence has elapsed. This
+   is the same model we used in Rounds 1-7.
+
+2. **Celery beat** (when `CELERY_BROKER_URL` is set): each job is
+   registered as a Celery task in `app.queue` and a separate Celery
+   worker process picks them up. The in-process loop is disabled in
+   this mode (`DISABLE_BACKGROUND_JOBS=1`).
+
+The public functions (`start_scheduler`, `stop_scheduler`,
+`run_retention_sweep_now`, `run_snapshot_now`, etc.) are the same
+either way.
 """
 from __future__ import annotations
 
@@ -20,6 +26,8 @@ from typing import Optional
 
 from sqlalchemy import func as sqlfunc
 from sqlalchemy.orm import Session
+
+from . import queue as _queue
 
 log = logging.getLogger(__name__)
 
@@ -68,14 +76,17 @@ def _run_loop() -> None:
                 for period, period_id in _current_period_ids(now):
                     last = last_snapshot.get(period + ":" + period_id)
                     if last is None or (now - last) > timedelta(hours=1):
-                        _snapshot_one(db, period, period_id)
+                        # Enqueue via the queue module. In the
+                        # in-process backend this runs in a thread;
+                        # with Celery this hits the broker.
+                        _queue.enqueue("leaderboard.snapshot_one", period, period_id)
                         last_snapshot[period + ":" + period_id] = now
                 # Downgrade executor — every 15 minutes
-                _process_scheduled_downgrades(db)
+                _queue.enqueue("subscriptions.process_downgrades")
                 # Retention sweep — every 6 hours
                 if (last_retention is None
                         or (now - last_retention) > timedelta(hours=6)):
-                    _retention_sweep(db)
+                    _queue.enqueue("retention.sweep")
                     last_retention = now
                 # Achievements seed — once per process
                 if last_achievements_seed is None:
@@ -86,8 +97,42 @@ def _run_loop() -> None:
                 db.close()
         except Exception as e:  # pragma: no cover
             log.warning("background job tick failed: %s", e)
-        # Wait 60s or until stop.
-        _scheduler_stop.wait(timeout=60)
+    # Wait 60s or until stop.
+    _scheduler_stop.wait(timeout=60)
+
+
+# ---------------------------------------------------------------------------
+# Manual triggers (for tests + admin "run now" buttons)
+# ---------------------------------------------------------------------------
+
+
+def run_snapshot_now(period: str, period_id: str) -> None:
+    """Synchronous helper for tests and the admin UI. Opens its own
+    session, runs _snapshot_one, and closes the session."""
+    from .database import SessionLocal
+    db = SessionLocal()
+    try:
+        _snapshot_one(db, period, period_id)
+    finally:
+        db.close()
+
+
+def run_retention_now() -> None:
+    from .database import SessionLocal
+    db = SessionLocal()
+    try:
+        _retention_sweep(db)
+    finally:
+        db.close()
+
+
+def run_downgrades_now() -> None:
+    from .database import SessionLocal
+    db = SessionLocal()
+    try:
+        _process_scheduled_downgrades(db)
+    finally:
+        db.close()
 
 
 def _current_period_ids(now: datetime) -> list[tuple[str, str]]:
@@ -245,4 +290,12 @@ def _process_scheduled_downgrades(db: Session) -> None:
     if swapped:
         db.commit()
         log.info("downgrade: swapped %d subscriptions", swapped)
+
+
+# Register every job with the queue module. Whether they run
+# in-process (memory backend) or via Celery is the queue's decision.
+# Done at the bottom so the function objects are defined first.
+_queue.register_task("leaderboard.snapshot_one", _snapshot_one)
+_queue.register_task("retention.sweep", _retention_sweep)
+_queue.register_task("subscriptions.process_downgrades", _process_scheduled_downgrades)
 

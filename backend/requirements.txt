@@ -14,4 +14,14 @@ passlib[bcrypt]>=1.7.4
 bcrypt<4.0.0
 razorpay>=1.4.1
 email-validator>=2.1.0
-
+# Redis cache + Celery broker. Both are optional at runtime — the
+# in-process fallback in app/cache.py / app/queue.py keeps the app
+# working without a REDIS_URL. The fallback is what tests use; the
+# production deployment on Render is expected to provide a free
+# Upstash/Redis Cloud URL via REDIS_URL.
+redis>=5.0.0
+celery>=5.4.0
+# Sentry for error monitoring. Initialised in app/monitoring.py when
+# SENTRY_DSN is set; the SDK no-ops when no DSN is configured so
+# leaving the env var unset is safe in dev.
+sentry-sdk[fastapi]>=2.10.0

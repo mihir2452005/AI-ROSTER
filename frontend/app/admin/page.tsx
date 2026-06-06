@@ -187,12 +187,24 @@ export default function AdminPage() {
     };
   }, []);
 
-  function toggleUserFlag(u: AdminUser, key: "is_active" | "is_verified" | "is_admin", value: boolean) {
+function toggleUserFlag(u: AdminUser, key: "is_active" | "is_verified" | "is_admin", value: boolean) {
     setMessage("");
     adminApi
       .updateUser(u.id, { [key]: value })
       .then(() => {
-        setMessage(`${u.masked_email} updated âœ…`);
+        setMessage(`${u.masked_email} updated ✅`);
+        reloadUsers(search);
+      })
+      .catch((e) => setMessage("Update failed: " + (e?.detail || "")));
+  }
+
+  function setUserRole(u: AdminUser, role: string) {
+    if (!role) return;
+    setMessage("");
+    adminApi
+      .updateUser(u.id, { role })
+      .then(() => {
+        setMessage(`${u.masked_email} role → ${role} ✅`);
         reloadUsers(search);
       })
       .catch((e) => setMessage("Update failed: " + (e?.detail || "")));
@@ -316,6 +328,7 @@ export default function AdminPage() {
                     <th className="px-3 py-2">Active</th>
                     <th className="px-3 py-2">Verified</th>
                     <th className="px-3 py-2">Admin</th>
+                    <th className="px-3 py-2">Role</th>
                     <th className="px-3 py-2">Status</th>
                   </tr>
                 </thead>
@@ -357,6 +370,18 @@ export default function AdminPage() {
                           disabled={u.id === me?.id}
                           title={u.id === me?.id ? "You can't demote yourself" : undefined}
                         />
+                      </td>
+                      <td className="px-3 py-2">
+                        <span className={`text-xs px-2 py-0.5 rounded font-medium ${
+                          u.role === "super_admin" ? "bg-purple-100 text-purple-700" :
+                          u.role === "admin" ? "bg-blue-100 text-blue-700" :
+                          u.role === "moderator" ? "bg-indigo-100 text-indigo-700" :
+                          u.role === "finance" ? "bg-amber-100 text-amber-700" :
+                          u.role === "support" ? "bg-teal-100 text-teal-700" :
+                          "bg-slate-100 text-slate-600"
+                        }`}>
+                          {u.role || "user"}
+                        </span>
                       </td>
                       <td className="px-3 py-2">
                         {u.is_banned ? (

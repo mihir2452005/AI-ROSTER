@@ -220,13 +220,59 @@ async def get_optional_user(
 async def require_admin(
     user: db_models.User = Depends(get_current_user),
 ) -> db_models.User:
-    """FastAPI dependency: ensures the caller is an admin."""
-    if not user.is_admin:
+    """FastAPI dependency: ensures the caller is an admin.
+
+    Backwards compatible: still accepts any caller with is_admin=True
+    (i.e. role >= admin). New code should use `require_role(Role.admin)`
+    or `require_permission("...")` for finer control.
+    """
+    if not user.has_role(db_models.Role.admin):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Admin privileges required",
         )
     return user
+
+
+def require_role(required: db_models.Role):
+    """Factory: returns a FastAPI dependency that checks the caller's
+    role is at least `required`.
+
+    Usage:
+        @router.post("/ban")
+        def ban(user: User = Depends(require_role(Role.moderator))):
+            ...
+    """
+    async def _dep(user: db_models.User = Depends(get_current_user)) -> db_models.User:
+        if not user.has_role(required):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=f"Role {required.value} or higher required",
+            )
+        return user
+    _dep.__name__ = f"require_role_{required.value}"
+    return _dep
+
+
+def require_permission(permission: str):
+    """Factory: returns a FastAPI dependency that checks the caller has
+    the named permission. The permission name is looked up in
+    `db_models.PERMISSIONS`.
+
+    Usage:
+        @router.post("/grant")
+        def grant(user: User = Depends(require_permission("subscription.grant"))):
+            ...
+    """
+    async def _dep(user: db_models.User = Depends(get_current_user)) -> db_models.User:
+        if not user.has_permission(permission):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=f"Permission '{permission}' required",
+            )
+        return user
+    _dep.__name__ = f"require_perm_{permission.replace('.', '_')}"
+    return _dep
 
 
 # ---- Startup validation ----

@@ -61,11 +61,90 @@ def my_history(
                 roast_response=item.roast_response,
                 score_total=item.score_total,
                 created_at=item.created_at,
+                session_id=item.session_id,
             )
             for item in items
         ],
         total=total,
     )
+
+
+# ---- Sessions list (for "Continue previous chat") ----
+
+@router.get("/sessions", response_model=auth_schemas.ChatSessionListResponse)
+def my_sessions(
+    user: Annotated[db_models.User, Depends(auth.get_current_user)],
+    db: Annotated[Session, Depends(get_db)],
+    skip: int = Query(0, ge=0),
+    limit: int = Query(50, ge=1, le=200),
+    q: Optional[str] = Query(None, max_length=200),
+) -> auth_schemas.ChatSessionListResponse:
+    """Return the user's persisted chat sessions, newest first.
+
+    Each row corresponds to one `RoastSession` (created on
+    /session/start for authenticated users). The frontend renders a
+    "Continue chat" link for each one, deep-linking back into the
+    /chat/{sessionId} page.
+
+    `q` matches the first user message in the session (substring,
+    case-insensitive).
+    """
+    base = db.query(db_models.RoastSession).filter(
+        db_models.RoastSession.user_id == user.id,
+    )
+    rows = base.order_by(
+        db_models.RoastSession.last_accessed_at.desc()
+    ).offset(skip).limit(limit).all()
+
+    # Build previews: for each session, the first user message
+    # from the associated chat history (or "roast response" if we
+    # stored the assistant side first). Cap to 80 chars.
+    out: list[auth_schemas.ChatSessionSummary] = []
+    for r in rows:
+        first_user_msg = (
+            db.query(db_models.ChatHistory.message)
+            .filter(
+                db_models.ChatHistory.user_id == user.id,
+                db_models.ChatHistory.session_id == r.session_id,
+                db_models.ChatHistory.is_user.is_(True),
+            )
+            .order_by(db_models.ChatHistory.created_at.asc())
+            .first()
+        )
+        preview = (first_user_msg[0][:80] + "…") if first_user_msg and len(first_user_msg[0]) > 80 else (first_user_msg[0] if first_user_msg else None)
+        # Count messages on this session.
+        msg_count = (
+            db.query(func.count(db_models.ChatHistory.id))
+            .filter(
+                db_models.ChatHistory.user_id == user.id,
+                db_models.ChatHistory.session_id == r.session_id,
+            )
+            .scalar() or 0
+        )
+        # Sum damage.
+        score = (
+            db.query(func.coalesce(func.sum(db_models.ChatHistory.score_total), 0.0))
+            .filter(
+                db_models.ChatHistory.user_id == user.id,
+                db_models.ChatHistory.session_id == r.session_id,
+            )
+            .scalar() or 0.0
+        )
+        out.append(auth_schemas.ChatSessionSummary(
+            session_id=r.session_id,
+            mode=r.mode,
+            personality=r.personality,
+            message_count=int(msg_count),
+            last_message_at=r.last_accessed_at,
+            is_ended=r.ended_at is not None,
+            score_total=float(score),
+            preview=preview,
+        ))
+    if q:
+        ql = q.lower()
+        out = [s for s in out if s.preview and ql in s.preview.lower()]
+    total = base.count()
+    return auth_schemas.ChatSessionListResponse(sessions=out, total=total)
 
 
 @router.delete("")

@@ -233,25 +233,23 @@ export default function ChatClient({ sessionId }: Props) {
   }
 
   function copyShareLink() {
-    const url = `${window.location.origin}/share/${sessionId}`;
-    // navigator.clipboard requires a secure context (HTTPS or
-    // localhost). On plain HTTP deploys or older browsers, the
-    // property is undefined and calling writeText throws
-    // synchronously â€” which used to crash the whole component.
-    if (typeof navigator === "undefined" || !navigator.clipboard) {
-      setError("Your browser doesn't support one-click copy. Long-press the link instead.");
-      return;
-    }
-    navigator.clipboard.writeText(url).then(
-      () => {
+    async function doShare() {
+      try {
+        const r = await api.shareSession(sessionId);
+        const url = `${window.location.origin}${r.share_url}`;
+        if (typeof navigator === "undefined" || !navigator.clipboard) {
+          setError("Your browser doesn't support one-click copy. Long-press the link instead.");
+          return;
+        }
+        await navigator.clipboard.writeText(url);
         setCopied(true);
         if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
         copyTimerRef.current = setTimeout(() => setCopied(false), 1800);
-      },
-      () => {
-        setError("Couldn't copy. Long-press the link instead.");
+      } catch (e) {
+        setError("Share failed. " + ((e as ApiError)?.detail || ""));
       }
-    );
+    }
+    doShare();
   }
 
   function copyTranscript() {

@@ -39,6 +39,7 @@ class UserOut(BaseModel):
     gender_preference: str
     is_verified: bool
     is_admin: bool
+    role: str = "user"
     free_messages_used: int
     created_at: datetime
     has_active_subscription: bool = False
@@ -128,8 +129,33 @@ class ChatHistoryItem(BaseModel):
     roast_response: Optional[str]
     score_total: float
     created_at: datetime
+    # The session this message belongs to. NULL for older rows or
+    # messages not associated with a session. The frontend uses this
+    # to group history by session and render a "Continue chat" link.
+    session_id: Optional[str] = None
 
 
 class ChatHistoryResponse(BaseModel):
     items: List[ChatHistoryItem]
+    total: int
+
+
+# ---- Chat sessions (top-level grouping for "Continue previous chat") ----
+class ChatSessionSummary(BaseModel):
+    session_id: str
+    mode: Optional[str] = None
+    personality: Optional[str] = None
+    message_count: int
+    last_message_at: datetime
+    is_ended: bool
+    # Total damage taken across the session (powers the "burn meter").
+    score_total: float
+    # The first user message, truncated to 80 chars. Useful for the
+    # "Continue: <preview>" link text.
+    preview: Optional[str] = None
+
+
+class ChatSessionListResponse(BaseModel):
+    sessions: List[ChatSessionSummary]
+    total: int
     total: int

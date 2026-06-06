@@ -21,6 +21,7 @@ os.environ.setdefault("RATE_LIMIT_REGISTER", "10000")
 os.environ.setdefault("RATE_LIMIT_LOGIN", "10000")
 os.environ.setdefault("RATE_LIMIT_REFRESH", "10000")
 os.environ.setdefault("RATE_LIMIT_SESSION_START", "10000")
+os.environ.setdefault("RATE_LIMIT_ADMIN_CLEANUP", "10000")
 # Don't spin up the background scheduler in tests — it would
 # keep the pytest process alive past the last test.
 os.environ.setdefault("DISABLE_BACKGROUND_JOBS", "1")
@@ -84,6 +85,18 @@ def client(db_session):
             pass
 
     app.dependency_overrides[get_db] = _override_get_db
+    # Clear the in-memory rate-limit and feature-flag cache between tests
+    # so test order doesn't leak into the global sliding-window buckets.
+    from app import cache, utils
+    try:
+        cache.clear_all()
+    except Exception:
+        pass
+    try:
+        utils._feature_flags.clear()
+        utils._feature_flag_expiry.clear()
+    except Exception:
+        pass
     with TestClient(app) as c:
         yield c
     app.dependency_overrides.clear()

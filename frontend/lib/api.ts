@@ -239,4 +239,16 @@ export const api = {
     request<SessionStateResponse>(`/api/v1/session/${sessionId}/recover`, {
       method: "POST",
     }),
+
+  /** Mint (or re-use) a public share token for a session. */
+  shareSession: (sessionId: string) =>
+    request<{ share_url: string; token: string }>(`/api/v1/session/${sessionId}/share`, {
+      method: "POST",
+    }),
+
+  /** Revoke an existing share token. */
+  revokeShareSession: (sessionId: string) =>
+    request<{ message: string }>(`/api/v1/session/${sessionId}/share`, {
+      method: "DELETE",
+    }),
 };

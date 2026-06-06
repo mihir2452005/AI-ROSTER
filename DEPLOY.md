@@ -65,6 +65,32 @@ In **Dashboard → roastgpt-api → Environment**, add:
 | `BACKUP_GITHUB_REPO`      | `your-username/roastgpt-backups`                       |
 | `BACKUP_GITHUB_TOKEN`     | *(fine-grained PAT, `contents:write` on the repo)*     |
 
+**Optional — Redis / rate limiting (Round 8):**
+
+| Key              | Value                                                                |
+| ---------------- | -------------------------------------------------------------------- |
+| `REDIS_URL`      | `rediss://default:xxx@upstash.io:6379` *(from Upstash free dashboard)* |
+
+When `REDIS_URL` is set, the rate-limit sliding window, feature flags, and
+achievement cache all run through Redis. Without it, the app uses an in-process
+dict — identical behaviour, but the counters reset on every cold start
+(15 min idle, Render spins down).
+
+To get a free Redis: sign up at <https://upstash.com>, create a free
+Redis instance (region same as Render, e.g. Oregon), copy the
+`REDIS_URL` (rediss://...), paste it above.
+
+**Optional — Error monitoring with Sentry (Round 8):**
+
+| Key                   | Value                                                        |
+| --------------------- | ------------------------------------------------------------ |
+| `SENTRY_DSN`          | `https://xxx@sentry.io/yyy` *(from Sentry → your project)*  |
+| `SENTRY_ENVIRONMENT`  | `production` (defaults to `ENVIRONMENT`)                     |
+
+When `SENTRY_DSN` is unset, the Sentry SDK is never initialised and no
+data is sent. To enable: create a project at <https://sentry.io>,
+copy the DSN, paste it above.
+
 **Optional — for verification / password-reset emails (Round 6):**
 
 | Key              | Value                                                                |
@@ -189,6 +215,10 @@ to use the new domains, redeploy both.
 - [ ] `/pricing` loads the 3 plans
 - [ ] `SMTP_*` env vars set (or accept the dev-mode log behavior)
 - [ ] `LLM_PROVIDER` is `stub` unless you have an LLM key to use
+- [ ] (optional) `REDIS_URL` set — rate-limit + flag cache survive cold starts
+- [ ] (optional) `SENTRY_DSN` set — error monitoring active
+- [ ] (optional) `CELERY_BROKER_URL` set — background queue uses Redis. Without it, the queue runs in-process (daemon thread) which is fine for the free-tier 750-hr/month web service.
+- [ ] (optional) Custom domain DNS records propagated on both Render and Vercel
 
 ---
 
@@ -277,14 +307,16 @@ Open http://localhost:3000. The frontend talks to the backend on 8000.
 
 ## 7. Cost notes (free tier, all services)
 
-| Service                | Free tier limit                                  | Survives inactivity? | Cost after free tier        |
-| ---------------------- | ------------------------------------------------ | -------------------- | --------------------------- |
-| Render web service     | 750 hrs/mo, 1 service                            | Spins down at 15 min idle (cold start 30–60 s) | $7/mo starter (always-on)  |
-| Render Cron Job        | 1 cron job                                       | n/a                  | $1/mo per cron              |
-| Neon Postgres          | 0.5 GB, 100 CU-hr/mo                             | **Yes** (never expires, never pauses) | $19/mo Launch (3 GB)   |
-| GitHub (backup repo)   | Unlimited private repos, 1 GB free               | Yes                  | $4/mo for 100 GB LFS        |
-| Vercel (frontend)      | 100 GB bandwidth, unlimited projects             | Yes                  | $20/mo Pro                  |
-| Razorpay               | 2% per successful payment                        | n/a                  | Same                        |
+| Service                     | Free tier limit                                  | Survives inactivity? | Cost after free tier        |
+| --------------------------- | ------------------------------------------------ | -------------------- | --------------------------- |
+| Render web service          | 750 hrs/mo, 1 service                            | Spins down at 15 min idle (cold start 30–60 s) | $7/mo starter (always-on)  |
+| Render Cron Job             | 1 cron job                                       | n/a                  | $1/mo per cron              |
+| Neon Postgres               | 0.5 GB, 100 CU-hr/mo                             | **Yes** (never expires, never pauses) | $19/mo Launch (3 GB)   |
+| Upstash Redis               | 10 000 commands/day, 1 MB data                   | **Yes**              | $0.15/GB bandwidth + $0.50/GB storage |
+| Sentry                      | 5 000 errors/month, 1 user                       | **Yes**              | $26/mo Team (50K errors)    |
+| GitHub (backup repo)        | Unlimited private repos, 1 GB free               | Yes                  | $4/mo for 100 GB LFS        |
+| Vercel (frontend)           | 100 GB bandwidth, unlimited projects             | Yes                  | $20/mo Pro                  |
+| Razorpay                    | 2% per successful payment                        | n/a                  | Same                        |
 
 **Total: $0/month** for the entire stack, including daily backups.
 
@@ -292,7 +324,13 @@ Open http://localhost:3000. The frontend talks to the backend on 8000.
 - Render web service **spins down after 15 min of idle**. Cold start is
   30–60 s. Authenticated users get a one-time "Session recovered from
   history" banner after a cold start (the session state is rebuilt
-  from the `roast_sessions` table).
+  from the `roast_sessions` table). If `REDIS_URL` is set, the
+  rate-limit and feature-flag cache also survives cold starts.
+- The in-process queue (daemon thread) runs inside the web service.
+  Background jobs (daily snapshots, retention sweeps) are only
+  processed while the web service is awake. If you need them to run on
+  a schedule, set `CELERY_BROKER_URL` to your Upstash Redis and add a
+  separate Celery worker service in `render.yaml`.
 - Neon has 100 CU-hours per month. CU-hours depend on compute
   consumption — for a low-traffic RoastGPT deployment (a few hundred
   active users) this is essentially never reached. The free project

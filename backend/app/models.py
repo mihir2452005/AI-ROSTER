@@ -278,6 +278,10 @@ class SessionStateResponse(BaseModel):
     scores: SessionScores
     history: list[ChatMessage]
     is_ended: bool = False
+    # True when the response was served by the public /share/{token}
+    # endpoint. The frontend uses this to hide the "share again" button
+    # and any owner-only controls.
+    is_public: bool = False
 
 
 class ModesResponse(BaseModel):

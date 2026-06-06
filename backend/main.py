@@ -65,6 +65,14 @@ logging.basicConfig(
 )
 log = logging.getLogger("roastgpt")
 
+# Initialise Sentry + structured logging as early as possible so any
+# startup error is captured. See backend/app/monitoring.py.
+try:
+    from app import monitoring as _monitoring
+    _monitoring.init_sentry()
+except Exception as _e:  # pragma: no cover
+    log.warning("monitoring init failed: %s", _e)
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -83,6 +91,18 @@ async def lifespan(app: FastAPI):
         len(LIB.intents),
     )
 
+    # Cache + queue backends. Touching these on startup forces the
+    # lazy-init in app/cache.py and app/queue.py to log which backend
+    # was selected. If REDIS_URL is unset they fall back to the
+    # in-process implementations; nothing else needs to know.
+    try:
+        from app import cache as _cache
+        from app import queue as _queue
+        log.info("cache backend: %s", _cache.backend())
+        log.info("queue backend: %s", _queue.backend())
+    except Exception as e:  # pragma: no cover
+        log.warning("cache/queue init probe failed: %s", e)
+
     # Initialise the database (creates tables on first run).
     log.info("initialising database...")
     try:
@@ -100,7 +120,7 @@ async def lifespan(app: FastAPI):
 
     # Start the in-process background jobs (leaderboard snapshot,
     # retention sweep). On the free tier these run inside the web
-    # process; on a worker dyno, swap to APScheduler/celery.
+    # process; on a worker dyno, swap to Celery beat.
     from app import jobs
     jobs.start_scheduler()
 
@@ -302,6 +322,10 @@ def _extract_client_ip(request: Request) -> str:
 # least-recently-active entry. Prevents an attacker from filling memory
 # by hitting the API from many random IPs.
 RATE_LIMIT_TRACKED_IPS = int(os.environ.get("RATE_LIMIT_TRACKED_IPS", "10000"))
+# Backwards-compat: keep the in-process maps for the /metrics counter
+# (`roastgpt_rate_limit_tracked_ips`). The actual rate-limit sliding
+# window is now stored in `app.cache`, which uses Redis when REDIS_URL
+# is set and an in-process dict otherwise.
 _request_history: Dict[str, list] = defaultdict(list)
 _last_seen: Dict[str, float] = {}
 
@@ -338,27 +362,21 @@ async def rate_limit_middleware(request: Request, call_next):
                 break
 
         now = time.time()
-        window_start = now - window
+        # Sliding window stored in app.cache (Redis or in-memory). The
+        # push returns the (trimmed) list of timestamps in the window.
+        cache_key = f"rl:{ip}:{request.url.path}"
+        try:
+            from app import cache as _cache
+            history = _cache.sliding_push(cache_key, now, window)
+        except Exception:  # pragma: no cover
+            history = []
 
-        # Bound the per-IP request list. Even under sustained abuse the
-        # list will never exceed the limit (the cap below).
-        request_history = _request_history[ip]
-        while request_history and request_history[0] < window_start:
-            request_history.pop(0)
-        # Hard cap: if the IP is sending requests faster than we can age
-        # them out, drop the oldest to keep memory bounded.
-        while len(request_history) >= limit:
-            request_history.pop(0)
+        # Cap to limit (drop the oldest) so a runaway client can't
+        # blow the in-memory list.
+        if len(history) > limit:
+            history = history[-limit:]
 
-        # Check limit
-        if len(request_history) >= limit:
-            # Return a JSONResponse directly rather than raising
-            # HTTPException. The exception would be re-raised by
-            # Starlette's middleware handler and the response would
-            # not include the security headers from
-            # `add_security_headers` (which is registered LATER and
-            # therefore outer in the ASGI chain). Building the
-            # response here means we control every header.
+        if len(history) >= limit:
             from fastapi.responses import JSONResponse
             return JSONResponse(
                 status_code=429,
@@ -369,8 +387,12 @@ async def rate_limit_middleware(request: Request, call_next):
                 headers={"Retry-After": str(window)},
             )
 
-        # Add current request
-        request_history.append(now)
+        # Mirror into the in-process map for /metrics + the
+        # RATE_LIMIT_TRACKED_IPS eviction policy. Keeping both maps
+        # is cheap; the in-process one only stores the current count.
+        if not history or history[-1] != now:
+            history.append(now)
+        _request_history[ip] = history
         _last_seen[ip] = now
         _evict_one_if_full()
 

@@ -131,6 +131,7 @@ export interface User {
   gender_preference: "male" | "female" | "neutral";
   is_verified: boolean;
   is_admin: boolean;
+  role?: string;
   free_messages_used: number;
   has_active_subscription: boolean;
   created_at: string;
@@ -405,13 +406,6 @@ export const historyApi = {
   },
   clear: () => request<{ message: string; deleted: number }>("/api/v1/history", { method: "DELETE" }),
   // Note: we use raw `fetch` here (not the shared `request()` helper)
-  // because we need the actual `Response` object to read it as a blob
-  // for the file-download UX. The shared helper would JSON-parse it.
-  // The path is versioned (`/api/v1/...`) to match every other
-  // frontend call. NEXT_PUBLIC_API_URL is the standard way to override
-  // the origin in dev/staging/prod; `__API_BASE__` is a legacy
-  // escape hatch and falls back to "" so the Next.js rewrite in
-  // next.config.mjs proxies to the backend in dev.
   export: (format: "txt" | "md" | "json" = "txt") => {
     const base = (typeof process !== "undefined" && process.env.NEXT_PUBLIC_API_URL) ||
       (typeof window !== "undefined" && (window as unknown as { __API_BASE__?: string }).__API_BASE__) ||
@@ -420,6 +414,27 @@ export const historyApi = {
       `${base}/api/v1/history/export?format=${format}`,
       { headers: authHeader() },
     );
+  },
+  /** Continue Previous Chat: list persisted sessions grouped by session_id. */
+  sessions: (params?: { skip?: number; limit?: number; q?: string }) => {
+    const qs = new URLSearchParams();
+    if (params?.skip) qs.set("skip", String(params.skip));
+    if (params?.limit) qs.set("limit", String(params.limit));
+    if (params?.q) qs.set("q", params.q);
+    const q = qs.toString();
+    return request<{
+      sessions: Array<{
+        session_id: string;
+        mode: string;
+        personality: string;
+        message_count: number;
+        last_message_at: string;
+        is_ended: boolean;
+        score_total: number;
+        preview: string | null;
+      }>;
+      total: number;
+    }>(`/api/v1/history/sessions${q ? `?${q}` : ""}`);
   },
 };
 
@@ -434,6 +449,7 @@ export interface AdminUser {
   is_active: boolean;
   is_verified: boolean;
   is_admin: boolean;
+  role?: string;
   free_messages_used: number;
   created_at: string;
   has_active_subscription: boolean;
@@ -473,7 +489,7 @@ export const adminApi = {
 
   getUser: (id: number) => request<AdminUser>(`/api/v1/admin/users/${id}`),
 
-  updateUser: (id: number, patch: { is_active?: boolean; is_verified?: boolean; is_admin?: boolean }) =>
+  updateUser: (id: number, patch: { is_active?: boolean; is_verified?: boolean; is_admin?: boolean; role?: string }) =>
     request<{ message: string }>(`/api/v1/admin/users/${id}`, {
       method: "PATCH",
       body: JSON.stringify(patch),
@@ -487,6 +503,11 @@ export const adminApi = {
 
   unbanUser: (id: number) =>
     request<{ message: string }>(`/api/v1/admin/users/${id}/unban`, { method: "POST" }),
+
+  listRoles: () =>
+    request<{ roles: Array<{ name: string; rank: number; permissions: string[] }> }>(
+      "/api/v1/admin/roles"
+    ),
 
   listFeatureFlags: () => request<{ flags: Array<{ key: string; enabled: boolean; description: string | null; updated_at: string | null }> }>(
     "/api/v1/admin/feature-flags"

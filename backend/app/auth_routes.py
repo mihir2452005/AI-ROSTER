@@ -264,6 +264,7 @@ def get_me(
         gender_preference=user.gender_preference.value,
         is_verified=user.is_verified,
         is_admin=user.is_admin,
+        role=user.role,
         free_messages_used=user.free_messages_used,
         created_at=user.created_at,
         has_active_subscription=has_sub,

@@ -213,6 +213,11 @@ def log_action(
 # ---------------------------------------------------------------------------
 # Feature flags
 # ---------------------------------------------------------------------------
+#
+# The cache now lives in `app.cache` (Redis with in-memory fallback).
+# We still keep `_FLAG_CACHE_LOADED_AT` as a TTL marker so we re-load
+# from the DB only every 60 seconds. set_flag() invalidates the key
+# immediately, so a freshly-flipped flag is visible on the next read.
 
 
 _FLAG_CACHE: dict[str, bool] = {}
@@ -223,6 +228,7 @@ _FLAG_CACHE_TTL = 60.0  # seconds
 def is_flag_enabled(db: Session, key: str, default: bool = False) -> bool:
     """Read a feature flag, with a 60s in-process cache."""
     import time
+    from . import cache as _cache
 
     global _FLAG_CACHE_LOADED_AT
     if not key:
@@ -235,15 +241,26 @@ def is_flag_enabled(db: Session, key: str, default: bool = False) -> bool:
             from . import db_models
             for row in db.query(db_models.FeatureFlag).all():
                 _FLAG_CACHE[row.key] = bool(row.enabled)
+            # Best-effort: also write into the shared cache so other
+            # processes / pods see the same answer.
+            for k, v in _FLAG_CACHE.items():
+                _cache.setex(f"flag:{k}", int(_FLAG_CACHE_TTL) + 5, "1" if v else "0")
         except Exception:  # pragma: no cover
             pass
-    return _FLAG_CACHE.get(key, default)
+    # If our local cache has it, return it. Otherwise ask the shared
+    # cache (Redis when configured). Falls back to default on miss.
+    if key in _FLAG_CACHE:
+        return _FLAG_CACHE[key]
+    cached = _cache.get(f"flag:{key}")
+    if cached is not None:
+        return cached == "1"
+    return default
 
 
 def set_flag(db: Session, key: str, enabled: bool, updated_by_id: Optional[int] = None,
              description: Optional[str] = None) -> None:
     """Upsert a flag and invalidate the cache."""
-    from . import db_models
+    from . import db_models, cache as _cache
     row = db.get(db_models.FeatureFlag, key)
     if row is None:
         row = db_models.FeatureFlag(key=key, enabled=enabled, description=description)
@@ -257,6 +274,9 @@ def set_flag(db: Session, key: str, enabled: bool, updated_by_id: Optional[int] 
     db.commit()
     _FLAG_CACHE.pop(key, None)
     _FLAG_CACHE_LOADED_AT = 0.0
+    # Invalidate the shared cache too. setex overwrites with a short
+    # TTL so subsequent reads re-fetch from the DB on the next cycle.
+    _cache.setex(f"flag:{key}", 5, "1" if enabled else "0")
 
 
 def list_flags(db: Session) -> list[dict]:

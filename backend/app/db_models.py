@@ -12,7 +12,7 @@ from sqlalchemy import (
     String, Integer, Boolean, DateTime, ForeignKey, Text, JSON, Enum, Float,
     Index, UniqueConstraint,
 )
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship, validates
 import enum
 
 from .database import Base
@@ -23,9 +23,68 @@ def utcnow() -> datetime:
 
 
 class GenderPref(str, enum.Enum):
+    neutral = "neutral"
     male = "male"
     female = "female"
-    neutral = "neutral"
+
+
+class Role(str, enum.Enum):
+    """Role-based access control.
+
+    Order matters: a higher role can do everything a lower role can.
+    The `User.role` column stores the enum name (lowercase string);
+    the existing `is_admin: bool` column is auto-derived from role to
+    keep old code paths working during the transition.
+    """
+    user = "user"            # default. Can chat, view own data, manage own sub.
+    moderator = "moderator"  # can ban users, view audit logs, view payments.
+    support = "support"      # read-only user data + audit logs (no edits).
+    finance = "finance"      # can view payments, revenue, grant subscriptions.
+    admin = "admin"          # full admin powers (legacy `is_admin=True`).
+    super_admin = "super_admin"  # can change other admins' roles, including demoting self.
+
+    @classmethod
+    def from_string(cls, s: str | None) -> "Role":
+        if not s:
+            return cls.user
+        try:
+            return cls(s.lower())
+        except ValueError:
+            return cls.user
+
+    def rank(self) -> int:
+        order = ["user", "moderator", "support", "finance", "admin", "super_admin"]
+        return order.index(self.value) if self.value in order else 0
+
+    def can(self, required: "Role") -> bool:
+        return self.rank() >= required.rank()
+
+
+# Permission helpers. These are coarse-grained and intentionally
+# string-typed so admin tooling can introspect them.
+PERMISSIONS: dict[str, Role] = {
+    # User self-service
+    "chat.send": Role.user,
+    "history.read_own": Role.user,
+    "subscription.manage_own": Role.user,
+    "account.manage_own": Role.user,
+    # Moderation
+    "user.ban": Role.moderator,
+    "user.unban": Role.moderator,
+    "audit.read": Role.moderator,
+    # Support (read-only on user data)
+    "user.read_pii": Role.support,
+    # Finance
+    "payments.read_all": Role.finance,
+    "subscription.grant": Role.finance,
+    "revenue.read": Role.finance,
+    # Admin
+    "user.set_role": Role.admin,
+    "user.set_is_admin": Role.admin,
+    "feature_flag.manage": Role.admin,
+    "admin.create": Role.super_admin,
+    "admin.demote": Role.super_admin,
+}
 
 
 class SubStatus(str, enum.Enum):
@@ -57,6 +116,11 @@ class User(Base):
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     is_verified: Mapped[bool] = mapped_column(Boolean, default=False)
     is_admin: Mapped[bool] = mapped_column(Boolean, default=False)
+    # Role-based access control. New systems should check `role` via
+    # `User.has_role(Role.admin)` instead of reading `is_admin`. The
+    # `is_admin` column is kept for backwards compatibility; the value
+    # is auto-derived on insert/update.
+    role: Mapped[str] = mapped_column(String(32), default="user", index=True)
     free_messages_used: Mapped[int] = mapped_column(Integer, default=0)
     # Incremented to invalidate every outstanding JWT (logout-everywhere,
     # password change, account compromise). Compared with the `ver` claim in
@@ -113,6 +177,93 @@ class User(Base):
     memory: Mapped[Optional["UserMemory"]] = relationship(
         back_populates="user", cascade="all, delete-orphan", uselist=False
     )
+
+    # ---- RBAC helpers ----
+    # Call `user.has_role(Role.admin)` from route handlers. The result
+    # is True iff the user's role rank is >= the required rank.
+    def has_role(self, required: "Role") -> bool:
+        return Role.from_string(self.role).can(required)
+
+    def has_permission(self, permission: str) -> bool:
+        required = PERMISSIONS.get(permission)
+        if required is None:
+            return False
+        return self.has_role(required)
+
+    @property
+    def role_enum(self) -> "Role":
+        return Role.from_string(self.role)
+
+    def __init__(self, *args, **kwargs):
+        # Apply the default role if not given, and sync is_admin so
+        # code that reads `user.is_admin` immediately after construction
+        # (common in tests) sees the correct value.
+        if "role" not in kwargs or kwargs["role"] is None:
+            kwargs["role"] = "user"
+        # Pull is_admin out of kwargs if it was passed — we'll override.
+        explicit_is_admin = kwargs.pop("is_admin", None)
+        super().__init__(*args, **kwargs)
+        # If the caller explicitly set is_admin, honour it; otherwise
+        # derive from role.
+        if explicit_is_admin is None:
+            self.is_admin = Role.from_string(self.role).can(Role.admin)
+        else:
+            self.is_admin = bool(explicit_is_admin)
+
+    @validates("role")
+    def _validate_role(self, key, value):
+        """On any in-process assignment to `role`, immediately re-sync
+        `is_admin` so callers reading `user.is_admin` after a role change
+        see the new value (the before_insert/before_update events only
+        fire on flush)."""
+        if not value:
+            value = "user"
+        # Direct attribute write via __dict__ to avoid triggering
+        # _validate_is_admin recursively. The event listener will
+        # also re-sync on flush, so we don't lose anything.
+        self.__dict__["is_admin"] = Role.from_string(value).can(Role.admin)
+        return value
+
+    @validates("is_admin")
+    def _validate_is_admin(self, key, value):
+        """Backwards-compat: legacy test/admin code sets `is_admin=True`
+        to make a user an admin. We promote to the `admin` role if
+        their current role is below admin. Demotions (is_admin=False)
+        leave `role` untouched because the user may still hold a
+        moderator/support/finance role.
+
+        We set `role` via __dict__ to avoid re-entering _validate_role
+        (which would also try to write `is_admin`).
+        """
+        if value and Role.from_string(self.role).rank() < Role.admin.rank():
+            self.__dict__["role"] = "admin"
+            self.__dict__["is_admin"] = True
+        return value
+
+    @validates("is_admin")
+    def _validate_is_admin(self, key, value):
+        """Backwards-compat: legacy test/admin code sets `is_admin=True`
+        to make a user an admin. We promote to the `admin` role.
+        Demotions (is_admin=False) leave `role` untouched because the
+        user may still hold a moderator/support/finance role."""
+        if value and Role.from_string(self.role).rank() < Role.admin.rank():
+            self.role = "admin"
+        return value
+
+
+# SQLAlchemy event: keep `is_admin` in sync with `role` automatically.
+# This means old code paths that read `user.is_admin` keep working
+# unchanged — they just see a derived value.
+from sqlalchemy import event  # noqa: E402
+
+
+@event.listens_for(User, "before_insert")
+@event.listens_for(User, "before_update")
+def _sync_is_admin(mapper, connection, target):  # noqa: D401
+    # Default missing role to "user" so the column is never NULL.
+    if not getattr(target, "role", None):
+        target.role = "user"
+    target.is_admin = Role.from_string(target.role).can(Role.admin)
 
 
 class SubscriptionPlan(Base):
@@ -293,6 +444,16 @@ class RoastSession(Base):
         DateTime(timezone=True), default=utcnow, onupdate=utcnow
     )
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    # Sharing is opt-in. When the user clicks "Share" we mint a random
+    # token and write it here. The token is what the public /share/{token}
+    # page resolves; the underlying `session_id` is the owner-only
+    # identifier. Tokens can be revoked by clearing this column.
+    is_public: Mapped[bool] = mapped_column(Boolean, default=False)
+    share_token: Mapped[Optional[str]] = mapped_column(
+        String(48), unique=True, index=True, nullable=True
+    )
+    share_revoked: Mapped[bool] = mapped_column(Boolean, default=False)
+    share_views: Mapped[int] = mapped_column(Integer, default=0)
 
     user: Mapped[Optional["User"]] = relationship(back_populates="roast_sessions")
 

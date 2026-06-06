@@ -84,6 +84,7 @@ export interface SessionStateResponse {
   scores: SessionScores;
   history: ChatMessage[];
   is_ended: boolean;
+  is_public?: boolean;
 }
 
 export const MODES: { value: RoastMode; label: string; emoji: string; description: string }[] = [
