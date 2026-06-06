@@ -22,7 +22,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 
-from . import auth, auth_schemas, db_models
+from . import auth, auth_schemas, db_models, utils
 from .database import get_db
 
 log = logging.getLogger(__name__)
@@ -464,6 +464,27 @@ def verify_payment(
         }
     db.refresh(sub)
 
+    # In-app payment-success notification. Failure is non-fatal.
+    try:
+        from .round9_routes import _create_notification
+        _create_notification(
+            db, user.id, "system", f"Payment received: {plan.name} 🎉",
+            f"Thanks! Your {plan.name} subscription is active until "
+            f"{sub.current_period_end.strftime('%Y-%m-%d') if sub.current_period_end else 'the end of the period'}.",
+            link="/account",
+        )
+    except Exception:
+        pass
+    # Payment success email
+    try:
+        from . import utils as _utils
+        _utils.send_payment_success_email(
+            user.email, plan.name,
+            sub.current_period_end.isoformat() if sub.current_period_end else None,
+        )
+    except Exception:
+        pass
+
     return {
         "message": "Payment verified and subscription activated",
         "subscription_id": sub.id,
@@ -713,6 +734,24 @@ def cancel_subscription(
         raise HTTPException(status_code=404, detail="No active subscription")
     sub.cancel_at_period_end = True
     db.commit()
+    # In-app notification
+    try:
+        from .round9_routes import _create_notification
+        _create_notification(
+            db, user.id, "system", "Subscription will end at period close",
+            f"Your subscription is set to cancel on "
+            f"{sub.current_period_end.strftime('%Y-%m-%d') if sub.current_period_end else 'the period end'}. "
+            "You can re-enable any time before then.",
+            link="/pricing",
+        )
+    except Exception:
+        pass
+    # Cancellation email
+    try:
+        plan_name = sub.plan.name if sub.plan else "your"
+        utils.send_subscription_cancelled_email(user.email, plan_name)
+    except Exception:
+        pass
     return {
         "message": "Subscription will be cancelled at the end of the current period",
         "current_period_end": sub.current_period_end.isoformat(),

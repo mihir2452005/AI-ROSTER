@@ -9,8 +9,10 @@ from __future__ import annotations
 
 import hashlib
 import hmac
+import html
 import logging
 import os
+import re
 import secrets
 import smtplib
 from datetime import datetime, timezone, timedelta
@@ -97,6 +99,37 @@ def consume_email_token(
 
 
 # ---------------------------------------------------------------------------
+# Text sanitization
+# ---------------------------------------------------------------------------
+#
+# Round 9 — used by the public contact form and the admin broadcast
+# notification endpoint. Strips HTML tags, escapes remaining angle
+# brackets, and caps the result to `max_len` characters. Catches the
+# most common XSS smuggled through user-typed text on the way into
+# the admin inbox or another user's notification feed.
+
+
+_TAG_RE = re.compile(r"<[^>]+>")
+
+
+def sanitize_text(value: Optional[str], max_len: int = 1000) -> str:
+    """Strip HTML, escape the rest, and cap length.
+
+    The contact form, broadcast notification, and any other
+    user-submitted free-text field should call this before persisting.
+    Never raises — a None or non-string input becomes "".
+    """
+    if not value or not isinstance(value, str):
+        return ""
+    cleaned = _TAG_RE.sub("", value)
+    cleaned = html.escape(cleaned, quote=False)
+    cleaned = cleaned.strip()
+    if max_len and len(cleaned) > max_len:
+        cleaned = cleaned[:max_len].rstrip()
+    return cleaned
+
+
+# ---------------------------------------------------------------------------
 # Email sending
 # ---------------------------------------------------------------------------
 
@@ -171,6 +204,78 @@ def send_password_reset_email(to: str, token: str) -> None:
             f"Click this link to set a new password:\n{link}\n\n"
             "The link is good for 1 hour. If you didn't request a reset, ignore this email\n"
             "and your password will stay the same.\n"
+        ),
+    )
+
+
+def send_welcome_email(to: str, name: Optional[str] = None) -> None:
+    """Sent on registration. The user is logged in already so this is
+    a low-friction touchpoint, not a re-pitch."""
+    base = os.environ.get("FRONTEND_URL", "http://localhost:3000").rstrip("/")
+    greeting = f"Hi {name}," if name else "Hi there,"
+    _send_email(
+        to=to,
+        subject="Welcome to RoastGPT 🔥",
+        body=(
+            f"{greeting}\n\n"
+            "Your account is ready. Pick a mode, pick a personality, and\n"
+            "prepare to get roasted. The first 5 messages are free.\n\n"
+            f"Start a session: {base}\n\n"
+            "If you ever get stuck, the help center is one click away.\n"
+            "\n— RoastGPT\n"
+        ),
+    )
+
+
+def send_payment_success_email(
+    to: str, plan_name: str, period_end_iso: Optional[str] = None
+) -> None:
+    """Sent on successful payment verification / webhook capture."""
+    base = os.environ.get("FRONTEND_URL", "http://localhost:3000").rstrip("/")
+    until = ""
+    if period_end_iso:
+        until = f" Your subscription is active until {period_end_iso[:10]}."
+    _send_email(
+        to=to,
+        subject=f"Payment received: {plan_name} ✅",
+        body=(
+            f"Thanks! Your {plan_name} subscription is now active.{until}\n\n"
+            f"Manage your subscription: {base}/account\n"
+            "\n— RoastGPT\n"
+        ),
+    )
+
+
+def send_subscription_expiring_email(
+    to: str, days_left: int, plan_name: str
+) -> None:
+    """Sent ~3 days before the period ends. In-app notification is the
+    primary surface; the email is the catch-all for users who haven't
+    opened the app in a while."""
+    base = os.environ.get("FRONTEND_URL", "http://localhost:3000").rstrip("/")
+    _send_email(
+        to=to,
+        subject=f"Your {plan_name} subscription expires in {days_left} days",
+        body=(
+            f"Heads up: your {plan_name} subscription ends in {days_left} days.\n\n"
+            f"Renew or change plan: {base}/pricing\n"
+            "\n— RoastGPT\n"
+        ),
+    )
+
+
+def send_subscription_cancelled_email(to: str, plan_name: str) -> None:
+    """Sent when a user explicitly cancels."""
+    base = os.environ.get("FRONTEND_URL", "http://localhost:3000").rstrip("/")
+    _send_email(
+        to=to,
+        subject=f"Your {plan_name} subscription has been cancelled",
+        body=(
+            f"Your {plan_name} subscription is cancelled. You'll keep access\n"
+            "until the end of the current billing period, then revert to the\n"
+            "free tier (5 messages per account).\n\n"
+            f"Re-subscribe any time: {base}/pricing\n"
+            "\n— RoastGPT\n"
         ),
     )
 

@@ -60,6 +60,24 @@ def register(
         )
     db.refresh(user)
 
+    # Welcome notification (in-app bell + email). Failure here is
+    # never fatal — the user is created and logged in regardless.
+    try:
+        from .round9_routes import _create_notification
+        _create_notification(
+            db, user.id, "system", "Welcome to RoastGPT 🔥",
+            f"Hi {user.full_name or 'there'}! Your account is ready. "
+            "Pick a mode, pick a personality, and prepare to get roasted.",
+            link="/",
+        )
+    except Exception:
+        pass
+    # Welcome email
+    try:
+        utils.send_welcome_email(user.email, user.full_name)
+    except Exception:
+        pass
+
     access = auth.create_access_token(user.id, user.email, user.token_version)
     refresh = auth.create_refresh_token(user.id, user.email, user.token_version)
     return auth_schemas.TokenResponse(
@@ -319,6 +337,16 @@ def change_password(
     # get a fresh token from /auth/login after this succeeds.
     user.token_version = (user.token_version or 0) + 1
     db.commit()
+    # In-app notification
+    try:
+        from .round9_routes import _create_notification
+        _create_notification(
+            db, user.id, "system", "Password changed",
+            "Your password was updated. Other sessions have been signed out.",
+            link="/account",
+        )
+    except Exception:
+        pass
     return {"message": "Password updated. Other sessions have been signed out."}
 
 

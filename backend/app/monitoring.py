@@ -71,6 +71,15 @@ def init_sentry() -> None:
         _init_logging()
         _initialised = True
         return
+
+
+def sentry_enabled() -> bool:
+    """True iff Sentry was initialised AND a DSN was provided.
+
+    Used by the /system/status and /system/metrics endpoints to
+    expose a Sentry health probe.
+    """
+    return bool(SENTRY_DSN) and _initialised
     try:
         import sentry_sdk
         from sentry_sdk.integrations.fastapi import FastApiIntegration

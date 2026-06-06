@@ -177,6 +177,9 @@ class User(Base):
     memory: Mapped[Optional["UserMemory"]] = relationship(
         back_populates="user", cascade="all, delete-orphan", uselist=False
     )
+    notifications: Mapped[List["Notification"]] = relationship(
+        back_populates="user", cascade="all, delete-orphan"
+    )
 
     # ---- RBAC helpers ----
     # Call `user.has_role(Role.admin)` from route handlers. The result
@@ -639,5 +642,70 @@ class LeaderboardSnapshot(Base):
 
     __table_args__ = (
         Index("ix_snapshot_period_rank", "period", "period_id", "rank"),
+    )
+
+
+# =============================================================================
+# Round 9 — Notifications + Contact Messages
+# =============================================================================
+
+
+class Notification(Base):
+    """In-app notification (bell-icon center).
+
+    The notification is a one-way message from the system to a user. We
+    keep `body` short and pre-rendered (no template substitution at
+    render time). `kind` is a free-form string the frontend can branch
+    on (e.g. "subscription_expiring", "achievement_unlocked",
+    "admin_announcement") for icons / grouping.
+    """
+    __tablename__ = "notifications"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), index=True
+    )
+    # "subscription_expiring" | "achievement_unlocked" |
+    # "admin_announcement" | "share_view" | "system"
+    kind: Mapped[str] = mapped_column(String(64), default="system")
+    title: Mapped[str] = mapped_column(String(200), nullable=False)
+    body: Mapped[str] = mapped_column(String(1000), nullable=False)
+    # Optional deep link to /account, /chat/{id}, /pricing, etc.
+    link: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
+    is_read: Mapped[bool] = mapped_column(Boolean, default=False, index=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=utcnow, index=True
+    )
+
+    user: Mapped["User"] = relationship(back_populates="notifications")
+
+    __table_args__ = (
+        # Used by the bell-icon poll: latest N notifications for a user.
+        Index("ix_notifications_user_created", "user_id", "created_at"),
+    )
+
+
+class ContactMessage(Base):
+    """A message submitted via the public /contact form.
+
+    Anonymous — no foreign key to `users`. We capture the email at
+    submit time so the support team can reply. `status` is a tiny
+    workflow: `new` → `in_progress` → `closed` (or `spam`).
+    """
+    __tablename__ = "contact_messages"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    name: Mapped[str] = mapped_column(String(100), nullable=False)
+    email: Mapped[str] = mapped_column(String(255), nullable=False, index=True)
+    subject: Mapped[str] = mapped_column(String(200), nullable=False)
+    message: Mapped[str] = mapped_column(String(5000), nullable=False)
+    # "new" | "in_progress" | "closed" | "spam"
+    status: Mapped[str] = mapped_column(String(20), default="new", index=True)
+    # The IP that submitted. Helps identify spam bursts.
+    ip: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
+    # The user-agent of the browser that submitted, for spam forensics.
+    user_agent: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=utcnow, index=True
     )
 

@@ -28,6 +28,7 @@ try:
     from app.admin_routes import router as admin_users_router
     from app.history_routes import router as history_router
     from app.leaderboard_routes import router as leaderboard_router
+    from app.round9_routes import router as round9_router
     from app.database import init_db, get_db
     from app import auth as auth_module
     from app import payment_routes  # to seed plans on startup
@@ -407,9 +408,99 @@ app.include_router(sub_router)                     # /api/subscriptions/*
 app.include_router(history_router)                 # /api/history/*
 app.include_router(leaderboard_router)             # /api/leaderboard/* (public)
 app.include_router(admin_users_router)             # /api/admin/* (admin user mgmt)
+app.include_router(round9_router, prefix="/api")      # /api/contact, /api/notifications, /api/system/*, /api/auth/me/activity
 # Note: backend/app/routes.py also has /api/admin/cleanup (session cleanup).
 # That route stays under the original router (legacy admin endpoint).
 # We intentionally split: admin_users_router is the new user/admin management UI.
+
+
+# ----- Maintenance mode -----
+# When the `maintenance_mode` feature flag is on, every /api/* request
+# from a non-admin user gets a 503 with a friendly message. Admins
+# (and /api/health, /api/v1/system/*) are always served so monitoring
+# keeps working during an outage.
+@app.middleware("http")
+async def maintenance_middleware(request: Request, call_next):
+    path = request.url.path
+    if path.startswith("/api/") and path not in (
+        # Health + monitoring endpoints are always served so admins
+        # and uptime scrapers can see what's happening. Each path is
+        # listed twice — once before the api_v1_alias rewrites it
+        # (raw request) and once after (rewritten). Middleware order
+        # means we usually see the rewritten form.
+        "/api/health", "/api/v1/health",
+        "/api/system/status", "/api/v1/system/status",
+        "/api/system/metrics", "/api/v1/system/metrics",
+        "/api/metrics",
+    ):
+        try:
+            from app.database import SessionLocal
+            from app import utils, db_models
+            from sqlalchemy import select
+            maintenance_on = False
+            db = SessionLocal()
+            try:
+                # Direct fast read — bypasses the 60s in-process cache
+                # so a fresh set_flag() from the admin UI is picked up
+                # on the very next request.
+                row = db.execute(
+                    select(db_models.FeatureFlag)
+                    .where(db_models.FeatureFlag.key == "maintenance_mode")
+                ).scalar_one_or_none()
+                maintenance_on = bool(row and row.enabled)
+                # Mirror into the shared cache so the next request
+                # doesn't have to hit the DB at all.
+                if row is not None:
+                    try:
+                        from app import cache
+                        cache.setex(
+                            "flag:maintenance_mode", 65,
+                            "1" if row.enabled else "0",
+                        )
+                    except Exception:
+                        pass
+            finally:
+                db.close()
+            if maintenance_on:
+                # Best-effort: decode the JWT and look up the user to
+                # see if the caller is an admin. JWTs do NOT include
+                # the is_admin claim (they hold sub/uid/ver/type), so
+                # we need a DB hit. This is fine — maintenance mode
+                # is rare and the request only does ONE query. Don't
+                # raise on a bad/missing token; just fall through to
+                # the 503.
+                from app.auth import _decode_token_no_verify_check
+                auth = request.headers.get("authorization", "")
+                is_admin = False
+                if auth.lower().startswith("bearer "):
+                    try:
+                        payload = _decode_token_no_verify_check(auth[7:])
+                        uid = payload.get("uid") or payload.get("sub") if payload else None
+                        if uid is not None:
+                            from app.database import SessionLocal
+                            from app import db_models
+                            db2 = SessionLocal()
+                            try:
+                                u = db2.get(db_models.User, int(uid))
+                                if u is not None and u.is_admin and u.deleted_at is None:
+                                    is_admin = True
+                            finally:
+                                db2.close()
+                    except Exception:
+                        pass
+                if not is_admin:
+                    from fastapi.responses import JSONResponse
+                    return JSONResponse(
+                        status_code=503,
+                        content={
+                            "detail": "RoastGPT is currently under maintenance. Please check back shortly.",
+                            "maintenance": True,
+                        },
+                    )
+        except Exception:
+            # If the feature-flag lookup itself fails, serve normally.
+            pass
+    return await call_next(request)
 
 
 # ----- API versioning (/api/v1/* aliases) -----
@@ -458,46 +549,16 @@ def root() -> dict:
 # Lightweight Prometheus-style metrics endpoint. We intentionally do
 # NOT pull in the prometheus_client package (free-tier, smaller
 # surface) — instead we expose the same key=value model in
-# text/plain, which any scraper can parse. Counts are best-effort,
-# sampled from in-process state only.
+# text/plain, which any scraper can parse. The /api/v1/system/metrics
+# endpoint in round9_routes.py is the canonical, more comprehensive
+# version (DB + cache + queue + sentry gauges). This one is kept as
+# a back-compat alias that delegates to the same function.
 @app.get("/api/metrics", include_in_schema=False)
-def metrics() -> PlainTextResponse:
-    lines: list[str] = []
-    lines.append("# HELP roastgpt_up 1 if the process is serving requests")
-    lines.append("roastgpt_up 1")
-    lines.append("# HELP roastgpt_rate_limit_tracked_ips Distinct IPs currently tracked")
-    lines.append(f"roastgpt_rate_limit_tracked_ips {len(_request_history)}")
-
-    # In-process circuit breaker from the LLM fallback (if loaded).
+def metrics() -> "PlainTextResponse":  # type: ignore[name-defined]
+    from app.database import SessionLocal
+    from app.round9_routes import prometheus_metrics
+    db = SessionLocal()
     try:
-        from app.llm_fallback import breaker_status
-        status = breaker_status()
-        open_ = 1 if status.get("open") else 0
-        lines.append("# HELP roastgpt_llm_breaker_open 1 if the LLM fallback breaker is open")
-        lines.append(f"roastgpt_llm_breaker_open {open_}")
-        for k, v in status.get("details", {}).items():
-            lines.append(f"# HELP roastgpt_llm_{k}")
-            lines.append(f"roastgpt_llm_{k} {v}")
-    except Exception:
-        pass
-
-    # Database liveness (cheap COUNT). Catches the case where the
-    # process is up but the DB is unreachable.
-    try:
-        from app.database import SessionLocal
-        from app import db_models
-        db = SessionLocal()
-        try:
-            users = db.query(db_models.User).count()
-            subs = db.query(db_models.Subscription).count()
-        finally:
-            db.close()
-        lines.append("# HELP roastgpt_users_total Total user rows in the database")
-        lines.append(f"roastgpt_users_total {users}")
-        lines.append("# HELP roastgpt_subscriptions_total Total subscription rows")
-        lines.append(f"roastgpt_subscriptions_total {subs}")
-    except Exception as e:
-        lines.append("# roastgpt_db_unreachable 1")
-        lines.append(f"roastgpt_db_unreachable 1 # {e}")
-
-    return PlainTextResponse("\n".join(lines) + "\n", media_type="text/plain; version=0.0.4")
+        return prometheus_metrics(db=db)
+    finally:
+        db.close()

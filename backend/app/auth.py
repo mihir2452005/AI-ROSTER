@@ -115,6 +115,28 @@ def decode_token(token: str) -> dict:
     )
 
 
+def _decode_token_no_verify_check(token: str) -> Optional[dict]:
+    """Best-effort token decode that NEVER raises.
+
+    Used by the maintenance-mode middleware to peek at a caller's
+    `is_admin` claim. We don't enforce token_version here because
+    that's checked when the request actually hits an authed route;
+    a stale admin token is still safer than blocking admins during
+    a maintenance window. Returns None on any failure.
+    """
+    if not token:
+        return None
+    try:
+        return jwt.decode(
+            token,
+            JWT_SECRET_KEY,
+            algorithms=[JWT_ALGORITHM],
+            options={"leeway": 30, "verify_exp": False},
+        )
+    except Exception:
+        return None
+
+
 # ---- FastAPI dependencies ----
 # `HTTPBearer` extracts the token from the `Authorization: Bearer <token>` header.
 # auto_error=False lets us raise our own HTTPException with a custom message.
