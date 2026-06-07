@@ -447,7 +447,7 @@ export default function ChatClient({ sessionId }: Props) {
                 className="btn-primary"
                 aria-label="Send message"
               >
-                Send ðŸ”¥
+                Send 🔥
               </button>
             </form>
             <div className="mt-2 flex items-center justify-between text-[10px] text-muted/70">

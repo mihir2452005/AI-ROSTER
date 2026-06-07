@@ -88,20 +88,20 @@ export interface SessionStateResponse {
 }
 
 export const MODES: { value: RoastMode; label: string; emoji: string; description: string }[] = [
-  { value: "friendly",   label: "Friendly Roast",  emoji: "ðŸ’›", description: "Light teasing. Safe to send to your mom." },
-  { value: "savage",     label: "Savage Roast",    emoji: "ðŸ”¥", description: "Brutal but safe. No mercy, no chill." },
-  { value: "programmer", label: "Programmer Roast", emoji: "ðŸ’»", description: "Code reviews from hell. Stack Overflow is tired of you." },
-  { value: "student",    label: "Student Roast",   emoji: "ðŸŽ“", description: "Your GPA, your procrastination, your excuses â€” all roasted." },
-  { value: "gamer",      label: "Gamer Roast",     emoji: "ðŸŽ®", description: "Trash-talk like it's a ranked match. GG." },
-  { value: "corporate",  label: "Corporate Roast", emoji: "ðŸ’¼", description: "LinkedIn buzzwords, meetings about meetings." },
-  { value: "startup",    label: "Startup Roast",   emoji: "ðŸ“ˆ", description: "Notion docs and Squarespace domains. TAM = everyone." },
+  { value: "friendly",   label: "Friendly Roast",  emoji: "💛", description: "Light teasing. Safe to send to your mom." },
+  { value: "savage",     label: "Savage Roast",    emoji: "🔥", description: "Brutal but safe. No mercy, no chill." },
+  { value: "programmer", label: "Programmer Roast", emoji: "💻", description: "Code reviews from hell. Stack Overflow is tired of you." },
+  { value: "student",    label: "Student Roast",   emoji: "🎓", description: "Your GPA, your procrastination, your excuses â€” all roasted." },
+  { value: "gamer",      label: "Gamer Roast",     emoji: "🎮", description: "Trash-talk like it's a ranked match. GG." },
+  { value: "corporate",  label: "Corporate Roast", emoji: "💼", description: "LinkedIn buzzwords, meetings about meetings." },
+  { value: "startup",    label: "Startup Roast",   emoji: "📈", description: "Notion docs and Squarespace domains. TAM = everyone." },
 ];
 
 export const PERSONALITIES: { value: Personality; label: string; emoji: string; description: string }[] = [
-  { value: "savage_one",        label: "The Savage One",        emoji: "ðŸ’€", description: "Maximum damage. No mercy." },
-  { value: "sarcastic_friend",  label: "The Sarcastic Friend",  emoji: "ðŸ™ƒ", description: "Playful, loving, but cuts deep." },
-  { value: "toxic_interviewer", label: "The Toxic Interviewer", emoji: "ðŸ’¼", description: "World's toughest recruiter." },
-  { value: "startup_investor",  label: "The Startup Investor",  emoji: "ðŸ“‰", description: "Destroys startup ideas with VC-speak." },
-  { value: "professor",         label: "The Professor",         emoji: "ðŸ“š", description: "Academically humiliates you with citations." },
-  { value: "gamer",             label: "The Gamer",             emoji: "ðŸ•¹ï¸", description: "Trash-talks like it's ranked." },
+  { value: "savage_one",        label: "The Savage One",        emoji: "💀", description: "Maximum damage. No mercy." },
+  { value: "sarcastic_friend",  label: "The Sarcastic Friend",  emoji: "🙃", description: "Playful, loving, but cuts deep." },
+  { value: "toxic_interviewer", label: "The Toxic Interviewer", emoji: "💼", description: "World's toughest recruiter." },
+  { value: "startup_investor",  label: "The Startup Investor",  emoji: "📉", description: "Destroys startup ideas with VC-speak." },
+  { value: "professor",         label: "The Professor",         emoji: "📚", description: "Academically humiliates you with citations." },
+  { value: "gamer",             label: "The Gamer",             emoji: "🕹️", description: "Trash-talks like it's ranked." },
 ];

@@ -126,7 +126,7 @@ function RegisterPageInner() {
                       : "border-slate-200 text-slate-600 hover:border-slate-300"
                   }`}
                 >
-                  {g === "female" ? "ðŸ‘© Female" : g === "male" ? "ðŸ‘¨ Male" : "ðŸ§‘ Neutral"}
+                  {g === "female" ? "👩 Female" : g === "male" ? "👨 Male" : "🧑 Neutral"}
                 </button>
               ))}
             </div>

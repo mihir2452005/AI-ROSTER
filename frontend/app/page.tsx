@@ -128,7 +128,7 @@ export default function HomePage() {
               disabled={busy}
               className="btn-primary mt-4 w-full text-base"
             >
-              {busy ? "Warming up the roasterâ€¦" : "Start a roast session ðŸ”¥"}
+              {busy ? "Warming up the roasterâ€¦" : "Start a roast session 🔥"}
             </button>
             {error && (
               <p className="mt-3 text-sm text-accent">{error}</p>
