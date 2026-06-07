@@ -59,49 +59,17 @@ services:
       # the rule-based matcher score falls below LLM_FALLBACK_SCORE_THRESHOLD.
       - key: LLM_PROVIDER
         value: "stub"
-      - key: LLM_API_KEY
-        sync: false  # leave empty unless LLM_PROVIDER is openai/anthropic
       - key: LLM_MODEL
         value: "gpt-4o-mini"
       # ---- Outbound email (verification + password reset) ----
       # Dev mode (SMTP_HOST empty) writes emails to dev_emails.log. Set
       # these to a real SMTP relay (Gmail app password, Resend, SES, etc.)
       # in production.
-      - key: SMTP_HOST
-        sync: false
       - key: SMTP_PORT
         value: "587"
-      - key: SMTP_USERNAME
-        sync: false
-      - key: SMTP_PASSWORD
-        sync: false
-      - key: SMTP_FROM
-        sync: false
-      # ---- Daily backup (any of these stores works for free) ----
-      # local (default) — writes to the cron's working directory; on
-      # Render Cron this is ephemeral, so use a remote backend unless
-      # you're just debugging.
-      - key: BACKUP_DESTINATION
-        value: "github"  # one of: local, http, github, s3
-      # ---- GitHub backend (recommended; free for private repos) ----
-      - key: BACKUP_GITHUB_REPO
-        sync: false  # e.g. mihir2452005/roastgpt-backups
-      - key: BACKUP_GITHUB_TOKEN
-        sync: false  # fine-grained PAT with `contents:write` on the backup repo
-      # ---- Optional: HTTP webhook backend ----
-      # - key: BACKUP_WEBHOOK_URL
-      #   sync: false
-      # ---- Optional: S3-compatible backend (Cloudflare R2, Backblaze B2, AWS) ----
-      # - key: BACKUP_S3_BUCKET
-      #   sync: false
-      # - key: BACKUP_S3_ENDPOINT
-      #   sync: false
-      # - key: BACKUP_S3_KEY_ID
-      #   sync: false
-      # - key: BACKUP_S3_KEY_SECRET
-      #   sync: false
-      # - key: BACKUP_S3_REGION
-      #   value: "auto"
+      # ---- Daily backup is now GitHub Actions, not a Render cron ----
+      # See .github/workflows/backup.yml in this repo. The script reads
+      # DATABASE_URL from secrets; no BACKUP_* env vars needed here.
 
   # Daily database backup is handled by GitHub Actions (free, no card)
   # See .github/workflows/backup.yml -- runs the same
