@@ -55,6 +55,32 @@
     background-attachment: fixed;
   }
 
+  /* Native form controls inherit `color` from the body, which is
+     white in our dark theme. That makes typed text invisible on
+     light surfaces (e.g. the white cards used on /login and
+     /register). Default form text to a dark slate-900 here so any
+     form not explicitly opting back into the dark theme still
+     works. Pages with a dark card (the global `.input` class) can
+     override with `text-text`. */
+  input,
+  textarea,
+  select {
+    color: rgb(15 23 42);            /* slate-900 */
+  }
+  input::placeholder,
+  textarea::placeholder {
+    color: rgb(148 163 184);          /* slate-400 */
+    opacity: 1;
+  }
+  /* Browsers paint autofilled inputs with a system yellow and force
+     the text colour back to black — which is fine for our case but
+     the yellow clashes with the card. Keep the autofill background
+     and the dark text legible. */
+  input:-webkit-autofill {
+    -webkit-text-fill-color: rgb(15 23 42);
+    -webkit-box-shadow: 0 0 0 1000px rgb(255 255 255) inset;
+  }
+
   ::selection {
     @apply bg-accent/40 text-text;
   }
