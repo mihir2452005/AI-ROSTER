@@ -36,6 +36,19 @@
   }
 
   body {
+    /* `next/font/google` sets --font-inter on <html>. We append the
+       standard OS emoji font fallbacks so glyphs like 🔥 💀 ⭐ 🎯
+       render on every platform (Segoe UI Emoji on Windows,
+       Apple Color Emoji on macOS/iOS, Noto Color Emoji on
+       Linux/Android). Without this the emojis render as black
+       boxes because Inter doesn't include emoji glyphs. */
+    font-family:
+      var(--font-inter),
+      "Segoe UI Emoji",
+      "Apple Color Emoji",
+      "Noto Color Emoji",
+      system-ui,
+      sans-serif;
     background-image:
       radial-gradient(circle at 15% 10%, rgba(239, 68, 68, 0.08), transparent 40%),
       radial-gradient(circle at 85% 90%, rgba(249, 115, 22, 0.06), transparent 40%);
