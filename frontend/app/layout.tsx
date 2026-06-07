@@ -1,4 +1,5 @@
 ﻿import type { Metadata } from "next";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import { Toaster } from "sonner";
 import "./globals.css";
 import HeaderAuth from "../components/HeaderAuth";
@@ -6,6 +7,28 @@ import ErrorBoundary from "../components/ErrorBoundary";
 import ThemeProvider from "../components/ThemeProvider";
 import ThemeToggle from "../components/ThemeToggle";
 import { CookieBanner } from "../components/CookieBanner";
+
+// Self-host the fonts via `next/font` so the build doesn't depend
+// on a live Google Fonts CDN (Google's CSS API intermittently
+// 400s on font names with special characters like
+// `Bricolage+Grotesque`, dumping 2.7 KB of error HTML into every
+// Vercel build log). The font files are fetched at build time
+// and served from Vercel's own CDN.
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+  variable: "--font-inter",
+  display: "swap",
+  fallback: ["system-ui", "sans-serif"],
+});
+
+const jetbrains = JetBrains_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  variable: "--font-jetbrains-mono",
+  display: "swap",
+  fallback: ["ui-monospace", "monospace"],
+});
 
 export const metadata: Metadata = {
   title: "RoastGPT — The Internet's Most Ruthless AI Roaster",
@@ -47,14 +70,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${jetbrains.variable}`}>
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Bricolage+Grotesque:600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
-        />
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
         <meta name="theme-color" content="#0a0a0a" />
       </head>
