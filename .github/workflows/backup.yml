@@ -12,7 +12,7 @@ on:
   schedule:
     # 02:13 UTC every day. Adjust to your timezone if needed.
     - cron: "13 2 * * *"
-  # Allow manual trigger from the Actions tab — useful after big
+  # Allow manual trigger from the Actions tab -- useful after big
   # changes when you want a fresh backup right now.
   workflow_dispatch:
 
