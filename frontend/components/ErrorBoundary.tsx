@@ -16,7 +16,7 @@ interface State {
  * App-level error boundary. Catches render-time exceptions so the
  * user gets a friendly "something went wrong" page instead of a
  * blank screen. Logs to the console so the error is visible in
- * dev. In prod the message is intentionally generic â€” we never
+ * dev. In prod the message is intentionally generic — we never
  * leak the underlying error to the user.
  */
 export default class ErrorBoundary extends Component<Props, State> {

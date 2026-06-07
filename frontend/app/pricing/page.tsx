@@ -24,7 +24,7 @@ declare global {
 
 // Maps a `plan.features` dict (from the backend) into a list of <li>.
 // Supports a small DSL so plans can be customised without frontend code:
-//   { items: ["âœ… Unlimited messages", "âŒ Custom personality", ...] }
+//   { items: ["✅ Unlimited messages", "âŒ Custom personality", ...] }
 //   { highlighted: "MOST POPULAR", items: [...] }
 //   { items: ["...", { text: "Build your own", cta: "Configure" }] }
 function renderPlanFeatures(plan: Plan): React.ReactNode {
@@ -44,22 +44,22 @@ function renderPlanFeatures(plan: Plan): React.ReactNode {
 
 const FALLBACK_FEATURES: Record<string, string[]> = {
   starter: [
-    "âœ… Unlimited messages",
-    "âœ… Male & female roaster",
-    "âœ… Chat history",
+    "✅ Unlimited messages",
+    "✅ Male & female roaster",
+    "✅ Chat history",
     "âŒ Custom personality",
   ],
   pro: [
-    "âœ… Everything in Starter",
-    "âœ… All 3 roaster types",
-    "âœ… Priority support",
-    "âœ… Weekly leaderboard rewards",
+    "✅ Everything in Starter",
+    "✅ All 3 roaster types",
+    "✅ Priority support",
+    "✅ Weekly leaderboard rewards",
   ],
   legend: [
-    "âœ… Everything in Pro",
-    "âœ… Custom personality (build your own)",
-    "âœ… 90 days of access",
-    "âœ… VIP support & early features",
+    "✅ Everything in Pro",
+    "✅ Custom personality (build your own)",
+    "✅ 90 days of access",
+    "✅ VIP support & early features",
   ],
 };
 
@@ -72,7 +72,7 @@ export default function PricingPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    // Plans are public â€” anyone can view pricing. We only need a
+    // Plans are public — anyone can view pricing. We only need a
     // logged-in user to subscribe; if the user clicks "Get Pro" while
     // not logged in, we send them to /login and bring them back here
     // after auth.
@@ -223,7 +223,7 @@ export default function PricingPage() {
         }) => {
           // The Razorpay modal has closed and the user has paid.
           // Verify on our backend. Note: clearing checkoutLoading is
-          // handled by ondismiss â€” we only clear it here on error so
+          // handled by ondismiss — we only clear it here on error so
           // the user can retry without the button being stuck.
           try {
             const r = await paymentsApi.verifyPayment(response);
@@ -267,7 +267,7 @@ export default function PricingPage() {
   if (loading) {
     return (
       <main className="min-h-screen flex items-center justify-center">
-        <p className="text-slate-500">Loading plansâ€¦</p>
+        <p className="text-slate-500">Loading plans…</p>
       </main>
     );
   }
@@ -282,7 +282,7 @@ export default function PricingPage() {
           </p>
           {user?.has_active_subscription && (
             <p className="mt-3 text-emerald-300 text-sm">
-              âœ… You have an active subscription. Manage it in <a href="/account" className="underline">Account</a>.
+              ✅ You have an active subscription. Manage it in <a href="/account" className="underline">Account</a>.
             </p>
           )}
         </div>

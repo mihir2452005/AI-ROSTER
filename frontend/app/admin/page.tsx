@@ -70,7 +70,7 @@ export default function AdminPage() {
       .me()
       .then((u) => {
         if (!u.is_admin) {
-          setMessage("Admins only. Redirectingâ€¦");
+          setMessage("Admins only. Redirecting…");
           setTimeout(() => router.push("/"), 1500);
           return;
         }
@@ -269,7 +269,7 @@ function toggleUserFlag(u: AdminUser, key: "is_active" | "is_verified" | "is_adm
   }
 
   if (loading) {
-    return <main className="min-h-screen flex items-center justify-center text-slate-500">Loading adminâ€¦</main>;
+    return <main className="min-h-screen flex items-center justify-center text-slate-500">Loading admin…</main>;
   }
   if (!me?.is_admin) {
     return (
@@ -331,7 +331,7 @@ function toggleUserFlag(u: AdminUser, key: "is_active" | "is_verified" | "is_adm
             <Stat label="Active users" value={stats.active_users} />
             <Stat label="Active subs" value={stats.active_subscriptions} />
             <Stat label="Total payments" value={stats.total_payments} />
-            <Stat label="Revenue" value={`â‚¹${(stats.total_revenue_paise / 100).toFixed(0)}`} />
+            <Stat label="Revenue" value={`₹${(stats.total_revenue_paise / 100).toFixed(0)}`} />
           </div>
         )}
 
@@ -339,7 +339,7 @@ function toggleUserFlag(u: AdminUser, key: "is_active" | "is_verified" | "is_adm
           <div>
             <input
               type="text"
-              placeholder="Search by email or nameâ€¦"
+              placeholder="Search by email or name…"
               value={search}
               onChange={(e) => {
                 const v = e.target.value;

@@ -1,4 +1,4 @@
-﻿/* RoastGPT â€” API client for the FastAPI backend. */
+﻿/* RoastGPT — API client for the FastAPI backend. */
 
 import type {
   EndSessionResponse,
@@ -29,22 +29,22 @@ const API_BASE = process.env.NEXT_PUBLIC_API_URL || "";
 if (!API_BASE && typeof window !== "undefined" && process.env.NODE_ENV === "production") {
   // Loud, once-per-load warning if the env var is missing in production.
   // Without this, every API call silently hits the Next.js origin and
-  // 404s on every route â€” confusing to debug.
+  // 404s on every route — confusing to debug.
   // eslint-disable-next-line no-console
   console.warn(
-    "[RoastGPT] NEXT_PUBLIC_API_URL is not set â€” API calls will fail in production."
+    "[RoastGPT] NEXT_PUBLIC_API_URL is not set — API calls will fail in production."
   );
 }
 
 interface RequestOptions extends RequestInit {
   /** Per-request timeout in ms. Defaults to DEFAULT_TIMEOUT_MS. Pass 0 to
-   * disable (use sparingly â€” hung requests leave the user stuck). */
+   * disable (use sparingly — hung requests leave the user stuck). */
   timeoutMs?: number;
   /** Internal: marks a request as a retry-after-refresh so we don't
    * loop forever on a perpetually-401 endpoint. Never set this in
    * application code. */
   __retried?: boolean;
-  /** Optional AbortSignal â€” wired to the internal timeout controller. */
+  /** Optional AbortSignal — wired to the internal timeout controller. */
   signal?: AbortSignal;
 }
 
@@ -116,7 +116,7 @@ export async function request<T>(path: string, init?: RequestOptions): Promise<T
     } catch { /* not JSON; keep raw */ }
 
     // 401 with a refresh token: try to refresh once and replay. Don't
-    // recurse infinitely â€” only one retry, only if we actually HAD a
+    // recurse infinitely — only one retry, only if we actually HAD a
     // refresh token to begin with. This handles the "access token
     // expired mid-session" case without bouncing the user to /login.
     if (res.status === 401 && !retried && getRefreshToken()) {

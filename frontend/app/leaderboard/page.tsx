@@ -101,7 +101,7 @@ export default function LeaderboardPage() {
       </div>
 
       <div className="card">
-        {loading && <p className="p-6 text-center text-muted">Loadingâ€¦</p>}
+        {loading && <p className="p-6 text-center text-muted">Loading…</p>}
         {error && <p className="p-6 text-center text-red-500">{error}</p>}
         {!loading && !error && entries.length === 0 && (
           <p className="p-6 text-center text-muted">
@@ -124,8 +124,8 @@ export default function LeaderboardPage() {
                 <div className="flex-1 min-w-0">
                   <div className="font-semibold">{row.display_name}</div>
                   <div className="text-xs text-muted">
-                    {row.message_count} message{row.message_count === 1 ? "" : "s"} Â·{" "}
-                    {row.masked_email || "â€”"}
+                    {row.message_count} message{row.message_count === 1 ? "" : "s"} ·{" "}
+                    {row.masked_email || "—"}
                   </div>
                 </div>
                 <div className="font-mono text-lg font-bold gradient-text">

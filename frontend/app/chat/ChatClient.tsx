@@ -40,7 +40,7 @@ export default function ChatClient({ sessionId }: Props) {
   // and not freshly fetched from memory.
   const [recoveredFromDb, setRecoveredFromDb] = useState(false);
   // True iff the latest error was a "free tier" 402 from the backend.
-  // Drives the "See plans â†’" CTA â€” branching on the typed error code
+  // Drives the "See plans →" CTA — branching on the typed error code
   // rather than substring matching the human-readable message.
   const [hitFreeTier, setHitFreeTier] = useState(false);
 
@@ -80,7 +80,7 @@ export default function ChatClient({ sessionId }: Props) {
         }
       } catch (e) {
         if (cancelled) return;
-        // If we got a 404, the in-memory store lost this session â€”
+        // If we got a 404, the in-memory store lost this session —
         // typical after a free-tier host cold start. Authenticated
         // users can recover from the persisted `roast_sessions` row.
         if (e instanceof ApiError && e.code === "not_found" && getAccessToken()) {
@@ -141,7 +141,7 @@ export default function ChatClient({ sessionId }: Props) {
     const optimisticId = `optimistic-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
     setMessages((m) => [...m, { role: "user", content: text, _id: optimisticId } as ChatMessage]);
 
-    // Cancel any in-flight send (defensive â€” busy guard already
+    // Cancel any in-flight send (defensive — busy guard already
     // prevents re-entry, but a stale promise from before unmount
     // could still resolve).
     sendControllerRef.current?.abort();
@@ -202,7 +202,7 @@ export default function ChatClient({ sessionId }: Props) {
 
   /** After a refresh on an ended session, the local `finalScores` is null
    * (state is fresh) but the server reports `is_ended: true`. The share UI
-   * should appear in that case too â€” otherwise the user sees their full
+   * should appear in that case too — otherwise the user sees their full
    * conversation with no way to share or restart. */
   const showShareUI = !!closer && (!!finalScores || endedRemote);
   const sessionIsLocked = !!finalScores || endedRemote;
@@ -282,7 +282,7 @@ export default function ChatClient({ sessionId }: Props) {
         <div className="flex items-center justify-between border-b border-border/60 px-4 py-3">
           <div>
             <div className="font-display text-lg font-bold capitalize">
-              {personality.replace("_", " ")} Â· {mode}
+              {personality.replace("_", " ")} · {mode}
             </div>
             <div className="text-xs text-muted">
               Session <span className="font-mono">{sessionId}</span>
@@ -328,7 +328,7 @@ export default function ChatClient({ sessionId }: Props) {
           className="flex-1 space-y-4 overflow-y-auto px-4 py-6"
         >
           {messages.length === 0 && !error && !endedRemote && (
-            <div className="text-center text-muted">Loading openerâ€¦</div>
+            <div className="text-center text-muted">Loading opener…</div>
           )}
 
           {endedRemote && messages.length === 0 && (
@@ -344,7 +344,7 @@ export default function ChatClient({ sessionId }: Props) {
           {busy && (
             <div className="flex justify-start">
               <div className="roast-bubble animate-pulse text-muted">
-                Cooking up something devastatingâ€¦
+                Cooking up something devastating…
               </div>
             </div>
           )}
@@ -363,7 +363,7 @@ export default function ChatClient({ sessionId }: Props) {
                     href="/pricing"
                     className="ml-3 inline-block rounded-md bg-gradient-to-r from-purple-600 to-pink-600 px-3 py-1 text-xs font-semibold text-white"
                   >
-                    See plans â†’
+                    See plans →
                   </a>
                 )}
               </div>
@@ -372,7 +372,7 @@ export default function ChatClient({ sessionId }: Props) {
                 aria-label="Dismiss error"
                 className="text-accent/70 hover:text-accent"
               >
-                âœ•
+                ✕
               </button>
             </motion.div>
           )}
@@ -394,7 +394,7 @@ export default function ChatClient({ sessionId }: Props) {
                   onClick={copyShareLink}
                   className="btn-ghost text-xs"
                 >
-                  {copied ? "Copied âœ“" : "Copy share link"}
+                  {copied ? "Copied ✓" : "Copy share link"}
                 </button>
                 <a
                   href={`/share/${sessionId}`}
@@ -435,7 +435,7 @@ export default function ChatClient({ sessionId }: Props) {
                     send();
                   }
                 }}
-                placeholder="Say something to be roastedâ€¦ (Enter to send, Shift+Enter for newline)"
+                placeholder="Say something to be roasted… (Enter to send, Shift+Enter for newline)"
                 className="input"
                 maxLength={2000}
                 autoFocus

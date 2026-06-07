@@ -11,7 +11,7 @@ type Gender = "male" | "female" | "neutral";
 export default function RegisterPage() {
   return (
     <Suspense fallback={
-      <main className="min-h-screen flex items-center justify-center text-slate-500">Loadingâ€¦</main>
+      <main className="min-h-screen flex items-center justify-center text-slate-500">Loading…</main>
     }>
       <RegisterPageInner />
     </Suspense>

@@ -1,4 +1,4 @@
-﻿/* RoastGPT â€” TypeScript types for the API */
+﻿/* RoastGPT — TypeScript types for the API */
 
 export type RoastMode =
   | "friendly"
@@ -91,7 +91,7 @@ export const MODES: { value: RoastMode; label: string; emoji: string; descriptio
   { value: "friendly",   label: "Friendly Roast",  emoji: "💛", description: "Light teasing. Safe to send to your mom." },
   { value: "savage",     label: "Savage Roast",    emoji: "🔥", description: "Brutal but safe. No mercy, no chill." },
   { value: "programmer", label: "Programmer Roast", emoji: "💻", description: "Code reviews from hell. Stack Overflow is tired of you." },
-  { value: "student",    label: "Student Roast",   emoji: "🎓", description: "Your GPA, your procrastination, your excuses â€” all roasted." },
+  { value: "student",    label: "Student Roast",   emoji: "🎓", description: "Your GPA, your procrastination, your excuses — all roasted." },
   { value: "gamer",      label: "Gamer Roast",     emoji: "🎮", description: "Trash-talk like it's a ranked match. GG." },
   { value: "corporate",  label: "Corporate Roast", emoji: "💼", description: "LinkedIn buzzwords, meetings about meetings." },
   { value: "startup",    label: "Startup Roast",   emoji: "📈", description: "Notion docs and Squarespace domains. TAM = everyone." },

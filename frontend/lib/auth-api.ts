@@ -1,4 +1,4 @@
-﻿/* RoastGPT â€” Auth/Payment API client for the FastAPI backend.
+﻿/* RoastGPT — Auth/Payment API client for the FastAPI backend.
 
 Uses the shared `request` / `ApiError` / `tryRefresh` from `lib/api.ts`
 so a 401 burst from any combination of api.* and authApi.* calls
