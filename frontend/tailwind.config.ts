@@ -22,13 +22,13 @@ const config: Config = {
         text:      "rgb(var(--c-text) / <alpha-value>)",
       },
       fontFamily: {
-        // `var(--font-*)` comes from the CSS variables set by
-        // `next/font/google` in app/layout.tsx. Falls back to the
-        // named family (which is what the next/font build downloaded
-        // and self-hosts) and then to a system font.
-        sans:    ["var(--font-inter)", "Inter", "system-ui", "sans-serif"],
+        // "RoastGPT-Emoji" is the unicode-range @font-face defined
+        // in app/globals.css. It only "owns" emoji code points, so
+        // for ASCII text the browser falls through to the next entry
+        // (the Inter variable) without an extra HTTP request.
+        sans:    ["RoastGPT-Emoji", "var(--font-inter)", "Inter", "system-ui", "sans-serif"],
         mono:    ["var(--font-jetbrains-mono)", "JetBrains Mono", "ui-monospace", "monospace"],
-        display: ["var(--font-inter)", "Inter", "sans-serif"],
+        display: ["RoastGPT-Emoji", "var(--font-inter)", "Inter", "sans-serif"],
       },
       animation: {
         "fade-in":   "fadeIn 0.4s ease-out",

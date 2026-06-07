@@ -4,6 +4,55 @@
 @tailwind components;
 @tailwind utilities;
 
+/* `next/font/google` builds Inter with a `@font-face` whose
+   `unicode-range: u+1f??` claims ownership of every code point
+   from U+1F000 to U+1FFFF — the BMP emoji range. But Inter has no
+   emoji glyphs at all, so the browser happily "renders" the
+   .notdef tofu box for 🔥 💀 ⭐ 🎯 💼 because the font claims the
+   range. The body font-family fallback (Segoe UI Emoji, Apple
+   Color Emoji, Noto Color Emoji) is never consulted.
+
+   The fix is a per-range @font-face that re-assigns the emoji
+   blocks to the system emoji font using `local()`. Browsers
+   walk the font-family list and pick the first @font-face whose
+   unicode-range covers the character; because this rule is listed
+   first in the body font-family, it wins for emoji. */
+@font-face {
+  font-family: "RoastGPT-Emoji";
+  src: local("Apple Color Emoji"),
+       local("Segoe UI Emoji"),
+       local("Noto Color Emoji"),
+       local("Twemoji Mozilla"),
+       local("EmojiOne Color"),
+       local("Android Emoji");
+  /* Emoji code-point blocks. Covers Miscellaneous Symbols,
+     Dingbats, the entire Emoji range, regional-indicator flags,
+     and the various symbol/arrow/punctuation blocks that ship
+     colour emoji in system fonts. */
+  unicode-range:
+    U+231A-231B,        /* ⌚⌛ */
+    U+23E9-23F3,        /* ⏩⏪⏫⏬⏭⏮⏯⏰⏱⏲⏳ */
+    U+23F8-23FA,        /* ⏸⏹⏺ */
+    U+2600-26FF,        /* ☀-⛿ */
+    U+2700-27BF,        /* ✀-➿ */
+    U+2900-297F,        /* ➀-⥿ */
+    U+2B00-2BFF,        /* ⬀-⯿ */
+    U+1F000-1F02F,      /* 🀀-🀯 */
+    U+1F0A0-1F0FF,      /* 🂠-🃿 */
+    U+1F100-1F1FF,      /* 🄀-🇿 */
+    U+1F200-1F2FF,      /* 🈀-🋿 */
+    U+1F300-1F5FF,      /* 🌀-🗿 */
+    U+1F600-1F64F,      /* 😀-🙏 */
+    U+1F650-1F67F,      /* 🙐-🙿 */
+    U+1F680-1F6FF,      /* 🚀-🛿 */
+    U+1F700-1F77F,      /* 🜀-🝿 */
+    U+1F780-1F7FF,      /* 🞀-🟿 */
+    U+1F800-1F8FF,      /* 🠀-🣿 */
+    U+1F900-1F9FF,      /* 🤀-🧿 */
+    U+1FA00-1FA6F,      /* 🨀-🩯 */
+    U+1FA70-1FAFF;      /* 🩰-🫿 */
+}
+
 /* Default = dark theme. The .light class on <html> switches to the
    light palette via the same CSS variables. We keep the same accent
    hues for brand consistency, only the surface/text/border change. */
@@ -36,13 +85,15 @@
   }
 
   body {
-    /* `next/font/google` sets --font-inter on <html>. We append the
-       standard OS emoji font fallbacks so glyphs like 🔥 💀 ⭐ 🎯
-       render on every platform (Segoe UI Emoji on Windows,
-       Apple Color Emoji on macOS/iOS, Noto Color Emoji on
-       Linux/Android). Without this the emojis render as black
-       boxes because Inter doesn't include emoji glyphs. */
+    /* "RoastGPT-Emoji" must come FIRST: it has a @font-face with
+       unicode-range covering only the emoji blocks, so the browser
+       uses it for 🔥 💀 ⭐ etc. For all other characters (Latin,
+       Latin-Ext, Cyrillic, Greek, etc.) the browser falls through
+       to var(--font-inter) → Inter. The trailing "Segoe UI Emoji"
+       etc. remain as a last-resort fallback in case the @font-face
+       trick fails on a very old browser. */
     font-family:
+      "RoastGPT-Emoji",
       var(--font-inter),
       "Segoe UI Emoji",
       "Apple Color Emoji",
