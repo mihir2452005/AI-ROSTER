@@ -104,5 +104,5 @@ services:
       #   value: "auto"
 
   # Daily database backup is handled by GitHub Actions (free, no card)
-  # See .github/workflows/backup.yml — runs the same
+  # See .github/workflows/backup.yml -- runs the same
   # `python -m scripts.backup_db --env` against Neon.
