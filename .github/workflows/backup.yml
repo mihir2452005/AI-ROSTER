@@ -12,11 +12,9 @@ on:
   schedule:
     # 02:13 UTC every day. Adjust to your timezone if needed.
     - cron: "13 2 * * *"
-  # Allow manual trigger from the Actions tab -- useful after big
-  # changes when you want a fresh backup right now.
+  # Allow manual trigger from the Actions tab.
   workflow_dispatch:
 
-# Don't run on forks or PRs from non-maintainers.
 permissions:
   contents: read
 
@@ -28,7 +26,7 @@ concurrency:
 
 jobs:
   backup:
-    name: Dump Neon → JSON → backup repo
+    name: Dump Neon -> JSON -> backup repo
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
@@ -52,40 +50,19 @@ jobs:
       - name: Run the backup
         working-directory: backend
         env:
-          # The same Neon connection string you pasted into Render.
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           BACKUP_DESTINATION: github
           BACKUP_GITHUB_REPO: ${{ secrets.BACKUP_GITHUB_REPO }}
           BACKUP_GITHUB_TOKEN: ${{ secrets.BACKUP_GITHUB_TOKEN }}
-          # Optional: cap how big a single row can be (default 10 MB).
           BACKUP_MAX_CELL_BYTES: "10485760"
         run: |
           python -m scripts.backup_db --env
 
       - name: Verify the backup landed
         if: success()
+        working-directory: backend
         env:
           BACKUP_GITHUB_REPO: ${{ secrets.BACKUP_GITHUB_REPO }}
           BACKUP_GITHUB_TOKEN: ${{ secrets.BACKUP_GITHUB_TOKEN }}
         run: |
-          # Hit the GitHub API to confirm a fresh file was committed
-          # to the backup repo in the last 5 minutes. If not, fail loud.
-          python -c "
-import os, sys, time, datetime, urllib.request, json
-repo = os.environ['BACKUP_GITHUB_REPO']
-token = os.environ['BACKUP_GITHUB_TOKEN']
-url = f'https://api.github.com/repos/{repo}/commits?per_page=3'
-req = urllib.request.Request(url, headers={'Authorization': f'Bearer {token}'})
-with urllib.request.urlopen(req) as r:
-    commits = json.loads(r.read())
-if not commits:
-    print('::error::No commits found in backup repo')
-    sys.exit(1)
-latest = commits[0]
-ts = datetime.datetime.fromisoformat(latest['commit']['author']['date'].replace('Z', '+00:00'))
-age_min = (datetime.datetime.now(datetime.timezone.utc) - ts).total_seconds() / 60
-print(f'Latest backup commit: {latest[\"sha\"][:8]} ({age_min:.1f} min ago)')
-print(f'Message: {latest[\"commit\"][\"message\"]}')
-if age_min > 60:
-    print(f'::warning::Latest backup is {age_min:.0f} min old — workflow may have failed silently')
-"
+          python -m scripts.verify_backup
