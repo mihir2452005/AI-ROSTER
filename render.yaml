@@ -16,7 +16,7 @@ services:
   - type: web
     name: roastgpt-api
     runtime: python
-    plan: starter
+    plan: free
     region: oregon
     rootDir: backend
     buildCommand: "pip install --upgrade pip && pip install -r requirements.txt"
@@ -110,7 +110,7 @@ services:
   - type: cron
     name: roastgpt-backup
     runtime: python
-    plan: starter
+    plan: free
     region: oregon
     rootDir: backend
     schedule: "13 2 * * *"
