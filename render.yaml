@@ -103,29 +103,6 @@ services:
       # - key: BACKUP_S3_REGION
       #   value: "auto"
 
-  # Daily database backup. Runs `python -m scripts.backup_db --env` so
-  # everything is configured via env vars above. Cron jobs are a free
-  # Render feature. Schedule: 02:13 UTC (off-the-hour to avoid the
-  # midnight crowd).
-  - type: cron
-    name: roastgpt-backup
-    runtime: python
-    plan: free
-    region: oregon
-    rootDir: backend
-    schedule: "13 2 * * *"
-    buildCommand: "pip install --upgrade pip && pip install -r requirements.txt"
-    startCommand: "python -m scripts.backup_db --env"
-    envVars:
-      - key: PYTHON_VERSION
-        value: 3.12.7
-      - key: DATABASE_URL
-        sync: false  # paste the same Neon connection string here
-      # Mirror the BACKUP_* env vars from the web service. Render doesn't
-      # share env between services, so duplicate what you need.
-      - key: BACKUP_DESTINATION
-        sync: false
-      - key: BACKUP_GITHUB_REPO
-        sync: false
-      - key: BACKUP_GITHUB_TOKEN
-        sync: false
+  # Daily database backup is handled by GitHub Actions (free, no card)
+  # See .github/workflows/backup.yml — runs the same
+  # `python -m scripts.backup_db --env` against Neon.
