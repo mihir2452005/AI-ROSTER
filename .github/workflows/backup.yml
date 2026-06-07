@@ -1,12 +1,18 @@
 name: Daily database backup
 
-# Runs the same `python -m scripts.backup_db --env` that the Render
-# cron job used to run. Scheduled at 02:13 UTC (off-the-hour) so we
-# don't compete with the rest of the internet's backups.
+# Dumps the Neon database to a JSON file and commits it to a
+# `backups/` folder in THIS repo (not a separate one).
 #
-# The script reads DATABASE_URL + BACKUP_GITHUB_* from environment,
-# dumps the Neon database to a JSON file, and pushes it to a private
-# GitHub repo (the "backup bucket"). No card, no Render cron bill.
+# Why this design:
+#   - No second repo to create or maintain
+#   - No fine-grained PAT to generate or rotate
+#   - The auto-provided `GITHUB_TOKEN` already has write access
+#     to the repo that triggered the workflow
+#   - One fewer secret to misconfigure
+#
+# The actual database dump still uses the existing
+# `python -m scripts.backup_db --output ...` command, so the
+# on-disk format is identical to a local backup.
 
 on:
   schedule:
@@ -15,8 +21,12 @@ on:
   # Allow manual trigger from the Actions tab.
   workflow_dispatch:
 
+# We need write access to commit the backup file back to the repo.
+# This is the only permission we ask for; the workflow does not run
+# on PRs from forks so `GITHUB_TOKEN` is not exposed to untrusted
+# code.
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   # Prevent two backups from racing each other if a previous run
@@ -26,7 +36,7 @@ concurrency:
 
 jobs:
   backup:
-    name: Dump Neon -> JSON -> backup repo
+    name: Dump Neon -> commit to backups/ folder
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
@@ -47,22 +57,39 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run the backup
+      - name: Run the backup to a local file
         working-directory: backend
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          BACKUP_DESTINATION: github
-          BACKUP_GITHUB_REPO: ${{ secrets.BACKUP_GITHUB_REPO }}
-          BACKUP_GITHUB_TOKEN: ${{ secrets.BACKUP_GITHUB_TOKEN }}
+          # Cap how big a single row can be (default 10 MB).
           BACKUP_MAX_CELL_BYTES: "10485760"
         run: |
-          python -m scripts.backup_db --env
+          mkdir -p ../backups
+          ts=$(date -u +%Y%m%d-%H%M%S)
+          out="../backups/backup-${ts}.json"
+          python -m scripts.backup_db --output "${out}"
+          echo "BACKUP_FILE=${out}" >> "$GITHUB_ENV"
+          echo "Wrote $(wc -c < ${out}) bytes to ${out}"
+
+      - name: Commit and push the backup file
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add backups/
+          # If nothing changed (e.g. database is empty and the
+          # empty-schema JSON is byte-identical to last run), don't
+          # create an empty commit.
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git commit -m "backup: $(date -u +%Y-%m-%d\ %H:%M:%S)\ UTC"
+          git push
 
       - name: Verify the backup landed
-        if: success()
         working-directory: backend
         env:
-          BACKUP_GITHUB_REPO: ${{ secrets.BACKUP_GITHUB_REPO }}
-          BACKUP_GITHUB_TOKEN: ${{ secrets.BACKUP_GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BACKUP_REPO:  ${{ github.repository }}
         run: |
-          python -m scripts.verify_backup
+          python -m scripts.verify_backup_gh
