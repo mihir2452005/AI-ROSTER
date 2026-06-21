@@ -1,0 +1,127 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-06-21T07:08:18.660189+00:00",
+  "engine": "ep-floral-base-aj03g83y-pooler.c-3.us-east-2.aws.neon.tech/neondb?channel_binding=require&sslmode=require",
+  "include_passwords": true,
+  "row_counts": {
+    "users": 1,
+    "subscription_plans": 3,
+    "subscriptions": 0,
+    "payments": 0,
+    "chat_history": 0,
+    "roast_sessions": 0
+  },
+  "tables": {
+    "users": [
+      {
+        "id": 1,
+        "email": "mihir2452005@gmail.com",
+        "hashed_password": "$2b$12$02854a7.kzvGrZkVFsXpuOZURjU92Py3diSHBAnoONTqEH8FloeD2",
+        "full_name": "Admin",
+        "gender_preference": "neutral",
+        "is_active": true,
+        "is_verified": true,
+        "is_admin": true,
+        "role": "admin",
+        "free_messages_used": 0,
+        "token_version": 0,
+        "last_login_at": null,
+        "last_login_ip": null,
+        "avatar_url": null,
+        "is_banned": false,
+        "ban_reason": null,
+        "banned_at": null,
+        "banned_by_id": null,
+        "favorite_mode": null,
+        "favorite_personality": null,
+        "recent_topics_json": [],
+        "created_at": "2026-06-07T08:14:10.407813+00:00",
+        "updated_at": "2026-06-07T08:14:10.407819+00:00",
+        "deleted_at": null
+      }
+    ],
+    "subscription_plans": [
+      {
+        "id": 1,
+        "plan_code": "starter",
+        "name": "Starter Chat",
+        "price_paise": 29900,
+        "currency": "INR",
+        "duration_days": 10,
+        "features": {
+          "roaster_types": [
+            "male",
+            "female"
+          ],
+          "unlimited": true,
+          "priority_support": false,
+          "items": [
+            "✅ Unlimited messages",
+            "✅ Male & female roaster",
+            "✅ Chat history",
+            "❌ Custom personality"
+          ]
+        },
+        "is_active": true,
+        "created_at": "2026-06-07T08:05:20.090033+00:00"
+      },
+      {
+        "id": 2,
+        "plan_code": "pro",
+        "name": "Pro Roaster",
+        "price_paise": 79900,
+        "currency": "INR",
+        "duration_days": 30,
+        "features": {
+          "roaster_types": [
+            "male",
+            "female",
+            "neutral"
+          ],
+          "unlimited": true,
+          "priority_support": true,
+          "highlighted": "MOST POPULAR",
+          "items": [
+            "✅ Everything in Starter",
+            "✅ All 3 roaster types",
+            "✅ Priority support",
+            "✅ Weekly leaderboard rewards"
+          ]
+        },
+        "is_active": true,
+        "created_at": "2026-06-07T08:05:20.090041+00:00"
+      },
+      {
+        "id": 3,
+        "plan_code": "legend",
+        "name": "Legend Pass",
+        "price_paise": 199900,
+        "currency": "INR",
+        "duration_days": 90,
+        "features": {
+          "roaster_types": [
+            "male",
+            "female",
+            "neutral",
+            "custom"
+          ],
+          "unlimited": true,
+          "priority_support": true,
+          "custom_personality": true,
+          "items": [
+            "✅ Everything in Pro",
+            "✅ Custom personality (build your own)",
+            "✅ 90 days of access",
+            "✅ VIP support & early features"
+          ]
+        },
+        "is_active": true,
+        "created_at": "2026-06-07T08:05:20.090042+00:00"
+      }
+    ],
+    "subscriptions": [],
+    "payments": [],
+    "chat_history": [],
+    "roast_sessions": []
+  }
+}
